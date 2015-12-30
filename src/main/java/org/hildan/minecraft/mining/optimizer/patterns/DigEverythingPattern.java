@@ -1,8 +1,8 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
-import org.hildan.minecraft.mining.optimizer.chunks.DugChunk;
+import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
 
-public class DigEverythingPattern implements Pattern {
+public class DigEverythingPattern extends AbstractDiggingPattern {
 
     @Override
     public int getWidth() {
@@ -24,7 +24,7 @@ public class DigEverythingPattern implements Pattern {
     }
 
     @Override
-    public void digInto(DugChunk chunk, int originX, int originY, int originZ) {
+    public void digInto(Chunk chunk, int originX, int originY, int originZ) {
         chunk.dig(originX, originY, originZ);
     }
 

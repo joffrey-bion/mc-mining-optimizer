@@ -1,43 +1,47 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
-import org.hildan.minecraft.mining.optimizer.chunks.DugChunk;
-import org.hildan.minecraft.mining.optimizer.chunks.OredChunk;
-import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelShape;
+import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
+import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelPattern;
 
 /**
  * One main shaft with perpendicular branches.
  */
-public class BranchingPattern implements Pattern {
+public class BranchingPattern extends AbstractDiggingPattern {
 
-    private TunnelShape shaft;
+    private final TunnelPattern shaft;
 
-    private TunnelShape branch;
+    private final TunnelPattern branch;
 
-    private int mainShaftSpacing;
+    private final int branchLength;
 
-    private int mainShaftLength;
+    private final int branchOffsetByTier;
 
-    private int branchSpacing;
+    public BranchingPattern(TunnelPattern shaft, TunnelPattern branch, int branchLength, int branchOffsetByTier) {
+        this.shaft = shaft;
+        this.branch = branch;
+        this.branchLength = branchLength;
+        this.branchOffsetByTier = branchOffsetByTier;
+        if (shaft.getShape().getHeight() < branch.getShape().getHeight()) {
+            throw new IllegalArgumentException("The main shaft should be higher than branches");
+        }
+        if (shaft.getHSpacing() < 2 * branch.getShape().getWidth()) {
+            throw new IllegalArgumentException("Branches from 2 different shafts are touching: reduce branch length, or put more space");
+        }
+    }
 
-    private int branchLength;
-
-    private int branchOffsetByTier;
-
-    private int tierSpacing;
-
-    @Override
     public int getWidth() {
-        return 0;
+        // the offset doesn't matter here, the spatial period is the same
+        return 2 * branchLength + shaft.getShape().getWidth();
     }
 
-    @Override
     public int getHeight() {
-        return 0;
+        int layerHeight = shaft.getShape().getHeight() + shaft.getVSpacing();
+        // with an offset, two consecutive layers are different
+        return branchOffsetByTier == 0 ? layerHeight : layerHeight * 2;
     }
 
-    @Override
     public int getLength() {
-        return 0;
+        return branch.getHSpacing() + branch.getShape().getWidth();
     }
 
     @Override
@@ -49,7 +53,7 @@ public class BranchingPattern implements Pattern {
     }
 
     @Override
-    public void digInto(DugChunk chunk, int originX, int originY, int originZ) {
+    public void digInto(Chunk chunk, int originX, int originY, int originZ) {
 
         // TODO dig the pattern into the chunk
     }
