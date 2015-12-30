@@ -14,7 +14,14 @@ public abstract class AbstractDiggingPattern implements DiggingPattern {
                 }
             }
         }
+        digVisibleOres(dugChunk);
         return dugChunk;
+    }
+
+    private void digVisibleOres(Chunk dugChunk) {
+
+        // TODO follow ores and dig all the visible ones like a human would do (and iterate)
+
     }
 
     /**

@@ -76,6 +76,21 @@ public class Chunk {
         return length;
     }
 
+    /**
+     * Returns whether this chunk can indeed be dug like this in game.
+     *
+     * @param accesses
+     *     the coordinates where the player enters this chunk to start digging, as specified by {@link DiggingPattern#getAccesses()}
+     *
+     * @return true if this chunk can indeed be dug like this in game.
+     */
+    public boolean isValid(int[][] accesses) {
+
+        // TODO check whether the dug blocks are arranged in a way that could indeed have been dug
+
+        return false;
+    }
+
     private int getIndex(int x, int y, int z) {
         int index = x + y * width + z * width * height;
         if (index < 0 || index >= blocks.length) {
@@ -84,15 +99,63 @@ public class Chunk {
         return index;
     }
 
+    private static int[] getAdjacentIndexes(int i, int size) {
+        if (i == 0) {
+            return new int[] { size - 1, i, i + 1 }; // wrapped max
+        }
+        if (i == size - 1) {
+            return new int[] { i - 1, i, 0 }; // wrapped min
+        }
+        return new int[] { i - 1, i, i + 1 };
+    }
+
+    /**
+     * Returns whether the given coordinates belong to this chunk.
+     *
+     * @param x
+     *     the X coordinate to test
+     * @param y
+     *     the Y coordinate to test
+     * @param z
+     *     the Z coordinate to test
+     *
+     * @return true if the given coordinates belong to this chunk.
+     */
+    public boolean hasBlock(int x, int y, int z) {
+        return x < width && y < height && z < length;
+    }
+
+    /**
+     * Sets the content of the given block.
+     *
+     * @param x
+     *     the X coordinate of the block to set
+     * @param y
+     *     the Y coordinate of the block to set
+     * @param z
+     *     the Z coordinate of the block to set
+     */
     public void setBlock(int x, int y, int z, Block block) {
         blocks[getIndex(x, y, z)] = block;
     }
 
+    /**
+     * Gets the content of the given block.
+     *
+     * @param x
+     *     the X coordinate of the block to get
+     * @param y
+     *     the Y coordinate of the block to get
+     * @param z
+     *     the Z coordinate of the block to get
+     *
+     * @return the Block located at the provided coordinates
+     */
     public Block getBlock(int x, int y, int z) {
         return blocks[getIndex(x, y, z)];
     }
 
-    protected long countBlocksMatching(Predicate<Block> predicate) {
+    private long countBlocksMatching(Predicate<Block> predicate) {
         long count = 0;
         for (int x = 0; x < this.width; x++) {
             for (int y = 0; y < this.height; y++) {
@@ -110,22 +173,16 @@ public class Chunk {
         return countBlocksMatching(Block::isOre);
     }
 
+    public long getDugBlocksCount() {
+        return countBlocksMatching(b -> b == Block.AIR);
+    }
+
     public void dig(int x, int y, int z) {
         setBlock(x, y, z, Block.AIR);
     }
 
     public boolean isDug(int x, int y, int z) {
         return getBlock(x, y, z) == Block.AIR;
-    }
-
-    protected static int[] getAdjacentIndexes(int i, int size) {
-        if (i == 0) {
-            return new int[] { size - 1, i, i + 1 }; // wrapped max
-        }
-        if (i == size - 1) {
-            return new int[] { i - 1, i, 0 }; // wrapped min
-        }
-        return new int[] { i - 1, i, i + 1 };
     }
 
     public boolean hasDugNeighbor(int x, int y, int z) {
@@ -150,27 +207,8 @@ public class Chunk {
 
     public boolean isDiscovered(int x, int y, int z) {
 
-        // TODO implement visibility algo
+        // TODO add actual visibility algorithm from possible standing positions
 
         return isDug(x, y, z) || hasDugNeighbor(x, y, z);
-    }
-
-    /**
-     * Returns whether this chunk can indeed be dug like this in game.
-     *
-     * @param accesses
-     *     the coordinates where the player enters this chunk to start digging, as specified by {@link DiggingPattern#getAccesses()}
-     *
-     * @return true if this chunk can indeed be dug like this in game.
-     */
-    public boolean isValid(int[][] accesses) {
-
-        // TODO check whether the dug blocks are arranged in a way that could indeed have been dug
-
-        return false;
-    }
-
-    public long getNumberOfDugBlocks() {
-        return countBlocksMatching(b -> b == Block.AIR);
     }
 }
