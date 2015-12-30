@@ -7,13 +7,6 @@ import java.util.Random;
 
 public class WorldGenMinable {
 
-    public static final WorldGenMinable coalGen = new WorldGenMinable(Block.COAL_ORE, 16);
-    public static final WorldGenMinable ironGen = new WorldGenMinable(Block.IRON_ORE, 8);
-    public static final WorldGenMinable goldGen = new WorldGenMinable(Block.GOLD_ORE, 8);
-    public static final WorldGenMinable redstoneGen = new WorldGenMinable(Block.REDSTONE_ORE, 7);
-    public static final WorldGenMinable diamondGen = new WorldGenMinable(Block.DIAMOND_ORE, 7);
-    public static final WorldGenMinable lapisGen = new WorldGenMinable(Block.LAPIS_ORE, 6);
-
     private int maxVeinSize;
 
     private Block blockToGenerate;
@@ -63,7 +56,8 @@ public class WorldGenMinable {
                             for (int i3 = k1; i3 <= j2; ++i3) {
                                 double d14 = ((double) i3 + 0.5D - d8) / (d10 / 2.0D);
 
-                                if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0D && chunk.getBlock(k2, l2, i3) == blockToReplace) {
+                                if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0D && chunk.hasBlock(k2, l2, i3) && chunk.getBlock(k2, l2, i3) ==
+                                    blockToReplace) {
                                     chunk.setBlock(k2, l2, i3, blockToGenerate);
                                 }
                             }

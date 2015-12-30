@@ -7,7 +7,7 @@ import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
 
 public class McMiningOptimizer {
 
-    private static final int ITERATIONS = 10000;
+    private static final int ITERATIONS = 8000;
 
     public static void main(String[] args) {
 
@@ -22,12 +22,12 @@ public class McMiningOptimizer {
         long startTime = System.currentTimeMillis();
 
         for (int i = 0; i < ITERATIONS; i++) {
-            Chunk oredChunk = oreGenerator.generate(baseChunk);
+            Chunk oredChunk = oreGenerator.generate(baseChunk, 5);
             long initialOres = oredChunk.getOresCount();
             totalOres += initialOres;
 
             Chunk dugChunk = pattern.dig(oredChunk);
-            dugBlocks += dugChunk.getNumberOfDugBlocks();
+            dugBlocks += dugChunk.getDugBlocksCount();
             foundOres += initialOres - dugChunk.getOresCount();
         }
 
