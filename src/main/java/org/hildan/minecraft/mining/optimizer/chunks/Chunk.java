@@ -155,7 +155,7 @@ public class Chunk {
         return blocks[getIndex(x, y, z)];
     }
 
-    private long countBlocksMatching(Predicate<Block> predicate) {
+    private long getCountOfBlocksMatching(Predicate<Block> predicate) {
         long count = 0;
         for (int x = 0; x < this.width; x++) {
             for (int y = 0; y < this.height; y++) {
@@ -170,11 +170,11 @@ public class Chunk {
     }
 
     public long getOresCount() {
-        return countBlocksMatching(Block::isOre);
+        return getCountOfBlocksMatching(Block::isOre);
     }
 
     public long getDugBlocksCount() {
-        return countBlocksMatching(b -> b == Block.AIR);
+        return getCountOfBlocksMatching(b -> b == Block.AIR);
     }
 
     public void dig(int x, int y, int z) {
