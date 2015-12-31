@@ -8,7 +8,7 @@ public class TunnelShape {
 
     public static final TunnelShape DOUBLE_MAN_SIZED = new TunnelShape(2, 2);
 
-    public static final TunnelShape CORRIDOR = new TunnelShape(2, 3);
+    public static final TunnelShape BIG_CORRIDOR = new TunnelShape(2, 3);
 
     private int width;
 
