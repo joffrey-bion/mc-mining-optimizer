@@ -44,8 +44,8 @@ public class McMiningOptimizer {
         System.out.format("Found ores: %10.2f  %,12d%n", avgFoundOres, foundOres);
         System.out.format("Dug Blocks: %10.2f  %,12d%n", avgDugBlocks, dugBlocks);
         System.out.println();
-        System.out.format("Efficiency:    %5.2f%%%n", efficiency);
-        System.out.format("Thoroughness:  %5.2f%%%n", thoroughness);
+        System.out.format("Efficiency:    %6.2f%%%n", efficiency);
+        System.out.format("Thoroughness:  %6.2f%%%n", thoroughness);
         System.out.println();
         System.out.format("Exec. time: %d ms", endTime - startTime);
     }
