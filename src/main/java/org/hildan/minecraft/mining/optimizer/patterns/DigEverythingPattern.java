@@ -26,6 +26,7 @@ public class DigEverythingPattern extends AbstractDiggingPattern {
     @Override
     public void digInto(Chunk chunk, int originX, int originY, int originZ) {
         chunk.dig(originX, originY, originZ);
+        chunk.dig(originX, originY + 1, originZ);
     }
 
 }
