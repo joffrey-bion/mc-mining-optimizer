@@ -1,7 +1,7 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
 import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
-import org.hildan.minecraft.mining.optimizer.patterns.tunnels.Axis;
+import org.hildan.minecraft.mining.optimizer.geometry.Axis;
 import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelPattern;
 
 /**

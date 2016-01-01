@@ -1,8 +1,12 @@
 package org.hildan.minecraft.mining.optimizer.chunks;
 
+import org.hildan.minecraft.mining.optimizer.geometry.Position;
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 /**
@@ -99,14 +103,51 @@ public class Chunk {
         return index;
     }
 
-    private static int[] getAdjacentIndexes(int i, int size) {
+    private static Integer[] getAdjacentIndexesInChunk(int i, int size) {
         if (i == 0) {
-            return new int[] { size - 1, i, i + 1 }; // wrapped max
+            return new Integer[] { i, i + 1 }; // wrapped max
         }
         if (i == size - 1) {
-            return new int[] { i - 1, i, 0 }; // wrapped min
+            return new Integer[] { i - 1, i }; // wrapped min
         }
-        return new int[] { i - 1, i, i + 1 };
+        return new Integer[] { i - 1, i, i + 1 };
+    }
+
+    private static Integer[] getAdjacentIndexesWrapped(int i, int size) {
+        if (i == 0) {
+            return new Integer[] { size - 1, i, i + 1 }; // wrapped max
+        }
+        if (i == size - 1) {
+            return new Integer[] { i - 1, i, 0 }; // wrapped min
+        }
+        return new Integer[] { i - 1, i, i + 1 };
+    }
+
+    private List<Position> getAdjacentBlocks(int x, int y, int z, BiFunction<Integer, Integer, Integer[]> getAdjacentIndexes) {
+        Integer[] adjXs = getAdjacentIndexes.apply(x, getWidth());
+        Integer[] adjYs = getAdjacentIndexes.apply(y, getHeight());
+        Integer[] adjZs = getAdjacentIndexes.apply(z, getLength());
+        List<Position> adjacentBlocks = new ArrayList<>(26);
+        for (int adjX : adjXs) {
+            for (int adjY : adjYs) {
+                for (int adjZ : adjZs) {
+                    if (x == adjX && y == adjY && z == adjZ) {
+                        // skip self
+                        continue;
+                    }
+                    adjacentBlocks.add(new Position(adjX, adjY, adjZ));
+                }
+            }
+        }
+        return adjacentBlocks;
+    }
+
+    public List<Position> getAdjacentBlocksInChunk(int x, int y, int z) {
+        return getAdjacentBlocks(x, y, z, Chunk::getAdjacentIndexesInChunk);
+    }
+
+    public List<Position> getAdjacentBlocksWrapped(int x, int y, int z) {
+        return getAdjacentBlocks(x, y, z, Chunk::getAdjacentIndexesWrapped);
     }
 
     /**
@@ -186,20 +227,9 @@ public class Chunk {
     }
 
     public boolean hasDugNeighbor(int x, int y, int z) {
-        int[] adjXs = getAdjacentIndexes(x, getWidth());
-        int[] adjYs = getAdjacentIndexes(y, getHeight());
-        int[] adjZs = getAdjacentIndexes(z, getLength());
-        for (int adjX : adjXs) {
-            for (int adjY : adjYs) {
-                for (int adjZ : adjZs) {
-                    if (x == adjX && y == adjY && z == adjZ) {
-                        // skip self
-                        continue;
-                    }
-                    if (isDug(adjX, adjY, adjZ)) {
-                        return true;
-                    }
-                }
+        for (Position pos : getAdjacentBlocksWrapped(x, y, z)) {
+            if (isDug(pos.getX(), pos.getY(), pos.getZ())) {
+                return true;
             }
         }
         return false;
@@ -215,13 +245,17 @@ public class Chunk {
     public String toString() {
         StringBuilder sb = new StringBuilder(String.format("Size: %d %d %d%n%n", getWidth(), getHeight(), getLength()));
         for (int y = 0; y < getHeight(); y++) {
-            sb.append(String.format("y = %d%n", y));
-            for (int z = 0; z < getLength(); z++) {
+            sb.append(String.format("%" + getWidth() + "s ", String.format("y = %d", y)));
+        }
+        sb.append(String.format("%n"));
+        for (int z = 0; z < getLength(); z++) {
+            for (int y = 0; y < getHeight(); y++) {
                 for (int x = 0; x < getWidth(); x++) {
                     sb.append(getBlock(x, y, z).toString());
                 }
-                sb.append(String.format("%n"));
+                sb.append(" ");
             }
+            sb.append(String.format("%n"));
         }
         return sb.toString();
     }
