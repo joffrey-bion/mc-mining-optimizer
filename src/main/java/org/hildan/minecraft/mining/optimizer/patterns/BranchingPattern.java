@@ -1,6 +1,7 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
 import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
+import org.hildan.minecraft.mining.optimizer.patterns.tunnels.Axis;
 import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelPattern;
 
 /**
@@ -54,7 +55,15 @@ public class BranchingPattern extends AbstractDiggingPattern {
 
     @Override
     public void digInto(Chunk chunk, int originX, int originY, int originZ) {
+        digLayer(chunk, originX, originY, originZ, 0);
+        if (branchOffsetByTier != 0) {
+            digLayer(chunk, originX, originY, originZ, branchOffsetByTier);
+        }
+    }
 
-        // TODO dig the pattern into the chunk
+    private void digLayer(Chunk chunk, int originX, int originY, int originZ, int offset) {
+        shaft.digInto(chunk, originX, originY, originZ + offset, branchLength, Axis.X, Axis.Y);
+        shaft.digInto(chunk, originX + branchLength, originY, originZ, getLength(), Axis.Z, Axis.Y);
+        shaft.digInto(chunk, originX + branchLength + shaft.getShape().getWidth(), originY, originZ + offset, branchLength, Axis.X, Axis.Y);
     }
 }
