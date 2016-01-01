@@ -35,8 +35,12 @@ public class BranchingPattern extends AbstractDiggingPattern {
         return 2 * branchLength + shaft.getShape().getWidth();
     }
 
+    private int getLayerHeight() {
+        return shaft.getShape().getHeight() + shaft.getVSpacing();
+    }
+
     public int getHeight() {
-        int layerHeight = shaft.getShape().getHeight() + shaft.getVSpacing();
+        int layerHeight = getLayerHeight();
         // with an offset, two consecutive layers are different
         return branchOffsetByTier == 0 ? layerHeight : layerHeight * 2;
     }
@@ -57,13 +61,14 @@ public class BranchingPattern extends AbstractDiggingPattern {
     public void digInto(Chunk chunk, int originX, int originY, int originZ) {
         digLayer(chunk, originX, originY, originZ, 0);
         if (branchOffsetByTier != 0) {
-            digLayer(chunk, originX, originY, originZ, branchOffsetByTier);
+            digLayer(chunk, originX, originY + getLayerHeight(), originZ, branchOffsetByTier);
         }
     }
 
     private void digLayer(Chunk chunk, int originX, int originY, int originZ, int offset) {
-        shaft.digInto(chunk, originX, originY, originZ + offset, branchLength, Axis.X, Axis.Y);
+        branch.digInto(chunk, originX, originY, originZ + offset, branchLength, Axis.X, Axis.Y);
         shaft.digInto(chunk, originX + branchLength, originY, originZ, getLength(), Axis.Z, Axis.Y);
-        shaft.digInto(chunk, originX + branchLength + shaft.getShape().getWidth(), originY, originZ + offset, branchLength, Axis.X, Axis.Y);
+        int oppositeBranchStartX = originX + branchLength + shaft.getShape().getWidth();
+        branch.digInto(chunk, oppositeBranchStartX, originY, originZ + offset, branchLength, Axis.X, Axis.Y);
     }
 }
