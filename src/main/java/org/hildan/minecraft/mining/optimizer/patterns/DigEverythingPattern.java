@@ -1,6 +1,10 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
 import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
+import org.hildan.minecraft.mining.optimizer.geometry.Position;
+
+import java.util.Collections;
+import java.util.List;
 
 public class DigEverythingPattern extends AbstractDiggingPattern {
 
@@ -19,8 +23,8 @@ public class DigEverythingPattern extends AbstractDiggingPattern {
         return 1;
     }
 
-    public int[][] getAccesses() {
-        return new int[][] { { 0, 0, 0 } };
+    public List<Position> getAccesses() {
+        return Collections.singletonList(new Position(0, 0, 0));
     }
 
     @Override

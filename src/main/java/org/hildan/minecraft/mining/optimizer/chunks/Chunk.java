@@ -88,7 +88,7 @@ public class Chunk {
      *
      * @return true if this chunk can indeed be dug like this in game.
      */
-    public boolean isValid(int[][] accesses) {
+    public boolean isValid(List<Position> accesses) {
 
         // TODO check whether the dug blocks are arranged in a way that could indeed have been dug
 

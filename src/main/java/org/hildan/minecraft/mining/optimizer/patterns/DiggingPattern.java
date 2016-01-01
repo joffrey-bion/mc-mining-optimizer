@@ -1,7 +1,13 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
 import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
+import org.hildan.minecraft.mining.optimizer.geometry.Position;
 
+import java.util.List;
+
+/**
+ * Represents a way to dig into the stone in 3 dimensions.
+ */
 public interface DiggingPattern {
 
     /**
@@ -32,13 +38,13 @@ public interface DiggingPattern {
      *
      * @return an array (of unspecified length) of arrays of coordinates (each of length 3)
      */
-    int[][] getAccesses();
+    List<Position> getAccesses();
 
     /**
-     * Digs this pattern into the given oredChunk to produce a new DugChunk. The pattern is repeated as many times as necessary in every
-     * direction, starting from the point (0,0,0).
+     * Digs this pattern into the given chunk to produce a new chunk. The pattern is repeated as many times as necessary in every direction,
+     * starting from the point (0,0,0).
      */
-    Chunk dig(Chunk oredChunk);
+    Chunk dig(Chunk chunk);
 
     /**
      * Returns whether it is actually possible to dig this pattern in the game.

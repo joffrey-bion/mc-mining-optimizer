@@ -2,7 +2,11 @@ package org.hildan.minecraft.mining.optimizer.patterns;
 
 import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
 import org.hildan.minecraft.mining.optimizer.geometry.Axis;
+import org.hildan.minecraft.mining.optimizer.geometry.Position;
 import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelPattern;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * One main shaft with perpendicular branches.
@@ -50,11 +54,8 @@ public class BranchingPattern extends AbstractDiggingPattern {
     }
 
     @Override
-    public int[][] getAccesses() {
-
-        // TODO calculate position of main shaft access(es) based on branch length and shaft/tier spacing
-
-        return new int[0][];
+    public List<Position> getAccesses() {
+        return Collections.singletonList(new Position(branchLength, 0, 0));
     }
 
     @Override
