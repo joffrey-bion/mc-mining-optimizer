@@ -1,5 +1,8 @@
 package org.hildan.minecraft.mining.optimizer.geometry;
 
+/**
+ * Represents a block's position.
+ */
 public class Position {
 
     private final int x;

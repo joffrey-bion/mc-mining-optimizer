@@ -1,5 +1,8 @@
 package org.hildan.minecraft.mining.optimizer.chunks;
 
+/**
+ * Represents the content of a Minecraft block.
+ */
 public enum Block {
     AIR(false, "."),
     STONE(false, "X"),

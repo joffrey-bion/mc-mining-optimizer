@@ -10,7 +10,7 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 /**
- * A chunk of blocks.
+ * A group of blocks.
  */
 public class Chunk {
 
