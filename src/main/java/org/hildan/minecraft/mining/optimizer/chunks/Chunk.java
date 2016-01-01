@@ -211,4 +211,18 @@ public class Chunk {
 
         return isDug(x, y, z) || hasDugNeighbor(x, y, z);
     }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder(String.format("Size: %d %d %d%n%n", getWidth(), getHeight(), getLength()));
+        for (int y = 0; y < getHeight(); y++) {
+            sb.append(String.format("y = %d%n", y));
+            for (int z = 0; z < getLength(); z++) {
+                for (int x = 0; x < getWidth(); x++) {
+                    sb.append(getBlock(x, y, z).toString());
+                }
+                sb.append(String.format("%n"));
+            }
+        }
+        return sb.toString();
+    }
 }

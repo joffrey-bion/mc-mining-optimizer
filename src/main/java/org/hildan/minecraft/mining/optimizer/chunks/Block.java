@@ -1,22 +1,29 @@
 package org.hildan.minecraft.mining.optimizer.chunks;
 
 public enum Block {
-    AIR(false),
-    STONE(false),
-    COAL_ORE(true),
-    IRON_ORE(true),
-    GOLD_ORE(true),
-    DIAMOND_ORE(true),
-    REDSTONE_ORE(true),
-    LAPIS_ORE(true);
+    AIR(false, "."),
+    STONE(false, "X"),
+    COAL_ORE(true, "c"),
+    IRON_ORE(true, "i"),
+    GOLD_ORE(true, "g"),
+    DIAMOND_ORE(true, "d"),
+    REDSTONE_ORE(true, "r"),
+    LAPIS_ORE(true, "l");
 
     private final boolean isOre;
 
-    Block(boolean isOre) {
+    private final String visual;
+
+    Block(boolean isOre, String visual) {
         this.isOre = isOre;
+        this.visual = visual;
     }
 
     public boolean isOre() {
         return isOre;
+    }
+
+    public String toString() {
+        return visual;
     }
 }

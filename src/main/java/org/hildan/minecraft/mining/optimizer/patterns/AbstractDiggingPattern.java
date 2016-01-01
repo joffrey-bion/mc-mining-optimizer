@@ -29,4 +29,10 @@ public abstract class AbstractDiggingPattern implements DiggingPattern {
      * This method takes care of stopping at the edge of the given chunk.
      */
     protected abstract void digInto(Chunk chunk, int originX, int originY, int originZ);
+
+    public String toString() {
+        Chunk chunk = new Chunk(getWidth(), getHeight(), getLength());
+        chunk = dig(chunk);
+        return chunk.toString();
+    }
 }

@@ -18,15 +18,22 @@ public class McMiningOptimizer {
 
         DiggingPattern digEverythingPattern = new DigEverythingPattern();
         System.out.println("DIG EVERYTHING");
+        printPattern(digEverythingPattern);
         printStats(digEverythingPattern, oreGenerator, baseChunk);
 
         DiggingPattern branchPattern2 = new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_2SPACED, 11, 2);
         System.out.println("STANDARD BRANCHING - 2 spaced");
+        printPattern(branchPattern2);
         printStats(branchPattern2, oreGenerator, baseChunk);
 
         DiggingPattern branchPattern3 = new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED, 11, 2);
         System.out.println("STANDARD BRANCHING - 3 spaced");
+        printPattern(branchPattern3);
         printStats(branchPattern3, oreGenerator, baseChunk);
+    }
+
+    private static void printPattern(DiggingPattern pattern) {
+        System.out.println(pattern.toString());
     }
 
     private static void printStats(DiggingPattern pattern, OreGenerator oreGenerator, Chunk testChunk) {
