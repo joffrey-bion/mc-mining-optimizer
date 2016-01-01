@@ -6,11 +6,10 @@ import org.hildan.minecraft.mining.optimizer.patterns.BranchingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.DigEverythingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelPattern;
-import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelShape;
 
 public class McMiningOptimizer {
 
-    private static final int ITERATIONS = 8000;
+    private static final int ITERATIONS = 20000;
 
     public static void main(String[] args) {
         Chunk baseChunk = new Chunk(16, 16, 16);
@@ -18,17 +17,17 @@ public class McMiningOptimizer {
 
         DiggingPattern digEverythingPattern = new DigEverythingPattern();
         System.out.println("DIG EVERYTHING");
-        printPattern(digEverythingPattern);
+        //printPattern(digEverythingPattern);
         printStats(digEverythingPattern, oreGenerator, baseChunk);
 
         DiggingPattern branchPattern2 = new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_2SPACED, 11, 2);
         System.out.println("STANDARD BRANCHING - 2 spaced");
-        printPattern(branchPattern2);
+        //printPattern(branchPattern2);
         printStats(branchPattern2, oreGenerator, baseChunk);
 
         DiggingPattern branchPattern3 = new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED, 11, 2);
         System.out.println("STANDARD BRANCHING - 3 spaced");
-        printPattern(branchPattern3);
+        //printPattern(branchPattern3);
         printStats(branchPattern3, oreGenerator, baseChunk);
     }
 
@@ -43,7 +42,6 @@ public class McMiningOptimizer {
 
         long startTime = System.currentTimeMillis();
 
-        boolean test = true;
         for (int i = 0; i < ITERATIONS; i++) {
             Chunk oredChunk = oreGenerator.generate(testChunk, 5);
             long initialOres = oredChunk.getOresCount();
@@ -52,13 +50,6 @@ public class McMiningOptimizer {
             Chunk dugChunk = pattern.dig(oredChunk);
             dugBlocks += dugChunk.getDugBlocksCount();
             foundOres += initialOres - dugChunk.getOresCount();
-
-            if (test) {
-                System.out.println("TEST");
-                System.out.println(oredChunk);
-                System.out.println(dugChunk);
-                test = false;
-            }
         }
 
         long endTime = System.currentTimeMillis();
