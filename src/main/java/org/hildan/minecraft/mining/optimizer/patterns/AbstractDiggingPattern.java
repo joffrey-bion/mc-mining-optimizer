@@ -1,6 +1,10 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
+import org.hildan.minecraft.mining.optimizer.chunks.Block;
 import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
+import org.hildan.minecraft.mining.optimizer.geometry.Position;
+
+import java.util.List;
 
 public abstract class AbstractDiggingPattern implements DiggingPattern {
 
@@ -19,9 +23,27 @@ public abstract class AbstractDiggingPattern implements DiggingPattern {
     }
 
     private void digVisibleOres(Chunk dugChunk) {
+        for (int y = 0; y < dugChunk.getHeight(); y++) {
+            for (int z = 0; z < dugChunk.getLength(); z++) {
+                for (int x = 0; x < dugChunk.getWidth(); x++) {
+                    Block block = dugChunk.getBlock(x, y, z);
+                    if (block != Block.AIR && block.isOre() && dugChunk.isDiscovered(x, y, z)) {
+                        digOresAround(dugChunk, x, y, z);
+                    }
+                }
+            }
+        }
+    }
 
-        // TODO follow ores and dig all the visible ones like a human would do (and iterate)
-
+    private void digOresAround(Chunk chunk, int originX, int originY, int originZ) {
+        chunk.dig(originX, originY, originZ);
+        List<Position> adjacentBlocks = chunk.getAdjacentBlocksInChunk(originX, originY, originZ);
+        for (Position p : adjacentBlocks) {
+            Block block = chunk.getBlock(p.getX(), p.getY(), p.getZ());
+            if (block != Block.AIR && block.isOre() && chunk.isDiscovered(p.getX(), p.getY(), p.getZ())) {
+                digOresAround(chunk, p.getX(), p.getY(), p.getZ());
+            }
+        }
     }
 
     /**

@@ -43,6 +43,7 @@ public class McMiningOptimizer {
 
         long startTime = System.currentTimeMillis();
 
+        boolean test = true;
         for (int i = 0; i < ITERATIONS; i++) {
             Chunk oredChunk = oreGenerator.generate(testChunk, 5);
             long initialOres = oredChunk.getOresCount();
@@ -51,6 +52,13 @@ public class McMiningOptimizer {
             Chunk dugChunk = pattern.dig(oredChunk);
             dugBlocks += dugChunk.getDugBlocksCount();
             foundOres += initialOres - dugChunk.getOresCount();
+
+            if (test) {
+                System.out.println("TEST");
+                System.out.println(oredChunk);
+                System.out.println(dugChunk);
+                test = false;
+            }
         }
 
         long endTime = System.currentTimeMillis();
