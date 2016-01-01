@@ -1,7 +1,5 @@
 package org.hildan.minecraft.mining.optimizer.ore;
 
-import java.util.Random;
-
 public class MathHelper {
 
     private static float[] a = new float[65536];
