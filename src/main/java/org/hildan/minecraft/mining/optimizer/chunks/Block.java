@@ -1,32 +1,94 @@
 package org.hildan.minecraft.mining.optimizer.chunks;
 
 /**
- * Represents the content of a Minecraft block.
+ * Represents a Minecraft block.
  */
-public enum Block {
-    AIR(false, "."),
-    STONE(false, "X"),
-    COAL_ORE(true, "c"),
-    IRON_ORE(true, "i"),
-    GOLD_ORE(true, "g"),
-    DIAMOND_ORE(true, "d"),
-    REDSTONE_ORE(true, "r"),
-    LAPIS_ORE(true, "l");
+public class Block {
 
-    private final boolean isOre;
+    private final int x;
 
-    private final String visual;
+    private final int y;
 
-    Block(boolean isOre, String visual) {
-        this.isOre = isOre;
-        this.visual = visual;
+    private final int z;
+
+    private BlockType type;
+
+    private boolean headAccessible;
+
+    private boolean visible;
+
+    /**
+     * Creates a new stone block at the given position.
+     */
+    public Block(int x, int y, int z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.type = BlockType.STONE;
+        this.headAccessible = false;
+        this.visible = false;
+    }
+
+    /**
+     * Creates a copy of the given block.
+     *
+     * @param source
+     *     the block to copy
+     */
+    public Block(Block source) {
+        this.x = source.x;
+        this.y = source.y;
+        this.z = source.z;
+        this.type = source.type;
+        this.headAccessible = source.headAccessible;
+        this.visible = source.visible;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getZ() {
+        return z;
+    }
+
+    public BlockType getType() {
+        return type;
+    }
+
+    void setType(BlockType type) {
+        this.type = type;
+    }
+
+    public boolean isHeadAccessible() {
+        return headAccessible;
+    }
+
+    void setHeadAccessible(boolean headAccessible) {
+        this.headAccessible = headAccessible;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public boolean isDug() {
+        return getType() == BlockType.AIR;
     }
 
     public boolean isOre() {
-        return isOre;
+        return getType().isOre();
     }
 
     public String toString() {
-        return visual;
+        return type.toString();
     }
 }

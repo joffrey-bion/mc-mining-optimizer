@@ -2,46 +2,43 @@ package org.hildan.minecraft.mining.optimizer.patterns;
 
 import org.hildan.minecraft.mining.optimizer.chunks.Block;
 import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
-import org.hildan.minecraft.mining.optimizer.geometry.Position;
+import org.hildan.minecraft.mining.optimizer.chunks.Wrapping;
 
 import java.util.List;
 
 public abstract class AbstractDiggingPattern implements DiggingPattern {
 
     @Override
-    public Chunk dig(Chunk oredChunk) {
-        Chunk dugChunk = new Chunk(oredChunk);
-        for (int x = 0; x < dugChunk.getWidth(); x += getWidth()) {
-            for (int y = 0; y < dugChunk.getHeight(); y += getHeight()) {
-                for (int z = 0; z < dugChunk.getLength(); z += getLength()) {
-                    digInto(dugChunk, x, y, z);
+    public void dig(Chunk chunk) {
+        for (int x = 0; x < chunk.getWidth(); x += getWidth()) {
+            for (int y = 0; y < chunk.getHeight(); y += getHeight()) {
+                for (int z = 0; z < chunk.getLength(); z += getLength()) {
+                    digInto(chunk, x, y, z);
                 }
             }
         }
-        digVisibleOres(dugChunk);
-        return dugChunk;
+        digVisibleOres(chunk);
     }
 
-    private void digVisibleOres(Chunk dugChunk) {
-        for (int y = 0; y < dugChunk.getHeight(); y++) {
-            for (int z = 0; z < dugChunk.getLength(); z++) {
-                for (int x = 0; x < dugChunk.getWidth(); x++) {
-                    Block block = dugChunk.getBlock(x, y, z);
-                    if (block != Block.AIR && block.isOre() && dugChunk.isDiscovered(x, y, z)) {
-                        digOresAround(dugChunk, x, y, z);
+    private void digVisibleOres(Chunk chunk) {
+        for (int y = 0; y < chunk.getHeight(); y++) {
+            for (int z = 0; z < chunk.getLength(); z++) {
+                for (int x = 0; x < chunk.getWidth(); x++) {
+                    Block block = chunk.getBlock(x, y, z);
+                    if (block.isOre() && block.isVisible()) {
+                        digBlockAndAdjacentOres(chunk, block);
                     }
                 }
             }
         }
     }
 
-    private void digOresAround(Chunk chunk, int originX, int originY, int originZ) {
-        chunk.dig(originX, originY, originZ);
-        List<Position> adjacentBlocks = chunk.getAdjacentBlocksInChunk(originX, originY, originZ);
-        for (Position p : adjacentBlocks) {
-            Block block = chunk.getBlock(p.getX(), p.getY(), p.getZ());
-            if (block != Block.AIR && block.isOre() && chunk.isDiscovered(p.getX(), p.getY(), p.getZ())) {
-                digOresAround(chunk, p.getX(), p.getY(), p.getZ());
+    private void digBlockAndAdjacentOres(Chunk chunk, Block block) {
+        chunk.dig(block.getX(), block.getY(), block.getZ());
+        List<Block> adjacentBlocks = chunk.getAdjacentBlocks(block, Wrapping.CUT);
+        for (Block adjacentBlock : adjacentBlocks) {
+            if (adjacentBlock.isOre() && adjacentBlock.isVisible()) {
+                digBlockAndAdjacentOres(chunk, adjacentBlock);
             }
         }
     }
@@ -54,7 +51,7 @@ public abstract class AbstractDiggingPattern implements DiggingPattern {
 
     public String toString() {
         Chunk chunk = new Chunk(getWidth(), getHeight(), getLength());
-        chunk = dig(chunk);
+        dig(chunk);
         return chunk.toString();
     }
 }

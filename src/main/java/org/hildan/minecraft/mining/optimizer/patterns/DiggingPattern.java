@@ -41,10 +41,10 @@ public interface DiggingPattern {
     List<Position> getAccesses();
 
     /**
-     * Digs this pattern into the given chunk to produce a new chunk. The pattern is repeated as many times as necessary in every direction,
-     * starting from the point (0,0,0).
+     * Digs this pattern into the given chunk. The pattern is repeated as many times as necessary in every direction, starting from the
+     * point (0,0,0).
      */
-    Chunk dig(Chunk chunk);
+    void dig(Chunk chunk);
 
     /**
      * Returns whether it is actually possible to dig this pattern in the game.

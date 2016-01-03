@@ -1,6 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.ore;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Block;
+import org.hildan.minecraft.mining.optimizer.chunks.BlockType;
 import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
 
 import java.util.Random;
@@ -11,17 +11,17 @@ public class OreGenerator {
 
     private int lowestY;
 
-    private WorldGenMinable coalGen = new WorldGenMinable(Block.COAL_ORE, 16);
+    private WorldGenMinable coalGen = new WorldGenMinable(BlockType.COAL_ORE, 16);
 
-    private WorldGenMinable ironGen = new WorldGenMinable(Block.IRON_ORE, 8);
+    private WorldGenMinable ironGen = new WorldGenMinable(BlockType.IRON_ORE, 8);
 
-    private WorldGenMinable goldGen = new WorldGenMinable(Block.GOLD_ORE, 8);
+    private WorldGenMinable goldGen = new WorldGenMinable(BlockType.GOLD_ORE, 8);
 
-    private WorldGenMinable redstoneGen = new WorldGenMinable(Block.REDSTONE_ORE, 7);
+    private WorldGenMinable redstoneGen = new WorldGenMinable(BlockType.REDSTONE_ORE, 7);
 
-    private WorldGenMinable diamondGen = new WorldGenMinable(Block.DIAMOND_ORE, 7);
+    private WorldGenMinable diamondGen = new WorldGenMinable(BlockType.DIAMOND_ORE, 7);
 
-    private WorldGenMinable lapisGen = new WorldGenMinable(Block.LAPIS_ORE, 6);
+    private WorldGenMinable lapisGen = new WorldGenMinable(BlockType.LAPIS_ORE, 6);
 
     /**
      * Generates a copy of the given chunk where some stones are replaced by ores. Only stone blocks may be changed.
@@ -52,6 +52,7 @@ public class OreGenerator {
             int y = random.nextInt(maxY - minY) + minY;
             int z = random.nextInt(oredChunk.getLength());
 
+            // Y is generated within a true big chunk, we check whether it falls in our chunk, which is a slice of the big chunk
             if (this.lowestY <= y && y < this.lowestY + oredChunk.getHeight()) {
                 generator.generateInto(oredChunk, random, x, y - this.lowestY, z);
             }

@@ -29,6 +29,12 @@ public class McMiningOptimizer {
         System.out.println("STANDARD BRANCHING - 3 spaced");
         //printPattern(branchPattern3);
         printStats(branchPattern3, oreGenerator, baseChunk);
+
+        DiggingPattern branchPatternHighShaft3 = new BranchingPattern(TunnelPattern.BIG_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED,
+            11, 2);
+        System.out.println("STANDARD BRANCHING (HIGH SHAFT) - 3 spaced");
+        //printPattern(branchPatternHighShaft3);
+        printStats(branchPatternHighShaft3, oreGenerator, baseChunk);
     }
 
     private static void printPattern(DiggingPattern pattern) {
@@ -46,10 +52,12 @@ public class McMiningOptimizer {
             Chunk oredChunk = oreGenerator.generate(testChunk, 5);
             long initialOres = oredChunk.getOresCount();
             totalOres += initialOres;
+            //System.out.println(oredChunk.toString());
 
-            Chunk dugChunk = pattern.dig(oredChunk);
-            dugBlocks += dugChunk.getDugBlocksCount();
-            foundOres += initialOres - dugChunk.getOresCount();
+            pattern.dig(oredChunk);
+            dugBlocks += oredChunk.getDugBlocksCount();
+            foundOres += initialOres - oredChunk.getOresCount();
+            //System.out.println(oredChunk.toString());
         }
 
         long endTime = System.currentTimeMillis();

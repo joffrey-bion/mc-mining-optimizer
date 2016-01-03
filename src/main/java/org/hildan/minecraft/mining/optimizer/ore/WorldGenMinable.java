@@ -1,6 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.ore;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Block;
+import org.hildan.minecraft.mining.optimizer.chunks.BlockType;
 import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
 
 import java.util.Random;
@@ -9,14 +9,14 @@ public class WorldGenMinable {
 
     private int maxVeinSize;
 
-    private Block blockToGenerate;
+    private BlockType blockTypeToGenerate;
 
-    private Block blockToReplace;
+    private BlockType blockTypeToReplace;
 
-    public WorldGenMinable(Block blockToGenerate, int maxVeinSize) {
+    public WorldGenMinable(BlockType blockTypeToGenerate, int maxVeinSize) {
         this.maxVeinSize = maxVeinSize;
-        this.blockToGenerate = blockToGenerate;
-        this.blockToReplace = Block.STONE;
+        this.blockTypeToGenerate = blockTypeToGenerate;
+        this.blockTypeToReplace = BlockType.STONE;
     }
 
     public boolean generateInto(Chunk chunk, Random random, int i, int j, int k) {
@@ -56,9 +56,9 @@ public class WorldGenMinable {
                             for (int i3 = k1; i3 <= j2; ++i3) {
                                 double d14 = ((double) i3 + 0.5D - d8) / (d10 / 2.0D);
 
-                                if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0D && chunk.hasBlock(k2, l2, i3) && chunk.getBlock(k2, l2, i3) ==
-                                    blockToReplace) {
-                                    chunk.setBlock(k2, l2, i3, blockToGenerate);
+                                if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0D && chunk.hasBlock(k2, l2, i3) && chunk.getBlock(k2, l2, i3).getType()
+                                    == blockTypeToReplace) {
+                                    chunk.putOre(k2, l2, i3, blockTypeToGenerate);
                                 }
                             }
                         }
