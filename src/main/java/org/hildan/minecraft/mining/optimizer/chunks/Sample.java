@@ -94,21 +94,6 @@ public class Sample {
     }
 
     /**
-     * Returns whether this chunk can indeed be dug like this in game.
-     *
-     * @param accesses
-     *         the coordinates where the player enters this chunk to start digging, as specified by {@link
-     *         DiggingPattern#getAccesses()}
-     * @return true if this chunk can indeed be dug like this in game.
-     */
-    public boolean isValid(List<Position> accesses) {
-
-        // TODO check whether the dug blocks are arranged in a way that could indeed have been dug
-
-        return false;
-    }
-
-    /**
      * Returns whether the given coordinates belong to this chunk.
      *
      * @param x
@@ -148,6 +133,17 @@ public class Sample {
         } catch (IllegalArgumentException e) {
             throw new NoSuchElementException(String.format("Block (%d,%d,%d) does not exist in this chunk", x, y, z));
         }
+    }
+
+    /**
+     * Gets the Block located at the given absolute position.
+     *
+     * @param position
+     *         the absolute position of the block to get
+     * @return the Block located at the provided coordinates
+     */
+    public Block getBlock(Position position) throws NoSuchElementException {
+        return getBlock(position.getX(), position.getY(), position.getZ());
     }
 
     /**

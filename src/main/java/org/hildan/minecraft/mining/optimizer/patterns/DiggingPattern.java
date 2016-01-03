@@ -1,9 +1,9 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
+import org.hildan.minecraft.mining.optimizer.chunks.Explorer;
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
-import org.hildan.minecraft.mining.optimizer.geometry.Position;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a way to dig into the stone in 3 dimensions.
@@ -32,14 +32,18 @@ public interface DiggingPattern {
     int getLength();
 
     /**
-     * Gives the coordinates where the player has to enter a chunk to start digging this pattern. Each set of
-     * coordinates fully defines a single access: the given block is the lower block occupied by the body of the player,
-     * and the upper block (occupied by the head of the player) is inferred from it. If multiple points are given, it
-     * means the player has to enter each of them independently.
+     * Gives the coordinates where the player has to enter a sample to start digging this pattern. Multiple accesses may
+     * be returned, meaning the player has to enter each of them independently to dig this pattern.
+     * <p>
+     * The accesses' positions in the sample depend on the position of the pattern within the sample.
      *
-     * @return an array (of unspecified length) of arrays of coordinates (each of length 3)
+     * @param x
+     *         the X position of this pattern within the sample
+     * @param y
+     *         the Y position of this pattern within the sample
+     * @return the set of accesses at the given pattern position
      */
-    List<Position> getAccesses();
+    Set<Access> getAccesses(int x, int y);
 
     /**
      * Digs this pattern into the given sample. The pattern is repeated as many times as necessary in every direction,
@@ -54,6 +58,6 @@ public interface DiggingPattern {
      */
     default boolean isValid() {
         Sample sample = new Sample(getWidth(), getHeight(), getLength());
-        return sample.isValid(getAccesses());
+        return Explorer.isValid(sample);
     }
 }

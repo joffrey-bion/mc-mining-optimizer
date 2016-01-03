@@ -2,11 +2,10 @@ package org.hildan.minecraft.mining.optimizer.patterns;
 
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.geometry.Axis;
-import org.hildan.minecraft.mining.optimizer.geometry.Position;
 import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelPattern;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * One main shaft with perpendicular branches.
@@ -47,9 +46,8 @@ public class BranchingPattern extends AbstractDiggingPattern {
 
     @Override
     public int getHeight() {
-        int layerHeight = getLayerHeight();
         // with an offset, two consecutive layers are different
-        return branchOffsetByTier == 0 ? layerHeight : layerHeight * 2;
+        return getLayerHeight() * 2;
     }
 
     @Override
@@ -58,16 +56,17 @@ public class BranchingPattern extends AbstractDiggingPattern {
     }
 
     @Override
-    public List<Position> getAccesses() {
-        return Collections.singletonList(new Position(branchLength, 0, 0));
+    public Set<Access> getAccesses(int x, int y) {
+        Set<Access> accesses = new HashSet<>();
+        accesses.add(new Access(x + branchLength, y));
+        accesses.add(new Access(x + branchLength, y + getLayerHeight()));
+        return accesses;
     }
 
     @Override
     public void digInto(Sample sample, int originX, int originY, int originZ) {
         digLayer(sample, originX, originY, originZ, 0);
-        if (branchOffsetByTier != 0) {
-            digLayer(sample, originX, originY + getLayerHeight(), originZ, branchOffsetByTier);
-        }
+        digLayer(sample, originX, originY + getLayerHeight(), originZ, branchOffsetByTier);
     }
 
     private void digLayer(Sample sample, int originX, int originY, int originZ, int offset) {

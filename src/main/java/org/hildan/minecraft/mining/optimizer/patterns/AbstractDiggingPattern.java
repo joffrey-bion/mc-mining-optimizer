@@ -1,9 +1,14 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
 import org.hildan.minecraft.mining.optimizer.chunks.Block;
+import org.hildan.minecraft.mining.optimizer.chunks.Explorer;
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.chunks.Wrapping;
+import org.hildan.minecraft.mining.optimizer.geometry.Position;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -13,13 +18,16 @@ public abstract class AbstractDiggingPattern implements DiggingPattern {
 
     @Override
     public void dig(Sample sample) {
+        Collection<Access> accesses = new ArrayList<>();
         for (int x = 0; x < sample.getWidth(); x += getWidth()) {
             for (int y = 0; y < sample.getHeight(); y += getHeight()) {
+                accesses.addAll(getAccesses(x, y));
                 for (int z = 0; z < sample.getLength(); z += getLength()) {
                     digInto(sample, x, y, z);
                 }
             }
         }
+        Explorer.explore(sample, accesses);
         digVisibleOres(sample);
     }
 

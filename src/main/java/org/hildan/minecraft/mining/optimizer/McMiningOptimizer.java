@@ -10,6 +10,9 @@ import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelPattern;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 
+/**
+ * Performs statistics on multiple digging patterns to find the most efficient.
+ */
 public class McMiningOptimizer {
 
     private static final boolean VISUAL_DEBUG = false;

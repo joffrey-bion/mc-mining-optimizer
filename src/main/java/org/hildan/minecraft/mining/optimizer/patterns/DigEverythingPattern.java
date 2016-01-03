@@ -1,10 +1,10 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
-import org.hildan.minecraft.mining.optimizer.geometry.Position;
+import org.hildan.minecraft.mining.optimizer.geometry.Player;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 /**
  * A pattern where every single block is dug. Not a real-life example, but a good test pattern.
@@ -13,27 +13,32 @@ public class DigEverythingPattern extends AbstractDiggingPattern {
 
     @Override
     public int getWidth() {
-        return 1;
+        return Player.WIDTH;
     }
 
     @Override
     public int getHeight() {
-        return 2;
+        return Player.HEIGHT;
     }
 
     @Override
     public int getLength() {
-        return 1;
+        return Player.LENGTH;
     }
 
     @Override
-    public List<Position> getAccesses() {
-        return Collections.singletonList(new Position(0, 0, 0));
+    public Set<Access> getAccesses(int x, int y) {
+        return Collections.singleton(new Access(x, y));
     }
 
     @Override
     public void digInto(Sample sample, int originX, int originY, int originZ) {
-        sample.dig(originX, originY, originZ);
-        sample.dig(originX, originY + 1, originZ);
+        for (int x = originX; x < originX + Player.WIDTH; x++) {
+            for (int y = originY; y < originY + Player.HEIGHT; y++) {
+                for (int z = originZ; z < originZ + Player.LENGTH; z++) {
+                    sample.dig(x, y, z);
+                }
+            }
+        }
     }
 }

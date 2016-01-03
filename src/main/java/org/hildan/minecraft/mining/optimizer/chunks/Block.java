@@ -25,6 +25,8 @@ public class Block {
         this.y = y;
         this.z = z;
         this.type = BlockType.STONE;
+
+        // exploration does not get to every block, hence the need to initialize to false
         this.headAccessible = false;
         this.visible = false;
     }
