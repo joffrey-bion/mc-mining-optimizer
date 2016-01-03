@@ -20,6 +20,7 @@ class WorldGenMinable {
         this.blockTypeToReplace = BlockType.STONE;
     }
 
+    @SuppressWarnings({"OverlyLongMethod", "OverlyNestedMethod"}) // will be broken up
     public void generateInto(Sample sample, Random random, int centerX, int centerY, int centerZ) {
         /*
         Implementation taken from Bukkit's github, here be dragons
