@@ -1,7 +1,7 @@
 package org.hildan.minecraft.mining.optimizer.ore;
 
 import org.hildan.minecraft.mining.optimizer.chunks.BlockType;
-import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
+import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 
 import java.util.Random;
 
@@ -20,7 +20,7 @@ class WorldGenMinable {
         this.blockTypeToReplace = BlockType.STONE;
     }
 
-    public void generateInto(Chunk chunk, Random random, int centerX, int centerY, int centerZ) {
+    public void generateInto(Sample sample, Random random, int centerX, int centerY, int centerZ) {
         /*
         Implementation taken from Bukkit's github, here be dragons
          */
@@ -59,9 +59,9 @@ class WorldGenMinable {
                             for (int i3 = k1; i3 <= j2; ++i3) {
                                 double d14 = ((double) i3 + 0.5D - d8) / (d10 / 2.0D);
 
-                                if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0D && chunk.hasBlock(k2, l2, i3)
-                                        && chunk.getBlock(k2, l2, i3).getType() == blockTypeToReplace) {
-                                    chunk.putOre(k2, l2, i3, blockTypeToGenerate);
+                                if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0D && sample.hasBlock(k2, l2, i3)
+                                        && sample.getBlock(k2, l2, i3).getType() == blockTypeToReplace) {
+                                    sample.putOre(k2, l2, i3, blockTypeToGenerate);
                                 }
                             }
                         }

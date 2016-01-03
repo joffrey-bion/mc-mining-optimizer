@@ -1,6 +1,6 @@
 package org.hildan.minecraft.mining.optimizer;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
+import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.ore.OreGenerator;
 import org.hildan.minecraft.mining.optimizer.patterns.BranchingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.DigEverythingPattern;
@@ -12,9 +12,11 @@ import java.lang.management.ThreadMXBean;
 
 public class McMiningOptimizer {
 
+    private static final boolean VISUAL_DEBUG = false;
+
     private static final int ITERATIONS = 10000;
 
-    private static final int CHUNK_HEIGHT = 16;
+    private static final int SAMPLE_HEIGHT = 16;
 
     private static final int BRANCH_LENGTH = 11;
 
@@ -23,37 +25,33 @@ public class McMiningOptimizer {
     private static final long NANOSECONDS_IN_A_MILLI = 1_000_000L;
 
     public static void main(String... args) {
-        Chunk baseChunk = new Chunk(Chunk.MC_CHUNK_WIDTH, CHUNK_HEIGHT, Chunk.MC_CHUNK_LENGTH);
+        Sample baseSample = new Sample(Sample.CHUNK_WIDTH, SAMPLE_HEIGHT, Sample.CHUNK_LENGTH);
         OreGenerator oreGenerator = new OreGenerator();
 
         DiggingPattern digEverythingPattern = new DigEverythingPattern();
         System.out.println("DIG EVERYTHING");
-        //        System.out.println(digEverythingPattern);
-        printStats(digEverythingPattern, oreGenerator, baseChunk);
+        printStats(digEverythingPattern, oreGenerator, baseSample);
 
         DiggingPattern branchPattern2 =
                 new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_2SPACED, BRANCH_LENGTH,
                         BRANCH_OFFSET);
         System.out.println("STANDARD BRANCHING - 2 spaced");
-        //        System.out.println(branchPattern2);
-        printStats(branchPattern2, oreGenerator, baseChunk);
+        printStats(branchPattern2, oreGenerator, baseSample);
 
         DiggingPattern branchPattern3 =
                 new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED, BRANCH_LENGTH,
                         BRANCH_OFFSET);
         System.out.println("STANDARD BRANCHING - 3 spaced");
-        //        System.out.println(branchPattern3);
-        printStats(branchPattern3, oreGenerator, baseChunk);
+        printStats(branchPattern3, oreGenerator, baseSample);
 
         DiggingPattern branchPatternHighShaft3 =
                 new BranchingPattern(TunnelPattern.BIG_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED, BRANCH_LENGTH,
                         BRANCH_OFFSET);
         System.out.println("STANDARD BRANCHING (HIGH SHAFT) - 3 spaced");
-        //        System.out.println(branchPatternHighShaft3);
-        printStats(branchPatternHighShaft3, oreGenerator, baseChunk);
+        printStats(branchPatternHighShaft3, oreGenerator, baseSample);
     }
 
-    private static void printStats(DiggingPattern pattern, OreGenerator oreGenerator, Chunk testChunk) {
+    private static void printStats(DiggingPattern pattern, OreGenerator oreGenerator, Sample testSample) {
         long totalOres = 0;
         long foundOres = 0;
         long dugBlocks = 0;
@@ -61,16 +59,20 @@ public class McMiningOptimizer {
         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
         long startTime = threadMXBean.getCurrentThreadCpuTime();
 
-        for (int i = 0; i < ITERATIONS; i++) {
-            Chunk chunk = oreGenerator.generate(testChunk, 5);
-            long initialOres = chunk.getOresCount();
+        for (int i = 0; i < (VISUAL_DEBUG ? 1 : ITERATIONS); i++) {
+            Sample sample = oreGenerator.generate(testSample, 5);
+            long initialOres = sample.getOresCount();
             totalOres += initialOres;
-            //System.out.println(chunk.toString());
+            if (VISUAL_DEBUG) {
+                System.out.println(sample);
+            }
 
-            pattern.dig(chunk);
-            dugBlocks += chunk.getDugBlocksCount();
-            foundOres += initialOres - chunk.getOresCount();
-            //System.out.println(chunk.toString());
+            pattern.dig(sample);
+            dugBlocks += sample.getDugBlocksCount();
+            foundOres += initialOres - sample.getOresCount();
+            if (VISUAL_DEBUG) {
+                System.out.println(sample);
+            }
         }
 
         long endTime = threadMXBean.getCurrentThreadCpuTime();

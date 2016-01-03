@@ -1,6 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
+import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.geometry.Position;
 
 import java.util.Collections;
@@ -32,8 +32,8 @@ public class DigEverythingPattern extends AbstractDiggingPattern {
     }
 
     @Override
-    public void digInto(Chunk chunk, int originX, int originY, int originZ) {
-        chunk.dig(originX, originY, originZ);
-        chunk.dig(originX, originY + 1, originZ);
+    public void digInto(Sample sample, int originX, int originY, int originZ) {
+        sample.dig(originX, originY, originZ);
+        sample.dig(originX, originY + 1, originZ);
     }
 }

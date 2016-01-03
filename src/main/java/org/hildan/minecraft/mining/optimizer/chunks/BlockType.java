@@ -20,37 +20,68 @@ public enum BlockType {
 
     private final int maxVeinSize;
 
-    private final int veinsCountPerMcChunk;
+    private final int veinsCountPerChunk;
 
     private final int minYAvailability;
 
     private final int maxYAvailability;
 
-    BlockType(boolean isOre, String visual, int maxVeinSize, int veinsCountPerMcChunk, int minY, int maxY) {
+    /**
+     * Creates a new BLockType.
+     *
+     * @param isOre
+     *         whether this BlockType represents an ore type
+     * @param visual
+     *         the String representation of this BlockType, for printing purposes
+     * @param maxVeinSize
+     *         the max number of blocks in vein of this type (ore only)
+     * @param veinsCountPerChunk
+     *         the number of generated veins of this type per Minecraft chunk (ore only)
+     * @param minY
+     *         the lowest Y where a vein of this type can be generated in a chunk (ore only)
+     * @param maxY
+     *         the highest Y where a vein of this type can be generated in a chunk (ore only)
+     */
+    BlockType(boolean isOre, String visual, int maxVeinSize, int veinsCountPerChunk, int minY, int maxY) {
         this.isOre = isOre;
         this.visual = visual;
         this.maxVeinSize = maxVeinSize;
-        this.veinsCountPerMcChunk = veinsCountPerMcChunk;
+        this.veinsCountPerChunk = veinsCountPerChunk;
         this.minYAvailability = minY;
         this.maxYAvailability = maxY;
     }
 
+    /**
+     * @return true if this type represents an ore type.
+     */
     public boolean isOre() {
         return isOre;
     }
 
+    /**
+     * @return the max number of blocks in vein of this type (ore only)
+     */
     public int getMaxVeinSize() {
         return maxVeinSize;
     }
 
-    public int getVeinsCountPerMcChunk() {
-        return veinsCountPerMcChunk;
+    /**
+     * @return the number of generated veins of this type per Minecraft chunk (ore only)
+     */
+    public int getVeinsCountPerChunk() {
+        return veinsCountPerChunk;
     }
 
+    /**
+     * @return the lowest Y where a vein of this type can be generated in a chunk (ore only)
+     */
     public int getMinYAvailability() {
         return minYAvailability;
     }
 
+    /**
+     * @return the highest Y where a vein of this type can be generated in a chunk (ore only)
+     */
     public int getMaxYAvailability() {
         return maxYAvailability;
     }

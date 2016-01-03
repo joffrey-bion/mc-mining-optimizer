@@ -1,6 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
+import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.geometry.Position;
 
 import java.util.List;
@@ -42,10 +42,10 @@ public interface DiggingPattern {
     List<Position> getAccesses();
 
     /**
-     * Digs this pattern into the given chunk. The pattern is repeated as many times as necessary in every direction,
+     * Digs this pattern into the given sample. The pattern is repeated as many times as necessary in every direction,
      * starting from the point (0,0,0).
      */
-    void dig(Chunk chunk);
+    void dig(Sample sample);
 
     /**
      * Returns whether it is actually possible to dig this pattern in the game.
@@ -53,7 +53,7 @@ public interface DiggingPattern {
      * @return true if it is actually possible to dig this pattern in the game.
      */
     default boolean isValid() {
-        Chunk chunk = new Chunk(getWidth(), getHeight(), getLength());
-        return chunk.isValid(getAccesses());
+        Sample sample = new Sample(getWidth(), getHeight(), getLength());
+        return sample.isValid(getAccesses());
     }
 }

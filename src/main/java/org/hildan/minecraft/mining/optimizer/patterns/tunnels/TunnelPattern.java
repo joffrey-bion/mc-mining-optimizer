@@ -1,6 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.patterns.tunnels;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
+import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.geometry.Axis;
 
 /**
@@ -40,15 +40,15 @@ public class TunnelPattern {
         return vSpacing;
     }
 
-    public void digInto(Chunk chunk, int originX, int originY, int originZ, int length, Axis lengthAxis,
+    public void digInto(Sample sample, int originX, int originY, int originZ, int length, Axis lengthAxis,
                         Axis heightAxis) {
         int xMax = originX + getSizeOnAxis(Axis.X, lengthAxis, heightAxis, length);
         int yMax = originY + getSizeOnAxis(Axis.Y, lengthAxis, heightAxis, length);
         int zMax = originZ + getSizeOnAxis(Axis.Z, lengthAxis, heightAxis, length);
-        for (int x = originX; x < Math.min(xMax, chunk.getWidth()); x++) {
-            for (int y = originY; y < Math.min(yMax, chunk.getHeight()); y++) {
-                for (int z = originZ; z < Math.min(zMax, chunk.getLength()); z++) {
-                    chunk.dig(x, y, z);
+        for (int x = originX; x < Math.min(xMax, sample.getWidth()); x++) {
+            for (int y = originY; y < Math.min(yMax, sample.getHeight()); y++) {
+                for (int z = originZ; z < Math.min(zMax, sample.getLength()); z++) {
+                    sample.dig(x, y, z);
                 }
             }
         }

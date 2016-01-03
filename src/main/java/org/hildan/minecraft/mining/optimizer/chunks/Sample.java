@@ -9,13 +9,20 @@ import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
 /**
- * A group of blocks.
+ * An arbitrary group of blocks. It can have any dimension, thus it is different from a minecraft chunk, which is
+ * 16x256x16.
  */
-public class Chunk {
+public class Sample {
 
-    public static final int MC_CHUNK_WIDTH = 16;
+    /**
+     * The width of a standard Minecraft chunk.
+     */
+    public static final int CHUNK_WIDTH = 16;
 
-    public static final int MC_CHUNK_LENGTH = 16;
+    /**
+     * The length of a standard Minecraft chunk.
+     */
+    public static final int CHUNK_LENGTH = 16;
 
     private final int width;
 
@@ -28,7 +35,7 @@ public class Chunk {
     /**
      * Creates a new pure stone chunk of the given dimensions.
      */
-    public Chunk(int width, int height, int length) {
+    public Sample(int width, int height, int length) {
         this.width = width;
         this.height = height;
         this.length = length;
@@ -44,12 +51,12 @@ public class Chunk {
     }
 
     /**
-     * Creates a copy of the given Chunk.
+     * Creates a copy of the given Sample.
      *
      * @param source
-     *         the Chunk to copy
+     *         the Sample to copy
      */
-    public Chunk(Chunk source) {
+    public Sample(Sample source) {
         this.width = source.width;
         this.height = source.height;
         this.length = source.length;

@@ -1,6 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
+import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.geometry.Axis;
 import org.hildan.minecraft.mining.optimizer.geometry.Position;
 import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelPattern;
@@ -63,17 +63,17 @@ public class BranchingPattern extends AbstractDiggingPattern {
     }
 
     @Override
-    public void digInto(Chunk chunk, int originX, int originY, int originZ) {
-        digLayer(chunk, originX, originY, originZ, 0);
+    public void digInto(Sample sample, int originX, int originY, int originZ) {
+        digLayer(sample, originX, originY, originZ, 0);
         if (branchOffsetByTier != 0) {
-            digLayer(chunk, originX, originY + getLayerHeight(), originZ, branchOffsetByTier);
+            digLayer(sample, originX, originY + getLayerHeight(), originZ, branchOffsetByTier);
         }
     }
 
-    private void digLayer(Chunk chunk, int originX, int originY, int originZ, int offset) {
-        branch.digInto(chunk, originX, originY, originZ + offset, branchLength, Axis.X, Axis.Y);
-        shaft.digInto(chunk, originX + branchLength, originY, originZ, getLength(), Axis.Z, Axis.Y);
+    private void digLayer(Sample sample, int originX, int originY, int originZ, int offset) {
+        branch.digInto(sample, originX, originY, originZ + offset, branchLength, Axis.X, Axis.Y);
+        shaft.digInto(sample, originX + branchLength, originY, originZ, getLength(), Axis.Z, Axis.Y);
         int oppositeBranchStartX = originX + branchLength + shaft.getShape().getWidth();
-        branch.digInto(chunk, oppositeBranchStartX, originY, originZ + offset, branchLength, Axis.X, Axis.Y);
+        branch.digInto(sample, oppositeBranchStartX, originY, originZ + offset, branchLength, Axis.X, Axis.Y);
     }
 }
