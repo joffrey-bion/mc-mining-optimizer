@@ -81,11 +81,11 @@ public class Block {
     }
 
     public boolean isDug() {
-        return getType() == BlockType.AIR;
+        return type == BlockType.AIR;
     }
 
     public boolean isOre() {
-        return getType().isOre();
+        return type.isOre();
     }
 
     public String toString() {

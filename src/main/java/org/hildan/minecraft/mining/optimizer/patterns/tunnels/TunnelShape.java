@@ -13,9 +13,9 @@ public class TunnelShape {
 
     public static final TunnelShape BIG_CORRIDOR = new TunnelShape(2, 3);
 
-    private int width;
+    private final int width;
 
-    private int height;
+    private final int height;
 
     public TunnelShape(int width, int height) {
         this.width = width;

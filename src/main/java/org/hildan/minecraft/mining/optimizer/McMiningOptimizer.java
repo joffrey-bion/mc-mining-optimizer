@@ -14,36 +14,43 @@ public class McMiningOptimizer {
 
     private static final int ITERATIONS = 10000;
 
-    public static void main(String[] args) {
-        Chunk baseChunk = new Chunk(16, 16, 16);
+    private static final int CHUNK_HEIGHT = 16;
+
+    private static final int BRANCH_LENGTH = 11;
+
+    private static final int BRANCH_OFFSET = 2;
+
+    private static final long NANOSECONDS_IN_A_MILLI = 1_000_000L;
+
+    public static void main(String... args) {
+        Chunk baseChunk = new Chunk(Chunk.MC_CHUNK_WIDTH, CHUNK_HEIGHT, Chunk.MC_CHUNK_LENGTH);
         OreGenerator oreGenerator = new OreGenerator();
 
         DiggingPattern digEverythingPattern = new DigEverythingPattern();
         System.out.println("DIG EVERYTHING");
-        //printPattern(digEverythingPattern);
+        //        System.out.println(digEverythingPattern);
         printStats(digEverythingPattern, oreGenerator, baseChunk);
 
         DiggingPattern branchPattern2 =
-                new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_2SPACED, 11, 2);
+                new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_2SPACED, BRANCH_LENGTH,
+                        BRANCH_OFFSET);
         System.out.println("STANDARD BRANCHING - 2 spaced");
-        //printPattern(branchPattern2);
+        //        System.out.println(branchPattern2);
         printStats(branchPattern2, oreGenerator, baseChunk);
 
         DiggingPattern branchPattern3 =
-                new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED, 11, 2);
+                new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED, BRANCH_LENGTH,
+                        BRANCH_OFFSET);
         System.out.println("STANDARD BRANCHING - 3 spaced");
-        //printPattern(branchPattern3);
+        //        System.out.println(branchPattern3);
         printStats(branchPattern3, oreGenerator, baseChunk);
 
         DiggingPattern branchPatternHighShaft3 =
-                new BranchingPattern(TunnelPattern.BIG_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED, 11, 2);
+                new BranchingPattern(TunnelPattern.BIG_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED, BRANCH_LENGTH,
+                        BRANCH_OFFSET);
         System.out.println("STANDARD BRANCHING (HIGH SHAFT) - 3 spaced");
-        //printPattern(branchPatternHighShaft3);
+        //        System.out.println(branchPatternHighShaft3);
         printStats(branchPatternHighShaft3, oreGenerator, baseChunk);
-    }
-
-    private static void printPattern(DiggingPattern pattern) {
-        System.out.println(pattern.toString());
     }
 
     private static void printStats(DiggingPattern pattern, OreGenerator oreGenerator, Chunk testChunk) {
@@ -55,15 +62,15 @@ public class McMiningOptimizer {
         long startTime = threadMXBean.getCurrentThreadCpuTime();
 
         for (int i = 0; i < ITERATIONS; i++) {
-            Chunk oredChunk = oreGenerator.generate(testChunk, 5);
-            long initialOres = oredChunk.getOresCount();
+            Chunk chunk = oreGenerator.generate(testChunk, 5);
+            long initialOres = chunk.getOresCount();
             totalOres += initialOres;
-            //System.out.println(oredChunk.toString());
+            //System.out.println(chunk.toString());
 
-            pattern.dig(oredChunk);
-            dugBlocks += oredChunk.getDugBlocksCount();
-            foundOres += initialOres - oredChunk.getOresCount();
-            //System.out.println(oredChunk.toString());
+            pattern.dig(chunk);
+            dugBlocks += chunk.getDugBlocksCount();
+            foundOres += initialOres - chunk.getOresCount();
+            //System.out.println(chunk.toString());
         }
 
         long endTime = threadMXBean.getCurrentThreadCpuTime();
@@ -86,7 +93,7 @@ public class McMiningOptimizer {
             System.out.format("Thoroughness:  %6.2f%%%n", thoroughness);
         }
         System.out.println();
-        long execTimeMillis = (endTime - startTime) / 1_000_000;
+        long execTimeMillis = (endTime - startTime) / NANOSECONDS_IN_A_MILLI;
         System.out.format("Execution time: %.3fs%n", (double) execTimeMillis / 1000);
         System.out.println();
     }

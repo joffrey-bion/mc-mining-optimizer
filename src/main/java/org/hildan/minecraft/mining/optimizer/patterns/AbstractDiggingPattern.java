@@ -23,7 +23,7 @@ public abstract class AbstractDiggingPattern implements DiggingPattern {
         digVisibleOres(chunk);
     }
 
-    private void digVisibleOres(Chunk chunk) {
+    private static void digVisibleOres(Chunk chunk) {
         for (int y = 0; y < chunk.getHeight(); y++) {
             for (int z = 0; z < chunk.getLength(); z++) {
                 for (int x = 0; x < chunk.getWidth(); x++) {
@@ -36,7 +36,7 @@ public abstract class AbstractDiggingPattern implements DiggingPattern {
         }
     }
 
-    private void digBlockAndAdjacentOres(Chunk chunk, Block block) {
+    private static void digBlockAndAdjacentOres(Chunk chunk, Block block) {
         chunk.dig(block.getX(), block.getY(), block.getZ());
         List<Block> adjacentBlocks = chunk.getAdjacentBlocks(block, Wrapping.CUT);
         for (Block adjacentBlock : adjacentBlocks) {

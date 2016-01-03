@@ -5,31 +5,32 @@ import org.hildan.minecraft.mining.optimizer.chunks.Chunk;
 
 import java.util.Random;
 
-public class WorldGenMinable {
+@SuppressWarnings({"MagicNumber", "UnnecessaryExplicitNumericCast"})
+class WorldGenMinable {
 
-    private int maxVeinSize;
+    private final int maxVeinSize;
 
-    private BlockType blockTypeToGenerate;
+    private final BlockType blockTypeToGenerate;
 
-    private BlockType blockTypeToReplace;
+    private final BlockType blockTypeToReplace;
 
-    public WorldGenMinable(BlockType blockTypeToGenerate, int maxVeinSize) {
-        this.maxVeinSize = maxVeinSize;
+    public WorldGenMinable(BlockType blockTypeToGenerate) {
+        this.maxVeinSize = blockTypeToGenerate.getMaxVeinSize();
         this.blockTypeToGenerate = blockTypeToGenerate;
         this.blockTypeToReplace = BlockType.STONE;
     }
 
-    public boolean generateInto(Chunk chunk, Random random, int i, int j, int k) {
+    public void generateInto(Chunk chunk, Random random, int centerX, int centerY, int centerZ) {
         /*
         Implementation taken from Bukkit's github, here be dragons
          */
         float f = random.nextFloat() * 3.1415927F;
-        double d0 = (double) ((float) (i + 8) + MathHelper.sin(f) * (float) this.maxVeinSize / 8.0F);
-        double d1 = (double) ((float) (i + 8) - MathHelper.sin(f) * (float) this.maxVeinSize / 8.0F);
-        double d2 = (double) ((float) (k + 8) + MathHelper.cos(f) * (float) this.maxVeinSize / 8.0F);
-        double d3 = (double) ((float) (k + 8) - MathHelper.cos(f) * (float) this.maxVeinSize / 8.0F);
-        double d4 = (double) (j + random.nextInt(3) - 2);
-        double d5 = (double) (j + random.nextInt(3) - 2);
+        double d0 = (double) ((float) (centerX + 8) + MathHelper.sin(f) * (float) this.maxVeinSize / 8.0F);
+        double d1 = (double) ((float) (centerX + 8) - MathHelper.sin(f) * (float) this.maxVeinSize / 8.0F);
+        double d2 = (double) ((float) (centerZ + 8) + MathHelper.cos(f) * (float) this.maxVeinSize / 8.0F);
+        double d3 = (double) ((float) (centerZ + 8) - MathHelper.cos(f) * (float) this.maxVeinSize / 8.0F);
+        double d4 = (double) (centerY + random.nextInt(3) - 2);
+        double d5 = (double) (centerY + random.nextInt(3) - 2);
 
         for (int l = 0; l <= this.maxVeinSize; ++l) {
             double d6 = d0 + (d1 - d0) * (double) l / (double) this.maxVeinSize;
@@ -68,6 +69,5 @@ public class WorldGenMinable {
                 }
             }
         }
-        return true;
     }
 }

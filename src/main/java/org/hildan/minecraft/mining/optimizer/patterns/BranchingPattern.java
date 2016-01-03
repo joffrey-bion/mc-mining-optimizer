@@ -35,6 +35,7 @@ public class BranchingPattern extends AbstractDiggingPattern {
         }
     }
 
+    @Override
     public int getWidth() {
         // the offset doesn't matter here, the spatial period is the same
         return 2 * branchLength + shaft.getShape().getWidth();
@@ -44,12 +45,14 @@ public class BranchingPattern extends AbstractDiggingPattern {
         return shaft.getShape().getHeight() + shaft.getVSpacing();
     }
 
+    @Override
     public int getHeight() {
         int layerHeight = getLayerHeight();
         // with an offset, two consecutive layers are different
         return branchOffsetByTier == 0 ? layerHeight : layerHeight * 2;
     }
 
+    @Override
     public int getLength() {
         return branch.getHSpacing() + branch.getShape().getWidth();
     }

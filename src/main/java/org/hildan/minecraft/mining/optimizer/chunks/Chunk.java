@@ -13,6 +13,10 @@ import java.util.function.Predicate;
  */
 public class Chunk {
 
+    public static final int MC_CHUNK_WIDTH = 16;
+
+    public static final int MC_CHUNK_LENGTH = 16;
+
     private final int width;
 
     private final int height;
@@ -199,7 +203,7 @@ public class Chunk {
     }
 
     private long getCountOfBlocksMatching(Predicate<Block> predicate) {
-        long count = 0;
+        long count = 0L;
         for (int x = 0; x < this.width; x++) {
             for (int y = 0; y < this.height; y++) {
                 for (int z = 0; z < this.length; z++) {
@@ -234,18 +238,20 @@ public class Chunk {
         getBlock(x, y, z).setType(type);
     }
 
+    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(String.format("Size: %d %d %d%n%n", getWidth(), getHeight(), getLength()));
-        for (int y = 0; y < getHeight(); y++) {
-            sb.append(String.format("%" + getWidth() + "s ", String.format("y = %d", y)));
+        StringBuilder sb = new StringBuilder(String.format("Size: %d %d %d%n%n", width, height, length));
+        String columnTitleFormat = "%" + width + "s ";
+        for (int y = 0; y < height; y++) {
+            sb.append(String.format(columnTitleFormat, String.format("y = %d", y)));
         }
         sb.append(String.format("%n"));
-        for (int z = 0; z < getLength(); z++) {
-            for (int y = 0; y < getHeight(); y++) {
-                for (int x = 0; x < getWidth(); x++) {
-                    sb.append(getBlock(x, y, z).toString());
+        for (int z = 0; z < length; z++) {
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    sb.append(getBlock(x, y, z));
                 }
-                sb.append(" ");
+                sb.append(' ');
             }
             sb.append(String.format("%n"));
         }
