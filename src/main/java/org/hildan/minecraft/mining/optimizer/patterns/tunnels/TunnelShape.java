@@ -1,5 +1,8 @@
 package org.hildan.minecraft.mining.optimizer.patterns.tunnels;
 
+/**
+ * Describes the dimensions of a 2D section of a tunnel.
+ */
 public class TunnelShape {
 
     public static final TunnelShape SIMPLE_HOLE = new TunnelShape(1, 1);

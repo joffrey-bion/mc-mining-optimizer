@@ -6,6 +6,9 @@ import org.hildan.minecraft.mining.optimizer.chunks.Wrapping;
 
 import java.util.List;
 
+/**
+ * This abstract class regroups common behavior for all patterns.
+ */
 public abstract class AbstractDiggingPattern implements DiggingPattern {
 
     @Override
