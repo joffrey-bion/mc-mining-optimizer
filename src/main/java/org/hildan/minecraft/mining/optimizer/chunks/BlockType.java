@@ -7,12 +7,12 @@ public enum BlockType {
 
     AIR(false, "\u2592"),
     STONE(false, "\u2588"),
-    COAL_ORE(true, "c"),
-    IRON_ORE(true, "i"),
-    GOLD_ORE(true, "g"),
-    DIAMOND_ORE(true, "d"),
-    REDSTONE_ORE(true, "r"),
-    LAPIS_ORE(true, "l");
+    COAL_ORE(true, "C"),
+    IRON_ORE(true, "I"),
+    GOLD_ORE(true, "G"),
+    DIAMOND_ORE(true, "D"),
+    REDSTONE_ORE(true, "R"),
+    LAPIS_ORE(true, "L");
 
     private final boolean isOre;
 
