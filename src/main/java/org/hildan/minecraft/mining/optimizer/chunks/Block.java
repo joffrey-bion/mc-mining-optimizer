@@ -33,7 +33,7 @@ public class Block {
      * Creates a copy of the given block.
      *
      * @param source
-     *     the block to copy
+     *         the block to copy
      */
     public Block(Block source) {
         this.x = source.x;

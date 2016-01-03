@@ -47,8 +47,8 @@ public abstract class AbstractDiggingPattern implements DiggingPattern {
     }
 
     /**
-     * Digs this pattern into the given chunk, starting from the given origin, and going in the increasing direction of each coordinate.
-     * This method takes care of stopping at the edge of the given chunk.
+     * Digs this pattern into the given chunk, starting from the given origin, and going in the increasing direction of
+     * each coordinate. This method takes care of stopping at the edge of the given chunk.
      */
     protected abstract void digInto(Chunk chunk, int originX, int originY, int originZ);
 

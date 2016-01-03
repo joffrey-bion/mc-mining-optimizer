@@ -27,10 +27,9 @@ public class OreGenerator {
      * Generates a copy of the given chunk where some stones are replaced by ores. Only stone blocks may be changed.
      *
      * @param baseChunk
-     *     the chunk to start from
+     *         the chunk to start from
      * @param chunkYPosition
-     *     the Y index of the lowest layer of the given chunk
-     *
+     *         the Y index of the lowest layer of the given chunk
      * @return a new chunk based on the given one, containing ores instead of some of the stones.
      */
     public Chunk generate(Chunk baseChunk, int chunkYPosition) {
@@ -46,7 +45,8 @@ public class OreGenerator {
         return oredChunk;
     }
 
-    protected void genStandardOre(Chunk oredChunk, int nVeinsPerBigChunk, WorldGenMinable generator, int minY, int maxY) {
+    protected void genStandardOre(Chunk oredChunk, int nVeinsPerBigChunk, WorldGenMinable generator, int minY,
+                                  int maxY) {
         for (int i = 0; i < nVeinsPerBigChunk; ++i) {
             int x = random.nextInt(oredChunk.getWidth());
             int y = random.nextInt(maxY - minY) + minY;
@@ -59,7 +59,8 @@ public class OreGenerator {
         }
     }
 
-    protected void genSingleLayerOre(Chunk oredChunk, int nVeinsPerBigChunk, WorldGenMinable generator, int minY, int maxY) {
+    protected void genSingleLayerOre(Chunk oredChunk, int nVeinsPerBigChunk, WorldGenMinable generator, int minY,
+                                     int maxY) {
         for (int i = 0; i < nVeinsPerBigChunk; ++i) {
             int x = random.nextInt(oredChunk.getWidth());
             int y = 2 * random.nextInt(maxY) + (minY - maxY);

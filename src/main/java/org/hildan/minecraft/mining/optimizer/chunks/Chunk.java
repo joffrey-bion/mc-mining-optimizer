@@ -43,7 +43,7 @@ public class Chunk {
      * Creates a copy of the given Chunk.
      *
      * @param source
-     *     the Chunk to copy
+     *         the Chunk to copy
      */
     public Chunk(Chunk source) {
         this.width = source.width;
@@ -86,8 +86,8 @@ public class Chunk {
      * Returns whether this chunk can indeed be dug like this in game.
      *
      * @param accesses
-     *     the coordinates where the player enters this chunk to start digging, as specified by {@link DiggingPattern#getAccesses()}
-     *
+     *         the coordinates where the player enters this chunk to start digging, as specified by {@link
+     *         DiggingPattern#getAccesses()}
      * @return true if this chunk can indeed be dug like this in game.
      */
     public boolean isValid(List<Position> accesses) {
@@ -101,12 +101,11 @@ public class Chunk {
      * Returns whether the given coordinates belong to this chunk.
      *
      * @param x
-     *     the X coordinate to test
+     *         the X coordinate to test
      * @param y
-     *     the Y coordinate to test
+     *         the Y coordinate to test
      * @param z
-     *     the Z coordinate to test
-     *
+     *         the Z coordinate to test
      * @return true if the given coordinates belong to this chunk.
      */
     public boolean hasBlock(int x, int y, int z) {
@@ -115,7 +114,8 @@ public class Chunk {
 
     private int getIndex(int x, int y, int z) {
         if (!hasBlock(x, y, z)) {
-            throw new IllegalArgumentException(String.format("The given coordinates (%d,%d,%d) are out of bounds for this chunk", x, y, z));
+            throw new IllegalArgumentException(
+                    String.format("The given coordinates (%d,%d,%d) are out of bounds for this chunk", x, y, z));
         }
         return x + y * width + z * width * height;
     }
@@ -124,12 +124,11 @@ public class Chunk {
      * Gets the Block located at the given absolute position.
      *
      * @param x
-     *     the X coordinate of the block to get
+     *         the X coordinate of the block to get
      * @param y
-     *     the Y coordinate of the block to get
+     *         the Y coordinate of the block to get
      * @param z
-     *     the Z coordinate of the block to get
-     *
+     *         the Z coordinate of the block to get
      * @return the Block located at the provided coordinates
      */
     public Block getBlock(int x, int y, int z) throws NoSuchElementException {
@@ -144,32 +143,32 @@ public class Chunk {
      * Gets the Block located at the given relative position.
      *
      * @param origin
-     *     the block to start from
+     *         the block to start from
      * @param distanceX
-     *     the distance to travel in the X direction (may be negative)
+     *         the distance to travel in the X direction (may be negative)
      * @param distanceY
-     *     the distance to travel in the Y direction (may be negative)
+     *         the distance to travel in the Y direction (may be negative)
      * @param distanceZ
-     *     the distance to travel in the Z direction (may be negative)
+     *         the distance to travel in the Z direction (may be negative)
      * @param wrapping
-     *     defines the decision to take when reaching the end of the chunk
-     *
-     * @return the Block located at the given position, or null if the block is out of bounds and wrapping is set to {@link Wrapping#CUT}.
+     *         defines the decision to take when reaching the end of the chunk
+     * @return the Block located at the given position, or null if the block is out of bounds and wrapping is set to
+     * {@link Wrapping#CUT}.
      */
     public Block getBlock(Block origin, int distanceX, int distanceY, int distanceZ, Wrapping wrapping) {
         try {
             int x = 0, y = 0, z = 0;
             switch (wrapping) {
-            case CUT:
-                x = origin.getX() + distanceX;
-                y = origin.getY() + distanceY;
-                z = origin.getZ() + distanceZ;
-                break;
-            case WRAP:
-                x = Math.floorMod(origin.getX() + distanceX, width);
-                y = Math.floorMod(origin.getY() + distanceY, height);
-                z = Math.floorMod(origin.getZ() + distanceZ, length);
-                break;
+                case CUT:
+                    x = origin.getX() + distanceX;
+                    y = origin.getY() + distanceY;
+                    z = origin.getZ() + distanceZ;
+                    break;
+                case WRAP:
+                    x = Math.floorMod(origin.getX() + distanceX, width);
+                    y = Math.floorMod(origin.getY() + distanceY, height);
+                    z = Math.floorMod(origin.getZ() + distanceZ, length);
+                    break;
             }
             return getBlock(x, y, z);
         } catch (NoSuchElementException e) {
@@ -178,14 +177,13 @@ public class Chunk {
     }
 
     /**
-     * Gets the 6 blocks that are adjacent to given one. If wrapping is set to {@link Wrapping#CUT} and the given block is on this chunk's
-     * side, less than 6 blocks are returned because part of them is cut off.
+     * Gets the 6 blocks that are adjacent to given one. If wrapping is set to {@link Wrapping#CUT} and the given block
+     * is on this chunk's side, less than 6 blocks are returned because part of them is cut off.
      *
      * @param block
-     *     the block to get the neighbors from
+     *         the block to get the neighbors from
      * @param wrapping
-     *     the wrapping policy when the given block is on the side of this chunk
-     *
+     *         the wrapping policy when the given block is on the side of this chunk
      * @return a list containing blocks adjacent to the given block
      */
     public List<Block> getAdjacentBlocks(Block block, Wrapping wrapping) {

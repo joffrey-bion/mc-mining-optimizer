@@ -36,5 +36,4 @@ public class DigEverythingPattern extends AbstractDiggingPattern {
         chunk.dig(originX, originY, originZ);
         chunk.dig(originX, originY + 1, originZ);
     }
-
 }

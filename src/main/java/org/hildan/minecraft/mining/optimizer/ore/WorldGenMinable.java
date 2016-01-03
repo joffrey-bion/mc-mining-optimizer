@@ -36,8 +36,10 @@ public class WorldGenMinable {
             double d7 = d4 + (d5 - d4) * (double) l / (double) this.maxVeinSize;
             double d8 = d2 + (d3 - d2) * (double) l / (double) this.maxVeinSize;
             double d9 = random.nextDouble() * (double) this.maxVeinSize / 16.0D;
-            double d10 = (double) (MathHelper.sin((float) l * 3.1415927F / (float) this.maxVeinSize) + 1.0F) * d9 + 1.0D;
-            double d11 = (double) (MathHelper.sin((float) l * 3.1415927F / (float) this.maxVeinSize) + 1.0F) * d9 + 1.0D;
+            double d10 =
+                    (double) (MathHelper.sin((float) l * 3.1415927F / (float) this.maxVeinSize) + 1.0F) * d9 + 1.0D;
+            double d11 =
+                    (double) (MathHelper.sin((float) l * 3.1415927F / (float) this.maxVeinSize) + 1.0F) * d9 + 1.0D;
             int i1 = MathHelper.floor(d6 - d10 / 2.0D);
             int j1 = MathHelper.floor(d7 - d11 / 2.0D);
             int k1 = MathHelper.floor(d8 - d10 / 2.0D);
@@ -56,8 +58,8 @@ public class WorldGenMinable {
                             for (int i3 = k1; i3 <= j2; ++i3) {
                                 double d14 = ((double) i3 + 0.5D - d8) / (d10 / 2.0D);
 
-                                if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0D && chunk.hasBlock(k2, l2, i3) && chunk.getBlock(k2, l2, i3).getType()
-                                    == blockTypeToReplace) {
+                                if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0D && chunk.hasBlock(k2, l2, i3)
+                                        && chunk.getBlock(k2, l2, i3).getType() == blockTypeToReplace) {
                                     chunk.putOre(k2, l2, i3, blockTypeToGenerate);
                                 }
                             }

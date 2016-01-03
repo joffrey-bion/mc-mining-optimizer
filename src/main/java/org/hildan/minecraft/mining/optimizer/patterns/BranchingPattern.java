@@ -30,7 +30,8 @@ public class BranchingPattern extends AbstractDiggingPattern {
             throw new IllegalArgumentException("The main shaft should be higher than branches");
         }
         if (shaft.getHSpacing() < 2 * branch.getShape().getWidth()) {
-            throw new IllegalArgumentException("Branches from 2 different shafts are touching: reduce branch length, or put more space");
+            throw new IllegalArgumentException(
+                    "Branches from 2 different shafts are touching: reduce branch length, or put more space");
         }
     }
 

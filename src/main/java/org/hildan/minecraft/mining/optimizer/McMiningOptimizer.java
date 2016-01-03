@@ -20,18 +20,20 @@ public class McMiningOptimizer {
         //printPattern(digEverythingPattern);
         printStats(digEverythingPattern, oreGenerator, baseChunk);
 
-        DiggingPattern branchPattern2 = new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_2SPACED, 11, 2);
+        DiggingPattern branchPattern2 =
+                new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_2SPACED, 11, 2);
         System.out.println("STANDARD BRANCHING - 2 spaced");
         //printPattern(branchPattern2);
         printStats(branchPattern2, oreGenerator, baseChunk);
 
-        DiggingPattern branchPattern3 = new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED, 11, 2);
+        DiggingPattern branchPattern3 =
+                new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED, 11, 2);
         System.out.println("STANDARD BRANCHING - 3 spaced");
         //printPattern(branchPattern3);
         printStats(branchPattern3, oreGenerator, baseChunk);
 
-        DiggingPattern branchPatternHighShaft3 = new BranchingPattern(TunnelPattern.BIG_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED,
-            11, 2);
+        DiggingPattern branchPatternHighShaft3 =
+                new BranchingPattern(TunnelPattern.BIG_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED, 11, 2);
         System.out.println("STANDARD BRANCHING (HIGH SHAFT) - 3 spaced");
         //printPattern(branchPatternHighShaft3);
         printStats(branchPatternHighShaft3, oreGenerator, baseChunk);
@@ -83,5 +85,4 @@ public class McMiningOptimizer {
         System.out.format("Exec. time: %d ms%n", endTime - startTime);
         System.out.println();
     }
-
 }

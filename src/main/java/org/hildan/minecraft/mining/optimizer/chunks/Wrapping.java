@@ -10,8 +10,8 @@ public enum Wrapping {
      */
     CUT,
     /**
-     * Wraps to the other side of the chunk. This means, when reaching for instance a Y value beyond the height of the chunk, it wraps back
-     * to Y=0.
+     * Wraps to the other side of the chunk. This means, when reaching for instance a Y value beyond the height of the
+     * chunk, it wraps back to Y=0.
      */
-    WRAP;
+    WRAP
 }

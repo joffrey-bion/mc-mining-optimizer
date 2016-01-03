@@ -6,7 +6,9 @@ package org.hildan.minecraft.mining.optimizer.geometry;
 public class Position {
 
     private final int x;
+
     private final int y;
+
     private final int z;
 
     public Position(int x, int y, int z) {
