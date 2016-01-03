@@ -7,9 +7,12 @@ import org.hildan.minecraft.mining.optimizer.patterns.DigEverythingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelPattern;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
+
 public class McMiningOptimizer {
 
-    private static final int ITERATIONS = 20000;
+    private static final int ITERATIONS = 10000;
 
     public static void main(String[] args) {
         Chunk baseChunk = new Chunk(16, 16, 16);
@@ -48,7 +51,8 @@ public class McMiningOptimizer {
         long foundOres = 0;
         long dugBlocks = 0;
 
-        long startTime = System.currentTimeMillis();
+        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+        long startTime = threadMXBean.getCurrentThreadCpuTime();
 
         for (int i = 0; i < ITERATIONS; i++) {
             Chunk oredChunk = oreGenerator.generate(testChunk, 5);
@@ -62,7 +66,7 @@ public class McMiningOptimizer {
             //System.out.println(oredChunk.toString());
         }
 
-        long endTime = System.currentTimeMillis();
+        long endTime = threadMXBean.getCurrentThreadCpuTime();
 
         double avgTotalOres = (double) totalOres / ITERATIONS;
         double avgFoundOres = (double) foundOres / ITERATIONS;
@@ -82,7 +86,8 @@ public class McMiningOptimizer {
             System.out.format("Thoroughness:  %6.2f%%%n", thoroughness);
         }
         System.out.println();
-        System.out.format("Exec. time: %d ms%n", endTime - startTime);
+        long execTimeMillis = (endTime - startTime) / 1_000_000;
+        System.out.format("Execution time: %.3fs%n", (double) execTimeMillis / 1000);
         System.out.println();
     }
 }
