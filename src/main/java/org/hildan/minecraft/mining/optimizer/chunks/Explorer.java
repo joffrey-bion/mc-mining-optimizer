@@ -26,6 +26,9 @@ public class Explorer {
     }
 
     private static void exploreAccess(Sample sample, Access access) {
+        if (!sample.hasBlock(access.getX(), access.getY(), access.getZ())) {
+            return;
+        }
         Block feetBlock = sample.getBlock(access);
         assert feetBlock.isDug() : "the given sample's access has not been dug at feet level";
         feetBlock.setFeetAccessible(true);
