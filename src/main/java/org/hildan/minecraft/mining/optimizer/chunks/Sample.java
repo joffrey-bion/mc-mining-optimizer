@@ -279,7 +279,7 @@ public class Sample {
         StringBuilder sb = new StringBuilder(String.format("Size: %d %d %d%n%n", width, height, length));
         final String layerSeparator = "  ";
 
-        final String columnTitleFormat = layerSeparator + "%" + width + "s";
+        final String columnTitleFormat = layerSeparator + '%' + width + 's';
         sb.append(' ');
         for (int y = 0; y < height; y++) {
             sb.append(String.format(columnTitleFormat, String.format("Y = %d", y)));
