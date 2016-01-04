@@ -4,12 +4,9 @@ import org.hildan.minecraft.mining.optimizer.chunks.Block;
 import org.hildan.minecraft.mining.optimizer.chunks.Explorer;
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.chunks.Wrapping;
-import org.hildan.minecraft.mining.optimizer.geometry.Position;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 
 /**
  * This abstract class regroups common behavior for all patterns.
@@ -46,7 +43,7 @@ public abstract class AbstractDiggingPattern implements DiggingPattern {
 
     private static void digBlockAndAdjacentOres(Sample sample, Block block) {
         sample.dig(block.getX(), block.getY(), block.getZ());
-        List<Block> adjacentBlocks = sample.getAdjacentBlocks(block, Wrapping.CUT);
+        Collection<Block> adjacentBlocks = sample.getAdjacentBlocks(block, Wrapping.CUT);
         for (Block adjacentBlock : adjacentBlocks) {
             if (adjacentBlock.isOre() && adjacentBlock.isVisible()) {
                 digBlockAndAdjacentOres(sample, adjacentBlock);

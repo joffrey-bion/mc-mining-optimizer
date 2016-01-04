@@ -2,6 +2,10 @@ package org.hildan.minecraft.mining.optimizer.chunks;
 
 import org.hildan.minecraft.mining.optimizer.patterns.Access;
 
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
+
 /**
  * A tool explore and validate a sample.
  */
@@ -22,13 +26,39 @@ public class Explorer {
     }
 
     private static void exploreAccess(Sample sample, Access access) {
-        Block block = sample.getBlock(access);
-        if (!block.isDug()) {
-            throw new IllegalStateException("the given sample's access has not been dug");
-        }
-        block.setVisible(true);
+        Block feetBlock = sample.getBlock(access);
+        assert feetBlock.isDug() : "the given sample's access has not been dug at feet level";
+        feetBlock.setFeetAccessible(true);
 
-        // TODO
+        Block headBlock = sample.getBlockAbove(feetBlock, Wrapping.WRAP);
+        assert headBlock.isDug() : "the given sample's access has not been dug at head level";
+        headBlock.setHeadAccessible(true);
+
+        Deque<Block> blocksToExplore = new ArrayDeque<>(sample.getWidth() * sample.getHeight() * sample.getLength() / 3);
+        blocksToExplore.addLast(headBlock);
+        while (!blocksToExplore.isEmpty()) {
+            Block block = blocksToExplore.pollFirst();
+            if (!block.isExplored()) {
+                exploreBlock(sample, block, blocksToExplore);
+            }
+        }
+    }
+
+    private static void exploreBlock(Sample sample, Block block, Deque<Block> blocksToExplore) {
+        //System.out.printf("exploring (%d,%d,%d)%n", block.getX(), block.getY(), block.getZ());
+
+        Collection<Block> adjBlocks = sample.getAdjacentBlocks(block, Wrapping.WRAP);
+
+        // FIXME add proper visibility algorithm based on accessible blocks
+        block.setVisible(block.isDug() || adjBlocks.stream().anyMatch(Block::isDug));
+
+        if (block.isDug()) {
+
+            // TODO set head/feet accessibility based on neighbors
+
+            adjBlocks.forEach(blocksToExplore::addLast);
+        }
+        block.setExplored(true);
     }
 
     /**

@@ -15,7 +15,11 @@ public class Block {
 
     private boolean headAccessible;
 
+    private boolean feetAccessible;
+
     private boolean visible;
+
+    private boolean explored;
 
     /**
      * Creates a new stone block at the given position.
@@ -28,7 +32,9 @@ public class Block {
 
         // exploration does not get to every block, hence the need to initialize to false
         this.headAccessible = false;
+        this.feetAccessible = false;
         this.visible = false;
+        this.explored = false;
     }
 
     /**
@@ -74,6 +80,14 @@ public class Block {
         this.headAccessible = headAccessible;
     }
 
+    public boolean isFeetAccessible() {
+        return feetAccessible;
+    }
+
+    public void setFeetAccessible(boolean feetAccessible) {
+        this.feetAccessible = feetAccessible;
+    }
+
     public boolean isVisible() {
         return visible;
     }
@@ -82,12 +96,41 @@ public class Block {
         this.visible = visible;
     }
 
+    public boolean isExplored() {
+        return explored;
+    }
+
+    public void setExplored(boolean explored) {
+        this.explored = explored;
+    }
+
     public boolean isDug() {
         return type == BlockType.AIR;
     }
 
     public boolean isOre() {
         return type.isOre();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Block block = (Block) obj;
+        return x == block.x && y == block.y && z == block.z;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = x;
+        result = 31 * result + y;
+        result = 31 * result + z;
+        return result;
     }
 
     public String toString() {

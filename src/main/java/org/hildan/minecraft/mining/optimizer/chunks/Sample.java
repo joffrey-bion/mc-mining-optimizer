@@ -1,10 +1,9 @@
 package org.hildan.minecraft.mining.optimizer.chunks;
 
 import org.hildan.minecraft.mining.optimizer.geometry.Position;
-import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
@@ -184,6 +183,34 @@ public class Sample {
     }
 
     /**
+     * Gets the block above the given one.
+     *
+     * @param block
+     *         the block above which to get a block
+     * @param wrapping
+     *         the wrapping policy when the given block is the ceiling of this sample
+     * @return the above block, or null if the given block is the ceiling of this sample and wrapping is set to {@link
+     * Wrapping#CUT}
+     */
+    public Block getBlockAbove(Block block, Wrapping wrapping) {
+        return getBlock(block, 0, 1, 0, wrapping);
+    }
+
+    /**
+     * Gets the block below the given one.
+     *
+     * @param block
+     *         the block below which to get a block
+     * @param wrapping
+     *         the wrapping policy when the given block is the floor of this sample
+     * @return the above block, or null if the given block is the floor of this sample and wrapping is set to {@link
+     * Wrapping#CUT}
+     */
+    public Block getBlockBelow(Block block, Wrapping wrapping) {
+        return getBlock(block, 0, -1, 0, wrapping);
+    }
+
+    /**
      * Gets the 6 blocks that are adjacent to given one. If wrapping is set to {@link Wrapping#CUT} and the given block
      * is on this chunk's side, less than 6 blocks are returned because part of them is cut off.
      *
@@ -193,8 +220,8 @@ public class Sample {
      *         the wrapping policy when the given block is on the side of this chunk
      * @return a list containing blocks adjacent to the given block
      */
-    public List<Block> getAdjacentBlocks(Block block, Wrapping wrapping) {
-        List<Block> adjacentBlocks = new ArrayList<>(6);
+    public Collection<Block> getAdjacentBlocks(Block block, Wrapping wrapping) {
+        Collection<Block> adjacentBlocks = new HashSet<>(6);
         adjacentBlocks.add(getBlock(block, +1, 0, 0, wrapping));
         adjacentBlocks.add(getBlock(block, -1, 0, 0, wrapping));
         adjacentBlocks.add(getBlock(block, 0, +1, 0, wrapping));
@@ -207,13 +234,9 @@ public class Sample {
 
     private long getCountOfBlocksMatching(Predicate<Block> predicate) {
         long count = 0L;
-        for (int x = 0; x < this.width; x++) {
-            for (int y = 0; y < this.height; y++) {
-                for (int z = 0; z < this.length; z++) {
-                    if (predicate.test(getBlock(x, y, z))) {
-                        count++;
-                    }
-                }
+        for (Block block : blocks) {
+            if (predicate.test(block)) {
+                count++;
             }
         }
         return count;
