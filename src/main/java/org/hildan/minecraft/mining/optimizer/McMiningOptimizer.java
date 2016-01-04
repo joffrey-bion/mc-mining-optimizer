@@ -15,11 +15,11 @@ import java.lang.management.ThreadMXBean;
  */
 public class McMiningOptimizer {
 
-    private static final boolean VISUAL_DEBUG = false;
+    private static final boolean VISUAL_DEBUG = true;
 
     private static final int ITERATIONS = 10000;
 
-    private static final int SAMPLE_HEIGHT = 16;
+    private static final int SAMPLE_HEIGHT = 10;
 
     private static final int BRANCH_LENGTH = 11;
 
@@ -55,6 +55,8 @@ public class McMiningOptimizer {
     }
 
     private static void printStats(DiggingPattern pattern, OreGenerator oreGenerator, Sample testSample) {
+        final int NB_SAMPLES = VISUAL_DEBUG ? 1 : ITERATIONS;
+
         long totalOres = 0;
         long foundOres = 0;
         long dugBlocks = 0;
@@ -62,7 +64,7 @@ public class McMiningOptimizer {
         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
         long startTime = threadMXBean.getCurrentThreadCpuTime();
 
-        for (int i = 0; i < (VISUAL_DEBUG ? 1 : ITERATIONS); i++) {
+        for (int i = 0; i < NB_SAMPLES; i++) {
             Sample sample = oreGenerator.generate(testSample, 5);
             long initialOres = sample.getOresCount();
             totalOres += initialOres;
@@ -80,13 +82,13 @@ public class McMiningOptimizer {
 
         long endTime = threadMXBean.getCurrentThreadCpuTime();
 
-        double avgTotalOres = (double) totalOres / ITERATIONS;
-        double avgFoundOres = (double) foundOres / ITERATIONS;
-        double avgDugBlocks = (double) dugBlocks / ITERATIONS;
+        double avgTotalOres = (double) totalOres / NB_SAMPLES;
+        double avgFoundOres = (double) foundOres / NB_SAMPLES;
+        double avgDugBlocks = (double) dugBlocks / NB_SAMPLES;
         double efficiency = (double) foundOres * 100 / dugBlocks;
         double thoroughness = (double) foundOres * 100 / totalOres;
 
-        System.out.format("            %10s  %12s%n", "Avg/chunk", "Total");
+        System.out.format("            %10s  %12s%n", "Avg/sample", "Total");
         System.out.format("Total ores: %10.2f  %,12d%n", avgTotalOres, totalOres);
         System.out.format("Found ores: %10.2f  %,12d%n", avgFoundOres, foundOres);
         System.out.format("Dug Blocks: %10.2f  %,12d%n", avgDugBlocks, dugBlocks);
