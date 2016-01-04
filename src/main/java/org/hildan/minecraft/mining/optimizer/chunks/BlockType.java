@@ -11,10 +11,10 @@ public enum BlockType {
     STONE(false, "\u2588", -1, -1, -1, -1),
     COAL_ORE(true, "C", 16, 20, 0, 128),
     IRON_ORE(true, "I", 8, 20, 0, 64),
-    GOLD_ORE(true, yellow("G"), 8, 2, 0, 32),
-    DIAMOND_ORE(true, cyan("D"), 7, 1, 0, 16),
-    REDSTONE_ORE(true, red("R"), 7, 8, 0, 16),
-    LAPIS_ORE(true, blue("L"), 6, 1, 16, 16);
+    GOLD_ORE(true, color("G", YELLOW), 8, 2, 0, 32),
+    DIAMOND_ORE(true, color("D", CYAN), 7, 1, 0, 16),
+    REDSTONE_ORE(true, color("R", RED), 7, 8, 0, 16),
+    LAPIS_ORE(true, color("L", BLUE), 6, 1, 16, 16);
 
     private final boolean isOre;
 
