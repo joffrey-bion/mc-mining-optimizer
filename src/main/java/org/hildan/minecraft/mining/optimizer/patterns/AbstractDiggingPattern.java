@@ -29,16 +29,7 @@ public abstract class AbstractDiggingPattern implements DiggingPattern {
     }
 
     private static void digVisibleOres(Sample sample) {
-        for (int y = 0; y < sample.getHeight(); y++) {
-            for (int z = 0; z < sample.getLength(); z++) {
-                for (int x = 0; x < sample.getWidth(); x++) {
-                    Block block = sample.getBlock(x, y, z);
-                    if (block.isOre() && block.isVisible()) {
-                        digBlockAndAdjacentOres(sample, block);
-                    }
-                }
-            }
-        }
+        sample.getBlocksMatching(b -> b.isOre() && b.isVisible()).forEach(b -> digBlockAndAdjacentOres(sample, b));
     }
 
     private static void digBlockAndAdjacentOres(Sample sample, Block block) {

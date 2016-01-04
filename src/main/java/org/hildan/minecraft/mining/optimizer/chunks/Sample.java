@@ -232,7 +232,17 @@ public class Sample {
         return adjacentBlocks;
     }
 
-    private long getCountOfBlocksMatching(Predicate<Block> predicate) {
+    public Collection<Block> getBlocksMatching(Predicate<Block> predicate) {
+        Collection<Block> matchingBlocks = new HashSet<>();
+        for (Block block : blocks) {
+            if (predicate.test(block)) {
+                matchingBlocks.add(block);
+            }
+        }
+        return matchingBlocks;
+    }
+
+    private long getNumberOfBlocksMatching(Predicate<Block> predicate) {
         long count = 0L;
         for (Block block : blocks) {
             if (predicate.test(block)) {
@@ -243,11 +253,11 @@ public class Sample {
     }
 
     public long getOresCount() {
-        return getCountOfBlocksMatching(Block::isOre);
+        return getNumberOfBlocksMatching(Block::isOre);
     }
 
     public long getDugBlocksCount() {
-        return getCountOfBlocksMatching(Block::isDug);
+        return getNumberOfBlocksMatching(Block::isDug);
     }
 
     public void dig(int x, int y, int z) {
@@ -267,17 +277,22 @@ public class Sample {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(String.format("Size: %d %d %d%n%n", width, height, length));
-        String columnTitleFormat = "%" + width + "s ";
+        final String layerSeparator = "  ";
+
+        final String columnTitleFormat = layerSeparator + "%" + width + "s";
+        sb.append(' ');
         for (int y = 0; y < height; y++) {
-            sb.append(String.format(columnTitleFormat, String.format("y = %d", y)));
+            sb.append(String.format(columnTitleFormat, String.format("Y = %d", y)));
         }
         sb.append(String.format("%n"));
+
         for (int z = 0; z < length; z++) {
+            sb.append(String.format("%2d ", z));
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
                     sb.append(getBlock(x, y, z));
                 }
-                sb.append(' ');
+                sb.append(layerSeparator);
             }
             sb.append(String.format("%n"));
         }
