@@ -1,5 +1,7 @@
 package org.hildan.minecraft.mining.optimizer.chunks;
 
+import static org.hildan.minecraft.mining.optimizer.display.AnsiCodes.*;
+
 /**
  * Represents the content of a Minecraft block.
  */
@@ -9,10 +11,10 @@ public enum BlockType {
     STONE(false, "\u2588", -1, -1, -1, -1),
     COAL_ORE(true, "C", 16, 20, 0, 128),
     IRON_ORE(true, "I", 8, 20, 0, 64),
-    GOLD_ORE(true, "G", 8, 2, 0, 32),
-    DIAMOND_ORE(true, "D", 7, 1, 0, 16),
-    REDSTONE_ORE(true, "R", 7, 8, 0, 16),
-    LAPIS_ORE(true, "L", 6, 1, 16, 16);
+    GOLD_ORE(true, yellow("G"), 8, 2, 0, 32),
+    DIAMOND_ORE(true, cyan("D"), 7, 1, 0, 16),
+    REDSTONE_ORE(true, red("R"), 7, 8, 0, 16),
+    LAPIS_ORE(true, blue("L"), 6, 1, 16, 16);
 
     private final boolean isOre;
 
