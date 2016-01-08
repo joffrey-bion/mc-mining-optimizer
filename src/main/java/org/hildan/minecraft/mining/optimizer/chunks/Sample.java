@@ -260,13 +260,17 @@ public class Sample {
         return getNumberOfBlocksMatching(Block::isDug);
     }
 
-    public void dig(int x, int y, int z) {
-        Block block = getBlock(x, y, z);
+    public void dig(Block block) {
         block.setType(BlockType.AIR);
 
         // TODO move visibility logic to external visitor
         block.setVisible(true);
         getAdjacentBlocks(block, Wrapping.WRAP).forEach(b -> b.setVisible(true));
+    }
+
+    public void dig(int x, int y, int z) {
+        Block block = getBlock(x, y, z);
+        dig(block);
     }
 
     public void putOre(int x, int y, int z, BlockType type) {
