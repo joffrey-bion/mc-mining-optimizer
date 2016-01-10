@@ -16,16 +16,31 @@ public class MoveAction implements Action {
     private final int distanceZ;
 
     private MoveAction(int distanceX, int distanceY, int distanceZ) {
+        if (distanceY > 1) {
+            throw new IllegalArgumentException("Can't jump higher than 1 block");
+        }
+        if (distanceY < -1) {
+            throw new IllegalArgumentException("No going down lower than 1 block, to be able to go back");
+        }
+        if (distanceX == 0 && distanceZ == 0) {
+            throw new IllegalArgumentException("Cannot stay in the same horizontal place, falls are not actions");
+        }
+        if (distanceX != 0 && distanceZ != 0) {
+            throw new IllegalArgumentException("Moves are accepted only along one axis at a time");
+        }
+        if (Math.abs(distanceX) > 1 || Math.abs(distanceZ) > 1) {
+            throw new IllegalArgumentException("Only moves of one block are accepted");
+        }
         this.distanceX = distanceX;
         this.distanceY = distanceY;
         this.distanceZ = distanceZ;
     }
 
-    public static Collection<Action> getAllMoves() {
-        final int[] values = {-1,0,1};
-        Collection<Action> moves = new ArrayList<>(12);
-        for (int x : values) {
-            for (int y : values) {
+    public static Iterable<? extends Action> getAll() {
+        final int[] values = {0, 1, -1};
+        Collection<MoveAction> moves = new ArrayList<>(12);
+        for (int y : values) {
+            for (int x : values) {
                 for (int z : values) {
                     if (x == 0 && z == 0) {
                         continue; // we have to move horizontally
@@ -42,16 +57,82 @@ public class MoveAction implements Action {
 
     @Override
     public boolean isValidFor(Sample sample, Block currentHeadPosition) {
+        // check that there is room for the head
         Block headDestination = sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.CUT);
         if (headDestination == null || !headDestination.isDug()) {
             return false;
         }
+        // check that there is room for the feet
         Block feetDestination = sample.getBlockBelow(headDestination, Wrapping.CUT);
-        return feetDestination != null && feetDestination.isDug();
+        if (feetDestination == null || !feetDestination.isDug()) {
+            return false;
+        }
+        // check that there is room for the movement
+        return hasRoomForMovement(sample, currentHeadPosition, headDestination);
+    }
+
+    /**
+     * Checks whether the intermediate position of the player during the movement is clear.
+     *
+     * @param sample
+     *         the current sample
+     * @param headPositionBefore
+     *         the position of the head before the movement
+     * @param headPositionAfter
+     *         the position of the head after the movement
+     * @return true if the intermediate block is clear
+     */
+    private boolean hasRoomForMovement(Sample sample, Block headPositionBefore, Block headPositionAfter) {
+        switch (distanceY) {
+            case 0:
+                return true;
+            case 1:
+                Block jumpRoom = sample.getBlockAbove(headPositionBefore, Wrapping.CUT);
+                return jumpRoom != null && jumpRoom.isDug();
+            case -1:
+                Block forwardRoom = sample.getBlockAbove(headPositionAfter, Wrapping.CUT);
+                return forwardRoom != null && forwardRoom.isDug();
+            default:
+                // can't jump higher than 1
+                // (counts also for the negative Ys because we want to be able to go back)
+                return false;
+        }
     }
 
     @Override
     public Block applyTo(Sample sample, Block currentHeadPosition) {
         return sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.CUT);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        MoveAction moveAction = (MoveAction) obj;
+
+        if (distanceX != moveAction.distanceX) {
+            return false;
+        }
+        if (distanceY != moveAction.distanceY) {
+            return false;
+        }
+        return distanceZ == moveAction.distanceZ;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = distanceX;
+        result = 31 * result + distanceY;
+        result = 31 * result + distanceZ;
+        return result;
+    }
+
+    public String toString() {
+        return String.format("MoveOf(%d,%d,%d)", distanceX, distanceY, distanceZ);
     }
 }
