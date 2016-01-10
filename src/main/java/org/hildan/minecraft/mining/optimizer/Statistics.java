@@ -32,7 +32,7 @@ public class Statistics {
                 System.out.println(sample);
             }
 
-            pattern.dig(sample);
+            pattern.digInto(sample);
             stats.dugBlocks += sample.getDugBlocksCount();
             stats.foundOres += initialOres - sample.getOresCount();
             if (debug) {
@@ -50,6 +50,7 @@ public class Statistics {
         return (double) foundOres * 100 / totalOres;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 

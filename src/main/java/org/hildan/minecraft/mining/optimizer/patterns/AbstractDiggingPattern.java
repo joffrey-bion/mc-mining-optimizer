@@ -14,7 +14,7 @@ import java.util.Collection;
 public abstract class AbstractDiggingPattern implements DiggingPattern {
 
     @Override
-    public void dig(Sample sample) {
+    public void digInto(Sample sample) {
         Collection<Access> accesses = new ArrayList<>();
         for (int x = 0; x < sample.getWidth(); x += getWidth()) {
             for (int y = 0; y < sample.getHeight(); y += getHeight()) {
@@ -48,9 +48,10 @@ public abstract class AbstractDiggingPattern implements DiggingPattern {
      */
     protected abstract void digInto(Sample sample, int originX, int originY, int originZ);
 
+    @Override
     public String toString() {
         Sample sample = new Sample(getWidth(), getHeight(), getLength());
-        dig(sample);
+        digInto(sample);
         return sample.toString();
     }
 }

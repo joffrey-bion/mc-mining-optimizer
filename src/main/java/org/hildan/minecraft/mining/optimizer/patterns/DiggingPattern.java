@@ -49,7 +49,7 @@ public interface DiggingPattern {
      * Digs this pattern into the given sample. The pattern is repeated as many times as necessary in every direction,
      * starting from the point (0,0,0).
      */
-    void dig(Sample sample);
+    void digInto(Sample sample);
 
     /**
      * Returns whether it is actually possible to dig this pattern in the game.
