@@ -37,7 +37,7 @@ public class DigAction implements Action {
      *         the digging range of the player
      * @return a collection of actions that can potentially be done
      */
-    private static Collection<? extends Action> getAll(Range3D range) {
+    public static Collection<? extends Action> getAll(Range3D range) {
         Collection<DigAction> moves = new ArrayList<>(12);
         for (int dY = range.minY(); dY <= range.maxY(); dY++) {
             for (int dX = range.minX(dY); dX <= range.maxX(dY); dX++) {
