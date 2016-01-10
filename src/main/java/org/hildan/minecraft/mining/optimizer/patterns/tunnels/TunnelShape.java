@@ -17,7 +17,7 @@ public class TunnelShape {
 
     private final int height;
 
-    public TunnelShape(int width, int height) {
+    private TunnelShape(int width, int height) {
         this.width = width;
         this.height = height;
     }

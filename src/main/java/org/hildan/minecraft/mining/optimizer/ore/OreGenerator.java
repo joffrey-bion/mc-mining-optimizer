@@ -35,12 +35,12 @@ public class OreGenerator {
         this.lowestY = sampleYPosition;
 
         Sample sample = new Sample(baseSample);
-        this.genStandardOre(sample, BlockType.COAL_ORE);
-        this.genStandardOre(sample, BlockType.IRON_ORE);
-        this.genStandardOre(sample, BlockType.GOLD_ORE);
-        this.genStandardOre(sample, BlockType.REDSTONE_ORE);
-        this.genStandardOre(sample, BlockType.DIAMOND_ORE);
-        this.genLayeredOre(sample, BlockType.LAPIS_ORE);
+        genStandardOre(sample, BlockType.COAL_ORE);
+        genStandardOre(sample, BlockType.IRON_ORE);
+        genStandardOre(sample, BlockType.GOLD_ORE);
+        genStandardOre(sample, BlockType.REDSTONE_ORE);
+        genStandardOre(sample, BlockType.DIAMOND_ORE);
+        genLayeredOre(sample, BlockType.LAPIS_ORE);
         return sample;
     }
 
@@ -55,8 +55,8 @@ public class OreGenerator {
 
             // Y is generated within a chunk, we check whether it falls in our sample, which is a slice of the chunk
             // this gives us the same probability as if the sample was actually taken from the Minecraft-generated world
-            if (this.lowestY <= y && y < this.lowestY + sample.getHeight()) {
-                gen.generateInto(sample, random, x, y - this.lowestY, z);
+            if (lowestY <= y && y < lowestY + sample.getHeight()) {
+                gen.generateInto(sample, random, x, y - lowestY, z);
             }
         }
     }
@@ -70,8 +70,8 @@ public class OreGenerator {
             int y = 2 * random.nextInt(maxY) + (minY - maxY);
             int z = random.nextInt(sample.getLength());
 
-            if (this.lowestY <= y && y < this.lowestY + sample.getHeight()) {
-                gen.generateInto(sample, random, x, y - this.lowestY, z);
+            if (lowestY <= y && y < lowestY + sample.getHeight()) {
+                gen.generateInto(sample, random, x, y - lowestY, z);
             }
         }
     }

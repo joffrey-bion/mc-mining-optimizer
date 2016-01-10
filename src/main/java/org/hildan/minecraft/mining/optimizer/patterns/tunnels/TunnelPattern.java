@@ -22,7 +22,7 @@ public class TunnelPattern {
 
     private final int vSpacing;
 
-    public TunnelPattern(TunnelShape shape, int hSpacing, int vSpacing) {
+    private TunnelPattern(TunnelShape shape, int hSpacing, int vSpacing) {
         this.shape = shape;
         this.hSpacing = hSpacing;
         this.vSpacing = vSpacing;

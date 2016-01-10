@@ -107,10 +107,9 @@ public class Sample {
         return x >= 0 && y >= 0 && z >= 0 && x < width && y < height && z < length;
     }
 
-    private int getIndex(int x, int y, int z) {
+    private int getIndex(int x, int y, int z) throws NoSuchElementException {
         if (!hasBlock(x, y, z)) {
-            throw new IllegalArgumentException(
-                    String.format("The given coordinates (%d,%d,%d) are out of bounds for this chunk", x, y, z));
+            throw new NoSuchElementException(String.format("Block (%d,%d,%d) does not exist in this chunk", x, y, z));
         }
         return x + y * width + z * width * height;
     }
@@ -127,11 +126,7 @@ public class Sample {
      * @return the Block located at the provided coordinates
      */
     public Block getBlock(int x, int y, int z) throws NoSuchElementException {
-        try {
-            return blocks[getIndex(x, y, z)];
-        } catch (IllegalArgumentException e) {
-            throw new NoSuchElementException(String.format("Block (%d,%d,%d) does not exist in this chunk", x, y, z));
-        }
+        return blocks[getIndex(x, y, z)];
     }
 
     /**
@@ -162,24 +157,25 @@ public class Sample {
      * {@link Wrapping#CUT}.
      */
     public Block getBlock(Block origin, int distanceX, int distanceY, int distanceZ, Wrapping wrapping) {
-        try {
-            int x = 0, y = 0, z = 0;
-            switch (wrapping) {
-                case CUT:
-                    x = origin.getX() + distanceX;
-                    y = origin.getY() + distanceY;
-                    z = origin.getZ() + distanceZ;
-                    break;
-                case WRAP:
-                    x = Math.floorMod(origin.getX() + distanceX, width);
-                    y = Math.floorMod(origin.getY() + distanceY, height);
-                    z = Math.floorMod(origin.getZ() + distanceZ, length);
-                    break;
-            }
-            return getBlock(x, y, z);
-        } catch (NoSuchElementException e) {
-            return null; // if going out of bounds with Wrapping.CUT
+        int x = 0;
+        int y = 0;
+        int z = 0;
+        switch (wrapping) {
+            case CUT:
+                x = origin.getX() + distanceX;
+                y = origin.getY() + distanceY;
+                z = origin.getZ() + distanceZ;
+                if (!hasBlock(x, y, z)) {
+                    return null;
+                }
+                break;
+            case WRAP:
+                x = Math.floorMod(origin.getX() + distanceX, width);
+                y = Math.floorMod(origin.getY() + distanceY, height);
+                z = Math.floorMod(origin.getZ() + distanceZ, length);
+                break;
         }
+        return getBlock(x, y, z);
     }
 
     /**
@@ -232,7 +228,7 @@ public class Sample {
         return adjacentBlocks;
     }
 
-    public Collection<Block> getBlocksMatching(Predicate<Block> predicate) {
+    public Iterable<Block> getBlocksMatching(Predicate<Block> predicate) {
         Collection<Block> matchingBlocks = new HashSet<>();
         for (Block block : blocks) {
             if (predicate.test(block)) {

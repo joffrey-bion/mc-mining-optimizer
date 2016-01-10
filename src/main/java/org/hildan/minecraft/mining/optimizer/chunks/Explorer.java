@@ -48,12 +48,11 @@ public class Explorer {
     }
 
     private static void exploreBlock(Sample sample, Block block, Deque<Block> blocksToExplore) {
-        //System.out.printf("exploring (%d,%d,%d)%n", block.getX(), block.getY(), block.getZ());
-
         Collection<Block> adjBlocks = sample.getAdjacentBlocks(block, Wrapping.WRAP);
 
         // FIXME add proper visibility algorithm based on accessible blocks
-        block.setVisible(block.isDug() || adjBlocks.stream().anyMatch(Block::isDug));
+        boolean hasDugNeighbor = adjBlocks.stream().anyMatch(Block::isDug);
+        block.setVisible(block.isDug() || hasDugNeighbor);
 
         if (block.isDug()) {
 

@@ -17,7 +17,7 @@ public class Statistics {
 
     private long dugBlocks = 0;
 
-    public Statistics(int nbSamples) {
+    private Statistics(int nbSamples) {
         this.nbSamples = nbSamples;
     }
 
