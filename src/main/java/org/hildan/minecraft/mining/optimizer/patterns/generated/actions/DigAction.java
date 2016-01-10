@@ -6,6 +6,7 @@ import org.hildan.minecraft.mining.optimizer.chunks.Wrapping;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class DigAction implements Action {
 
@@ -17,46 +18,42 @@ public class DigAction implements Action {
 
     private final int distanceZ;
 
-    DigAction(int distanceX, int distanceY, int distanceZ) {
+    private DigAction(int distanceX, int distanceY, int distanceZ) {
         this.distanceX = distanceX;
         this.distanceY = distanceY;
         this.distanceZ = distanceZ;
     }
 
-    private static final int[][] boundWithShift =
-            {{6, 6, 6, 5, 5, 4, 2}, {6, 6, 6, 5, 5, 4, 2}, {6, 6, 5, 5, 5, 4, 1}, {5, 5, 5, 5, 4, 3, -1}};
+    public static Iterable<? extends Action> getAll() {
+        return getAll(DigRange3D.STRICT);
+    }
 
-    private static final int[][] boundStrict =
-            {{5, 5, 5, 5, 4, 3}, {5, 5, 5, 5, 4, 3}, {5, 5, 5, 4, 3, 2}, {4, 4, 4, 4, 3, -1}};
+    public static Iterable<? extends Action> getAllWithShift() {
+        return getAll(DigRange3D.PRESSING_SHIFT);
+    }
 
-    private static Collection<Action> getAll(int[][] boundDistribution) {
-        Collection<Action> moves = new ArrayList<>(12);
-        for (int y = -MAX_Y_DISTANCE; y <= MAX_Y_DISTANCE; y++) {
-            final int max = boundDistribution[y].length;
-            for (int x = -max; x <= max; x++) {
-                for (int z = -max; z <= max; z++) {
-                    if (x == 0 && y == 0 && z == 0) {
-                        continue; // skip origin
+    private static Iterable<? extends Action> getAll(DigRange3D range) {
+        Collection<DigAction> moves = new ArrayList<>(12);
+        final int maxY = range.maxY();
+        for (int dY = -maxY; dY <= maxY; dY++) {
+            final int maxX = range.maxX(dY);
+            final int maxZ = range.maxZ(dY);
+            for (int dX = -maxX; dX <= maxX; dX++) {
+                for (int dZ = -maxZ; dZ <= maxZ; dZ++) {
+                    if (dX == 0 && dZ == 0) {
+                        continue; // never dig above or below
                     }
-                    if (Math.abs(x) > boundDistribution[Math.abs(y)][Math.abs(z)]) {
-                        continue;
+                    if (range.inRange(dX, dY, dZ)) {
+                        moves.add(new DigAction(dX, dY, dZ));
                     }
-                    if (Math.abs(z) > boundDistribution[Math.abs(y)][Math.abs(x)]) {
-                        continue;
-                    }
-                    moves.add(new DigAction(x, y, z));
                 }
             }
         }
-        return moves;
+        return moves.stream().sorted((a1, a2) -> a1.norm() - a2.norm()).collect(Collectors.toList());
     }
 
-    public static Collection<Action> getAll() {
-        return getAll(boundStrict);
-    }
-
-    public static Collection<Action> getAllWithShift() {
-        return getAll(boundWithShift);
+    private int norm() {
+        return distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ;
     }
 
     @Override
@@ -77,5 +74,38 @@ public class DigAction implements Action {
         sample.dig(blockToDig);
         // we haven't moved
         return currentHeadPosition;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        DigAction digAction = (DigAction) obj;
+
+        if (distanceX != digAction.distanceX) {
+            return false;
+        }
+        if (distanceY != digAction.distanceY) {
+            return false;
+        }
+        return distanceZ == digAction.distanceZ;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = distanceX;
+        result = 31 * result + distanceY;
+        result = 31 * result + distanceZ;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Dig(%d,%d,%d)", distanceX, distanceY, distanceZ);
     }
 }
