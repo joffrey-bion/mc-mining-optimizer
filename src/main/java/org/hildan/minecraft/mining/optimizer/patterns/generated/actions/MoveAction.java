@@ -7,6 +7,10 @@ import org.hildan.minecraft.mining.optimizer.chunks.Wrapping;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * An immutable action representing the player moving of one block horizontally. The move can be done in any 4
+ * horizontal directions, and can result in the player going up or down one block as well.
+ */
 public class MoveAction implements Action {
 
     private final int distanceX;
@@ -36,7 +40,7 @@ public class MoveAction implements Action {
         this.distanceZ = distanceZ;
     }
 
-    public static Iterable<? extends Action> getAll() {
+    public static Collection<? extends Action> getAll() {
         final int[] values = {0, 1, -1};
         Collection<MoveAction> moves = new ArrayList<>(12);
         for (int y : values) {
@@ -100,7 +104,7 @@ public class MoveAction implements Action {
     }
 
     @Override
-    public Block applyTo(Sample sample, Block currentHeadPosition) {
+    public Block executeOn(Sample sample, Block currentHeadPosition) {
         return sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.CUT);
     }
 
@@ -132,6 +136,7 @@ public class MoveAction implements Action {
         return result;
     }
 
+    @Override
     public String toString() {
         return String.format("MoveOf(%d,%d,%d)", distanceX, distanceY, distanceZ);
     }

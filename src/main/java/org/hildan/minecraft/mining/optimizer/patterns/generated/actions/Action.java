@@ -3,10 +3,13 @@ package org.hildan.minecraft.mining.optimizer.patterns.generated.actions;
 import org.hildan.minecraft.mining.optimizer.chunks.Block;
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 
+/**
+ * Represents an action the player can perform. An action is performed on a sample, from a given position.
+ */
 public interface Action {
 
     /**
-     * Checks whether it is possible to applyTo this action in the given situation.
+     * Checks whether it is possible to execute this action in the given situation.
      *
      * @param sample
      *         the current sample
@@ -27,5 +30,5 @@ public interface Action {
      * @throws IllegalStateException
      *         if the action couldn't be performed in the current state
      */
-    Block applyTo(Sample sample, Block currentHeadPosition) throws IllegalStateException;
+    Block executeOn(Sample sample, Block currentHeadPosition) throws IllegalStateException;
 }

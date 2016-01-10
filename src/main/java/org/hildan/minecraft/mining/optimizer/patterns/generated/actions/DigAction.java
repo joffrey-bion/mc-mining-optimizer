@@ -3,14 +3,17 @@ package org.hildan.minecraft.mining.optimizer.patterns.generated.actions;
 import org.hildan.minecraft.mining.optimizer.chunks.Block;
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.chunks.Wrapping;
+import org.hildan.minecraft.mining.optimizer.geometry.Range3D;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+/**
+ * An immutable action representing the player digging one block in an acceptable range. Digging above or below the
+ * player is forbidden (we don't want to fall in a cave, or be covered in lava).
+ */
 public class DigAction implements Action {
-
-    private static final int MAX_Y_DISTANCE = 3;
 
     private final int distanceX;
 
@@ -19,29 +22,28 @@ public class DigAction implements Action {
     private final int distanceZ;
 
     private DigAction(int distanceX, int distanceY, int distanceZ) {
+        if (distanceX == 0 && distanceZ == 0) {
+            throw new IllegalArgumentException("Never dig above the head or below the feet");
+        }
         this.distanceX = distanceX;
         this.distanceY = distanceY;
         this.distanceZ = distanceZ;
     }
 
-    public static Iterable<? extends Action> getAll() {
-        return getAll(DigRange3D.STRICT);
-    }
-
-    public static Iterable<? extends Action> getAllWithShift() {
-        return getAll(DigRange3D.PRESSING_SHIFT);
-    }
-
-    private static Iterable<? extends Action> getAll(DigRange3D range) {
+    /**
+     * Gets all the possible digging actions for the given accepted range.
+     *
+     * @param range
+     *         the digging range of the player
+     * @return a collection of actions that can potentially be done
+     */
+    private static Collection<? extends Action> getAll(Range3D range) {
         Collection<DigAction> moves = new ArrayList<>(12);
-        final int maxY = range.maxY();
-        for (int dY = -maxY; dY <= maxY; dY++) {
-            final int maxX = range.maxX(dY);
-            final int maxZ = range.maxZ(dY);
-            for (int dX = -maxX; dX <= maxX; dX++) {
-                for (int dZ = -maxZ; dZ <= maxZ; dZ++) {
+        for (int dY = range.minY(); dY <= range.maxY(); dY++) {
+            for (int dX = range.minX(dY); dX <= range.maxX(dY); dX++) {
+                for (int dZ = range.minZ(dY); dZ <= range.maxZ(dY); dZ++) {
                     if (dX == 0 && dZ == 0) {
-                        continue; // never dig above or below
+                        continue; // never dig above the head or below the feet
                     }
                     if (range.inRange(dX, dY, dZ)) {
                         moves.add(new DigAction(dX, dY, dZ));
@@ -52,6 +54,11 @@ public class DigAction implements Action {
         return moves.stream().sorted((a1, a2) -> a1.norm() - a2.norm()).collect(Collectors.toList());
     }
 
+    /**
+     * Returns the squared distance of the block to dig.
+     *
+     * @return the squared distance of the block to dig.
+     */
     private int norm() {
         return distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ;
     }
@@ -69,7 +76,7 @@ public class DigAction implements Action {
     }
 
     @Override
-    public Block applyTo(Sample sample, Block currentHeadPosition) throws IllegalStateException {
+    public Block executeOn(Sample sample, Block currentHeadPosition) throws IllegalStateException {
         Block blockToDig = sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.CUT);
         sample.dig(blockToDig);
         // we haven't moved
