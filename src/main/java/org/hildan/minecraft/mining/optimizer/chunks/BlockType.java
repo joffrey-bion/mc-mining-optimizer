@@ -88,6 +88,7 @@ public enum BlockType {
         return maxYAvailability;
     }
 
+    @Override
     public String toString() {
         return visual;
     }
