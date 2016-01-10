@@ -7,8 +7,9 @@ import org.hildan.minecraft.mining.optimizer.patterns.AbstractDiggingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.Access;
 import org.hildan.minecraft.mining.optimizer.patterns.generated.actions.Action;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -16,31 +17,48 @@ import java.util.Set;
  */
 public class GeneratedPattern extends AbstractDiggingPattern {
 
-    private final List<Action> actions;
+    private final Map<Access, List<Action>> actionsPerAccess;
 
-    public GeneratedPattern(List<Action> actions) {
-        this.actions = new ArrayList<>(actions);
+    private final int width;
+
+    private final int height;
+
+    private final int length;
+
+    /**
+     * Creates a GeneratedPattern with the given list of actions for each given access.
+     *
+     * @param actionsPerAccess
+     *         defines for each access, the corresponding list of actions
+     */
+    public GeneratedPattern(Map<Access, List<Action>> actionsPerAccess, int width, int height, int length) {
+        this.actionsPerAccess = new HashMap<>(actionsPerAccess);
+        this.width = width;
+        this.height = height;
+        this.length = length;
     }
 
     @Override
     public int getWidth() {
-        // TODO calculate pattern width based on actions, and add pattern spacing
-        return 0;
+        // TODO calculate pattern's width based on actions, and add pattern spacing
+        return width;
     }
 
     @Override
     public int getHeight() {
-        return 0;
+        // TODO calculate pattern's height based on actions, and add pattern spacing
+        return height;
     }
 
     @Override
     public int getLength() {
-        return 0;
+        // TODO calculate pattern's length based on actions, and add pattern spacing
+        return length;
     }
 
     @Override
     public Set<Access> getAccesses(int x, int y) {
-        return null;
+        return actionsPerAccess.keySet();
     }
 
     @Override
@@ -50,9 +68,23 @@ public class GeneratedPattern extends AbstractDiggingPattern {
             sample.dig(feetBlock);
             Block headBlock = sample.getBlockAbove(feetBlock, Wrapping.WRAP);
             sample.dig(headBlock);
-            for (Action action : actions) {
-                headBlock = action.applyTo(sample, headBlock);
+            for (Action action : actionsPerAccess.get(access)) {
+                headBlock = action.executeOn(sample, headBlock);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        Set<Access> accesses = getAccesses(0, 0);
+        StringBuilder sb = new StringBuilder();
+        final String indent = "   ";
+        for (Access access : accesses) {
+            sb.append(access).append(String.format("%n"));
+            for (Action action : actionsPerAccess.get(access)) {
+                sb.append(indent).append(action).append(String.format("%n"));
+            }
+        }
+        return sb.toString();
     }
 }

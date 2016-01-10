@@ -17,4 +17,9 @@ public class Access extends Position {
     public Access(int x, int y) {
         super(x, y, 0);
     }
+
+    @Override
+    public String toString() {
+        return String.format("Access(%d,%d)", getX(), getY());
+    }
 }
