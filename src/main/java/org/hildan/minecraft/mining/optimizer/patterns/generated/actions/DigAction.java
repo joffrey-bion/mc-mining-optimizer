@@ -69,10 +69,14 @@ public class DigAction implements Action {
         if (blockToDig == null || blockToDig.isDug()) {
             return false;
         }
+        return isPathClear(sample, currentHeadPosition, blockToDig);
+    }
+
+    private boolean isPathClear(Sample sample, Block b1, Block b2) {
 
         // TODO check that the view is not obstructed
 
-        return true;
+        return false;
     }
 
     @Override
