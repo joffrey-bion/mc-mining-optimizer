@@ -1,15 +1,11 @@
 package org.hildan.minecraft.mining.optimizer.chunks;
 
+import org.hildan.minecraft.mining.optimizer.geometry.Position;
+
 /**
  * Represents a Minecraft block.
  */
-public class Block {
-
-    private final int x;
-
-    private final int y;
-
-    private final int z;
+public class Block extends Position {
 
     private BlockType type;
 
@@ -25,9 +21,7 @@ public class Block {
      * Creates a new stone block at the given position.
      */
     public Block(int x, int y, int z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        super(x, y, z);
         this.type = BlockType.STONE;
 
         // exploration does not get to every block, hence the need to initialize to false
@@ -44,24 +38,10 @@ public class Block {
      *         the block to copy
      */
     public Block(Block source) {
-        this.x = source.x;
-        this.y = source.y;
-        this.z = source.z;
+        super(source);
         this.type = source.type;
         this.headAccessible = source.headAccessible;
         this.visible = source.visible;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getZ() {
-        return z;
     }
 
     public BlockType getType() {
@@ -122,14 +102,14 @@ public class Block {
         }
 
         Block block = (Block) obj;
-        return x == block.x && y == block.y && z == block.z;
+        return getX() == block.getX() && getY() == block.getY() && getZ() == block.getZ();
     }
 
     @Override
     public int hashCode() {
-        int result = x;
-        result = 31 * result + y;
-        result = 31 * result + z;
+        int result = getX();
+        result = 31 * result + getY();
+        result = 31 * result + getZ();
         return result;
     }
 

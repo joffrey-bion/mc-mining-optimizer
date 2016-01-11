@@ -145,7 +145,7 @@ public class Sample {
      * Gets the Block located at the given relative position.
      *
      * @param origin
-     *         the block to start from
+     *         the position to start from
      * @param distanceX
      *         the distance to travel in the X direction (may be negative)
      * @param distanceY
@@ -157,7 +157,7 @@ public class Sample {
      * @return the Block located at the given position, or null if the block is out of bounds and wrapping is set to
      * {@link Wrapping#CUT}.
      */
-    public Block getBlock(Block origin, int distanceX, int distanceY, int distanceZ, Wrapping wrapping) {
+    public Block getBlock(Position origin, int distanceX, int distanceY, int distanceZ, Wrapping wrapping) {
         int x = 0;
         int y = 0;
         int z = 0;
@@ -180,51 +180,51 @@ public class Sample {
     }
 
     /**
-     * Gets the block above the given one.
+     * Gets the block above the given position.
      *
-     * @param block
-     *         the block above which to get a block
+     * @param position
+     *         the position above which to get a block
      * @param wrapping
      *         the wrapping policy when the given block is the ceiling of this sample
      * @return the above block, or null if the given block is the ceiling of this sample and wrapping is set to {@link
      * Wrapping#CUT}
      */
-    public Block getBlockAbove(Block block, Wrapping wrapping) {
-        return getBlock(block, 0, 1, 0, wrapping);
+    public Block getBlockAbove(Position position, Wrapping wrapping) {
+        return getBlock(position, 0, 1, 0, wrapping);
     }
 
     /**
      * Gets the block below the given one.
      *
-     * @param block
-     *         the block below which to get a block
+     * @param position
+     *         the position below which to get a block
      * @param wrapping
      *         the wrapping policy when the given block is the floor of this sample
      * @return the above block, or null if the given block is the floor of this sample and wrapping is set to {@link
      * Wrapping#CUT}
      */
-    public Block getBlockBelow(Block block, Wrapping wrapping) {
-        return getBlock(block, 0, -1, 0, wrapping);
+    public Block getBlockBelow(Position position, Wrapping wrapping) {
+        return getBlock(position, 0, -1, 0, wrapping);
     }
 
     /**
-     * Gets the 6 blocks that are adjacent to given one. If wrapping is set to {@link Wrapping#CUT} and the given block
-     * is on this chunk's side, less than 6 blocks are returned because part of them is cut off.
+     * Gets the 6 blocks that are adjacent to given position. If wrapping is set to {@link Wrapping#CUT} and the given
+     * position is on this chunk's side, less than 6 blocks are returned because part of them is cut off.
      *
-     * @param block
-     *         the block to get the neighbors from
+     * @param position
+     *         the position to get the neighbors from
      * @param wrapping
      *         the wrapping policy when the given block is on the side of this chunk
-     * @return a list containing blocks adjacent to the given block
+     * @return a list containing blocks adjacent to the given position
      */
-    public Collection<Block> getAdjacentBlocks(Block block, Wrapping wrapping) {
+    public Collection<Block> getAdjacentBlocks(Position position, Wrapping wrapping) {
         Collection<Block> adjacentBlocks = new HashSet<>(6);
-        adjacentBlocks.add(getBlock(block, +1, 0, 0, wrapping));
-        adjacentBlocks.add(getBlock(block, -1, 0, 0, wrapping));
-        adjacentBlocks.add(getBlock(block, 0, +1, 0, wrapping));
-        adjacentBlocks.add(getBlock(block, 0, -1, 0, wrapping));
-        adjacentBlocks.add(getBlock(block, 0, 0, +1, wrapping));
-        adjacentBlocks.add(getBlock(block, 0, 0, -1, wrapping));
+        adjacentBlocks.add(getBlock(position, +1, 0, 0, wrapping));
+        adjacentBlocks.add(getBlock(position, -1, 0, 0, wrapping));
+        adjacentBlocks.add(getBlock(position, 0, +1, 0, wrapping));
+        adjacentBlocks.add(getBlock(position, 0, -1, 0, wrapping));
+        adjacentBlocks.add(getBlock(position, 0, 0, +1, wrapping));
+        adjacentBlocks.add(getBlock(position, 0, 0, -1, wrapping));
         adjacentBlocks.removeIf(b -> b == null);
         return adjacentBlocks;
     }
@@ -257,17 +257,17 @@ public class Sample {
         return getNumberOfBlocksMatching(Block::isDug);
     }
 
-    public void dig(Block block) {
+    public void dig(Position position) {
+        dig(position.getX(), position.getY(), position.getZ());
+    }
+
+    public void dig(int x, int y, int z) {
+        Block block = getBlock(x, y, z);
         block.setType(BlockType.AIR);
 
         // TODO move visibility logic to external visitor
         block.setVisible(true);
         getAdjacentBlocks(block, Wrapping.WRAP).forEach(b -> b.setVisible(true));
-    }
-
-    public void dig(int x, int y, int z) {
-        Block block = getBlock(x, y, z);
-        dig(block);
     }
 
     public void putOre(int x, int y, int z, BlockType type) {

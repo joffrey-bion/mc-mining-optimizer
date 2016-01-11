@@ -17,6 +17,12 @@ public class Position {
         this.z = z;
     }
 
+    public Position(Position source) {
+        this.x = source.x;
+        this.y = source.y;
+        this.z = source.z;
+    }
+
     public int getX() {
         return x;
     }
