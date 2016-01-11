@@ -2,6 +2,7 @@ package org.hildan.minecraft.mining.optimizer.chunks;
 
 import org.hildan.minecraft.mining.optimizer.geometry.Position;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
@@ -272,6 +273,38 @@ public class Sample {
     public void putOre(int x, int y, int z, BlockType type) {
         assert type.isOre() : "the provided type has to be an Ore type";
         getBlock(x, y, z).setType(type);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Sample sample = (Sample) obj;
+
+        if (width != sample.width) {
+            return false;
+        }
+        if (height != sample.height) {
+            return false;
+        }
+        if (length != sample.length) {
+            return false;
+        }
+        return Arrays.equals(blocks, sample.blocks);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = width;
+        result = 31 * result + height;
+        result = 31 * result + length;
+        result = 31 * result + Arrays.hashCode(blocks);
+        return result;
     }
 
     @Override
