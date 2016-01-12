@@ -7,22 +7,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * An arbitrary group of blocks. It can have any dimension, thus it is different from a minecraft chunk, which is
  * 16x256x16.
  */
 public class Sample {
-
-    /**
-     * The width of a standard Minecraft chunk.
-     */
-    public static final int CHUNK_WIDTH = 16;
-
-    /**
-     * The length of a standard Minecraft chunk.
-     */
-    public static final int CHUNK_LENGTH = 16;
 
     private final int width;
 
@@ -230,23 +221,11 @@ public class Sample {
     }
 
     public Iterable<Block> getBlocksMatching(Predicate<Block> predicate) {
-        Collection<Block> matchingBlocks = new HashSet<>();
-        for (Block block : blocks) {
-            if (predicate.test(block)) {
-                matchingBlocks.add(block);
-            }
-        }
-        return matchingBlocks;
+        return Arrays.stream(blocks).filter(predicate).collect(Collectors.toSet());
     }
 
     private long getNumberOfBlocksMatching(Predicate<Block> predicate) {
-        long count = 0L;
-        for (Block block : blocks) {
-            if (predicate.test(block)) {
-                count++;
-            }
-        }
-        return count;
+        return Arrays.stream(blocks).filter(predicate).count();
     }
 
     public long getOresCount() {

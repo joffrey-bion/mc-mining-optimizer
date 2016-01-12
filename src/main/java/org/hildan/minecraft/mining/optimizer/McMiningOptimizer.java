@@ -19,7 +19,9 @@ public class McMiningOptimizer {
 
     private static final int NB_ITERATIONS = 10000;
 
+    private static final int SAMPLE_WIDTH = 16;
     private static final int SAMPLE_HEIGHT = 10;
+    private static final int SAMPLE_LENGTH = 16;
 
     private static final int BRANCH_LENGTH = 11;
 
@@ -28,7 +30,11 @@ public class McMiningOptimizer {
     private static final long NANOSECONDS_IN_A_MILLI = 1_000_000L;
 
     public static void main(String... args) {
-        Sample reference = new Sample(Sample.CHUNK_WIDTH, SAMPLE_HEIGHT, Sample.CHUNK_LENGTH);
+        testPatterns();
+    }
+
+    private static void testPatterns() {
+        Sample reference = new Sample(SAMPLE_WIDTH, SAMPLE_HEIGHT, SAMPLE_LENGTH);
         OreGenerator oreGenerator = new OreGenerator();
 
         DiggingPattern digEverythingPattern = new DigEverythingPattern();
