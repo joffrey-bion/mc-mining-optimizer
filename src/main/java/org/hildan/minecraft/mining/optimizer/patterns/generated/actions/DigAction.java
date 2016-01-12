@@ -3,6 +3,7 @@ package org.hildan.minecraft.mining.optimizer.patterns.generated.actions;
 import org.hildan.minecraft.mining.optimizer.chunks.Block;
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.chunks.Wrapping;
+import org.hildan.minecraft.mining.optimizer.geometry.Position;
 import org.hildan.minecraft.mining.optimizer.geometry.Range3D;
 
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class DigAction implements Action {
     }
 
     @Override
-    public boolean isValidFor(Sample sample, Block currentHeadPosition) {
+    public boolean isValidFor(Sample sample, Position currentHeadPosition) {
         Block blockToDig = sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.CUT);
         if (blockToDig == null || blockToDig.isDug()) {
             return false;
@@ -72,7 +73,7 @@ public class DigAction implements Action {
         return isPathClear(sample, currentHeadPosition, blockToDig);
     }
 
-    private boolean isPathClear(Sample sample, Block b1, Block b2) {
+    private boolean isPathClear(Sample sample, Position b1, Position b2) {
 
         // TODO check that the view is not obstructed
 
@@ -80,7 +81,7 @@ public class DigAction implements Action {
     }
 
     @Override
-    public Block executeOn(Sample sample, Block currentHeadPosition) throws IllegalStateException {
+    public Position executeOn(Sample sample, Position currentHeadPosition) throws IllegalStateException {
         Block blockToDig = sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.CUT);
         sample.dig(blockToDig);
         // we haven't moved

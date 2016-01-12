@@ -2,6 +2,7 @@ package org.hildan.minecraft.mining.optimizer.patterns.generated.actions;
 
 import org.hildan.minecraft.mining.optimizer.chunks.Block;
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
+import org.hildan.minecraft.mining.optimizer.geometry.Position;
 
 /**
  * Represents an action the player can perform. An action is performed on a sample, from a given position.
@@ -17,7 +18,7 @@ public interface Action {
      *         the current position of the head of the player
      * @return true if this action can be performed in the given situation
      */
-    boolean isValidFor(Sample sample, Block currentHeadPosition);
+    boolean isValidFor(Sample sample, Position currentHeadPosition);
 
     /**
      * Executes this action on the given sample.
@@ -30,5 +31,5 @@ public interface Action {
      * @throws IllegalStateException
      *         if the action couldn't be performed in the current state
      */
-    Block executeOn(Sample sample, Block currentHeadPosition) throws IllegalStateException;
+    Position executeOn(Sample sample, Position currentHeadPosition) throws IllegalStateException;
 }

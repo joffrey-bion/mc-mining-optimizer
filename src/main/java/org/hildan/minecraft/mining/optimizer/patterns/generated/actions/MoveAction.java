@@ -3,6 +3,7 @@ package org.hildan.minecraft.mining.optimizer.patterns.generated.actions;
 import org.hildan.minecraft.mining.optimizer.chunks.Block;
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.chunks.Wrapping;
+import org.hildan.minecraft.mining.optimizer.geometry.Position;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,7 +61,7 @@ public class MoveAction implements Action {
     }
 
     @Override
-    public boolean isValidFor(Sample sample, Block currentHeadPosition) {
+    public boolean isValidFor(Sample sample, Position currentHeadPosition) {
         // check that there is room for the head
         Block headDestination = sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.CUT);
         if (headDestination == null || !headDestination.isDug()) {
@@ -86,7 +87,7 @@ public class MoveAction implements Action {
      *         the position of the head after the movement
      * @return true if the intermediate block is clear
      */
-    private boolean hasRoomForMovement(Sample sample, Block headPositionBefore, Block headPositionAfter) {
+    private boolean hasRoomForMovement(Sample sample, Position headPositionBefore, Position headPositionAfter) {
         switch (distanceY) {
             case 0:
                 return true;
@@ -104,7 +105,7 @@ public class MoveAction implements Action {
     }
 
     @Override
-    public Block executeOn(Sample sample, Block currentHeadPosition) {
+    public Position executeOn(Sample sample, Position currentHeadPosition) {
         return sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.CUT);
     }
 
