@@ -35,6 +35,10 @@ public class Position {
         return z;
     }
 
+    public Position above() {
+        return new Position(x, y + 1, z);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
