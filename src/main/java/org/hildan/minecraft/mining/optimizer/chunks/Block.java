@@ -64,7 +64,7 @@ public class Block extends Position {
         return feetAccessible;
     }
 
-    public void setFeetAccessible(boolean feetAccessible) {
+    void setFeetAccessible(boolean feetAccessible) {
         this.feetAccessible = feetAccessible;
     }
 
@@ -76,11 +76,11 @@ public class Block extends Position {
         this.visible = visible;
     }
 
-    public boolean isExplored() {
+    boolean isExplored() {
         return explored;
     }
 
-    public void setExplored(boolean explored) {
+    void setExplored(boolean explored) {
         this.explored = explored;
     }
 
