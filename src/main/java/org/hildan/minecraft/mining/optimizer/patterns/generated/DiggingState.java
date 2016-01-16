@@ -2,6 +2,7 @@ package org.hildan.minecraft.mining.optimizer.patterns.generated;
 
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.geometry.Position;
+import org.hildan.minecraft.mining.optimizer.patterns.Access;
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.generated.actions.Action;
 import org.hildan.minecraft.mining.optimizer.patterns.generated.actions.DigAction;
@@ -11,8 +12,10 @@ import org.hildan.minecraft.mining.optimizer.patterns.generated.actions.MoveActi
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -31,54 +34,68 @@ class DiggingState {
         allActions = Collections.unmodifiableCollection(actions);
     }
 
-    private final Position currentHeadPosition;
-
     private final Sample sample;
 
-    private final List<Action> actionsPerformed;
+    private final Map<Access, Position> headPositionsPerAccess;
+
+    private final Map<Access, List<Action>> actionsPerAccess;
 
     /**
-     * Creates a new state with the given sample and player's position, and an empty list of actions.
+     * Creates an initial state for the given sample based on the given accesses.
      *
-     * @param currentHeadPosition
-     *         the current position of the head of the player
      * @param sample
      *         the current sample
+     * @param accesses
+     *         the list of accesses to start digging
      */
-    DiggingState(Position currentHeadPosition, Sample sample) {
-        this(currentHeadPosition, sample, new ArrayList<>());
+    DiggingState(Sample sample, Collection<Access> accesses) {
+        this(sample, new HashMap<>(accesses.size()), new HashMap<>(accesses.size()));
+        for (Access access : accesses) {
+            Position startingHeadPosition = access.above();
+            sample.digBlock(access);
+            sample.digBlock(startingHeadPosition);
+            headPositionsPerAccess.put(access, startingHeadPosition);
+            actionsPerAccess.put(access, new ArrayList<>(10));
+        }
     }
 
     /**
      * Creates a new state with the given sample, player's position, and list of actions performed so far.
      *
-     * @param currentHeadPosition
-     *         the current position of the head of the player
      * @param sample
      *         the current sample
-     * @param actionsPerformed
-     *         the list of actions that were performed to arrive in this state
+     * @param headPositionsPerAccess
+     *         the current position of the head of the player for each access
+     * @param actionsPerAccess
      */
-    private DiggingState(Position currentHeadPosition, Sample sample, List<Action> actionsPerformed) {
-        this.currentHeadPosition = currentHeadPosition;
+    private DiggingState(Sample sample, Map<Access, Position> headPositionsPerAccess,
+                         Map<Access, List<Action>> actionsPerAccess) {
         this.sample = sample;
-        this.actionsPerformed = actionsPerformed;
+        this.headPositionsPerAccess = headPositionsPerAccess;
+        this.actionsPerAccess = actionsPerAccess;
     }
 
     /**
      * Returns the {@code DiggingState} resulting of the execution of the given action on this state. This method does
      * not affect this state.
      *
+     * @param access
+     *         the access for which to add the action
      * @param action
      *         the action to perform on this state
      * @return the resulting state
      */
-    private DiggingState transition(Action action) {
+    private DiggingState transition(Access access, Action action) {
         Sample newSample = new Sample(sample);
-        Position newHeadPosition = action.executeOn(newSample, currentHeadPosition);
-        List<Action> newActions = new ArrayList<>(actionsPerformed);
-        newActions.add(action);
-        return new DiggingState(newHeadPosition, newSample, newActions);
+
+        Map<Access, Position> newHeadPositions = new HashMap<>(headPositionsPerAccess);
+        Position newHeadPosition = action.executeOn(newSample, headPositionsPerAccess.get(access));
+        newHeadPositions.put(access, newHeadPosition);
+
+        Map<Access, List<Action>> newActions = new HashMap<>(actionsPerAccess);
+        newActions.get(access).add(action);
+
+        return new DiggingState(newSample, newHeadPositions, newActions);
     }
 
     /**
@@ -87,10 +104,13 @@ class DiggingState {
      * @return the collection of all states resulting of the execution of each possible action on this state.
      */
     Collection<DiggingState> expand() {
-        return allActions.stream()
-                         .filter(a -> a.isValidFor(sample, currentHeadPosition))
-                         .map(this::transition)
-                         .collect(Collectors.toList());
+        return headPositionsPerAccess.keySet()
+                                     .stream()
+                                     .flatMap(access -> allActions.stream()
+                                                                  .filter(action -> action.isValidFor(sample,
+                                                                          headPositionsPerAccess.get(access)))
+                                                                  .map(action -> transition(access, action)))
+                                     .collect(Collectors.toList());
     }
 
     /**
@@ -100,8 +120,8 @@ class DiggingState {
      */
     DiggingPattern toPattern() {
 
-        // FIXME find a way to give these arguments...
+        // FIXME find a way to give these as arguments...
 
-        return new GeneratedPattern(null, 0, 0, 0);
+        return new GeneratedPattern(actionsPerAccess, sample.getWidth(), sample.getHeight(), sample.getLength());
     }
 }

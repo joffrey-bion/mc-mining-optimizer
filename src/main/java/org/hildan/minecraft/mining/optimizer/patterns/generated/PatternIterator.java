@@ -1,13 +1,13 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated;
 
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
-import org.hildan.minecraft.mining.optimizer.geometry.Position;
 import org.hildan.minecraft.mining.optimizer.patterns.Access;
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -21,21 +21,17 @@ class PatternIterator implements Iterator<DiggingPattern> {
 
     private final int maxDugBlocks;
 
-    private Set<DiggingState> exploredStates;
+    private final Set<DiggingState> exploredStates;
 
-    private Deque<DiggingState> statesToExplore;
+    private final Deque<DiggingState> statesToExplore;
 
-    public PatternIterator(Sample base, Access access, int maxActions, int maxDugBlocks) {
+    public PatternIterator(Sample initialSample, Collection<Access> accesses, int maxActions, int maxDugBlocks) {
         this.maxActions = maxActions;
         this.maxDugBlocks = maxDugBlocks;
+        this.exploredStates = new HashSet<>(50);
         this.statesToExplore = new ArrayDeque<>(25);
 
-        // TODO handle multiple accesses?
-        Position startingHeadPosition = access.above();
-        Sample sample = new Sample(base);
-        sample.digBlock(access);
-        sample.digBlock(startingHeadPosition);
-        DiggingState initialState = new DiggingState(startingHeadPosition, new Sample(base));
+        DiggingState initialState = new DiggingState(initialSample, accesses);
         statesToExplore.add(initialState);
     }
 
