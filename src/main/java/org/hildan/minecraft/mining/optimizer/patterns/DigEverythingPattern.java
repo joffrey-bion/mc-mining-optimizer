@@ -36,7 +36,7 @@ public class DigEverythingPattern extends AbstractDiggingPattern {
         for (int x = originX; x < originX + Player.WIDTH; x++) {
             for (int y = originY; y < originY + Player.HEIGHT; y++) {
                 for (int z = originZ; z < originZ + Player.LENGTH; z++) {
-                    sample.dig(x, y, z);
+                    sample.digBlock(x, y, z);
                 }
             }
         }

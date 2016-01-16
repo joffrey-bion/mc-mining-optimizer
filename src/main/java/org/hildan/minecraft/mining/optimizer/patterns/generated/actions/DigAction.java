@@ -83,7 +83,7 @@ public class DigAction implements Action {
     @Override
     public Position executeOn(Sample sample, Position currentHeadPosition) throws IllegalStateException {
         Block blockToDig = sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.CUT);
-        sample.dig(blockToDig);
+        sample.digBlock(blockToDig);
         // we haven't moved
         return currentHeadPosition;
     }

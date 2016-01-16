@@ -1,5 +1,6 @@
 package org.hildan.minecraft.mining.optimizer;
 
+import org.hildan.minecraft.mining.optimizer.chunks.Block;
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.ore.OreGenerator;
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
@@ -26,15 +27,15 @@ public class Statistics {
         Statistics stats = new Statistics(nbSamples);
         for (int i = 0; i < nbSamples; i++) {
             Sample sample = oreGenerator.generate(reference, 5);
-            long initialOres = sample.getOresCount();
+            long initialOres = sample.getNumberOfBlocksMatching(Block::isOre);
             stats.totalOres += initialOres;
             if (debug) {
                 System.out.println(sample);
             }
 
             pattern.digInto(sample);
-            stats.dugBlocks += sample.getDugBlocksCount();
-            stats.foundOres += initialOres - sample.getOresCount();
+            stats.dugBlocks += sample.getNumberOfBlocksMatching(Block::isDug);
+            stats.foundOres += initialOres - sample.getNumberOfBlocksMatching(Block::isOre);
             if (debug) {
                 System.out.println(sample);
             }

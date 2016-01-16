@@ -1,8 +1,8 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Block;
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.chunks.Wrapping;
+import org.hildan.minecraft.mining.optimizer.geometry.Position;
 import org.hildan.minecraft.mining.optimizer.patterns.AbstractDiggingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.Access;
 import org.hildan.minecraft.mining.optimizer.patterns.generated.actions.Action;
@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * A pattern that can be programmatically generated.
  */
-public class GeneratedPattern extends AbstractDiggingPattern {
+class GeneratedPattern extends AbstractDiggingPattern {
 
     private final Map<Access, List<Action>> actionsPerAccess;
 
@@ -64,10 +64,10 @@ public class GeneratedPattern extends AbstractDiggingPattern {
     @Override
     protected void digInto(Sample sample, int originX, int originY, int originZ) {
         for (Access access : getAccesses(originX, originY)) {
-            Block feetBlock = sample.getBlock(access.getX(), access.getY(), 0);
-            sample.dig(feetBlock);
-            Block headBlock = sample.getBlockAbove(feetBlock, Wrapping.WRAP);
-            sample.dig(headBlock);
+            Position feetBlock = sample.getBlock(access);
+            sample.digBlock(feetBlock);
+            Position headBlock = sample.getBlockAbove(feetBlock, Wrapping.WRAP);
+            sample.digBlock(headBlock);
             for (Action action : actionsPerAccess.get(access)) {
                 headBlock = action.executeOn(sample, headBlock);
             }

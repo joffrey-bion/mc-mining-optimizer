@@ -1,6 +1,5 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated.actions;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Block;
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.geometry.Position;
 

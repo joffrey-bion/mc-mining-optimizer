@@ -44,10 +44,21 @@ public class Block extends Position {
         this.visible = source.visible;
     }
 
+    /**
+     * Gets the type of this block.
+     *
+     * @return the type of this block.
+     */
     public BlockType getType() {
         return type;
     }
 
+    /**
+     * Sets the type of this block.
+     *
+     * @param type
+     *         the new type for this block
+     */
     void setType(BlockType type) {
         this.type = type;
     }
@@ -84,10 +95,20 @@ public class Block extends Position {
         this.explored = explored;
     }
 
+    /**
+     * Returns whether this block has been dug.
+     *
+     * @return true if this block has been dug.
+     */
     public boolean isDug() {
         return type == BlockType.AIR;
     }
 
+    /**
+     * Returns whether this block is an ore block.
+     *
+     * @return true if this block is an ore block.
+     */
     public boolean isOre() {
         return type.isOre();
     }

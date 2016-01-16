@@ -1,11 +1,11 @@
 package org.hildan.minecraft.mining.optimizer.display;
 
 /**
- * Provides ANSI colorFg codes to print colors in the console.
+ * Provides ANSI color codes to print colors in the console.
  */
 public class AnsiCodes {
 
-    public static final String RESET = "\u001B[0m";
+    private static final String RESET = "\u001B[0m";
 
     public static final String BLACK = "\u001B[30m";
 

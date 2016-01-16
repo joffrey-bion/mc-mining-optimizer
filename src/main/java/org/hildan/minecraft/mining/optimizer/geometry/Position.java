@@ -1,7 +1,7 @@
 package org.hildan.minecraft.mining.optimizer.geometry;
 
 /**
- * Represents a block's position.
+ * Represents an immutable 3D position.
  */
 public class Position {
 

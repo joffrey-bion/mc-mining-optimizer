@@ -62,7 +62,7 @@ class WorldGenMinable {
 
                                 if (d12 * d12 + d13 * d13 + d14 * d14 < 1.0D && sample.hasBlock(k2, l2, i3)
                                         && sample.getBlock(k2, l2, i3).getType() == blockTypeToReplace) {
-                                    sample.putOre(k2, l2, i3, blockTypeToGenerate);
+                                    sample.setBlock(k2, l2, i3, blockTypeToGenerate);
                                 }
                             }
                         }

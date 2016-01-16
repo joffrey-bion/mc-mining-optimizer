@@ -48,7 +48,7 @@ public class TunnelPattern {
         for (int x = originX; x < Math.min(xMax, sample.getWidth()); x++) {
             for (int y = originY; y < Math.min(yMax, sample.getHeight()); y++) {
                 for (int z = originZ; z < Math.min(zMax, sample.getLength()); z++) {
-                    sample.dig(x, y, z);
+                    sample.digBlock(x, y, z);
                 }
             }
         }

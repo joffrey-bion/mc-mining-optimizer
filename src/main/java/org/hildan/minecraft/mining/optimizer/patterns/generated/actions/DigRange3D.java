@@ -8,12 +8,19 @@ import org.hildan.minecraft.mining.optimizer.geometry.Range3D;
  */
 public enum DigRange3D implements Range3D {
 
+    /**
+     * The accessible range when pressing shift and no block is preventing the player from overextending.
+     */
     PRESSING_SHIFT(new int[][]{ //
             {6, 6, 6, 5, 5, 4, 2}, // distanceY = 0
             {6, 6, 6, 5, 5, 4, 2}, // distanceY = 1 or -1
             {6, 6, 5, 5, 5, 4, 1}, // distanceY = 2 or -2
             {5, 5, 5, 5, 4, 3, -1} // distanceY = 3 or -3
     }),
+    /**
+     * The accessible range when the player is strictly limited to the block he's standing on (because other blocks are
+     * in his way and prevent him from overextending by pressing shift).
+     */
     STRICT(new int[][]{ //
             {5, 5, 5, 5, 4, 3}, // distanceY = 0
             {5, 5, 5, 5, 4, 3}, // distanceY = 1 or -1

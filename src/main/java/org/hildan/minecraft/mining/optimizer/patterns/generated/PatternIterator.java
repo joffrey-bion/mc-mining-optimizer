@@ -33,8 +33,8 @@ class PatternIterator implements Iterator<DiggingPattern> {
         // TODO handle multiple accesses?
         Position startingHeadPosition = access.above();
         Sample sample = new Sample(base);
-        sample.dig(access);
-        sample.dig(startingHeadPosition);
+        sample.digBlock(access);
+        sample.digBlock(startingHeadPosition);
         DiggingState initialState = new DiggingState(startingHeadPosition, new Sample(base));
         statesToExplore.add(initialState);
     }

@@ -33,7 +33,7 @@ public abstract class AbstractDiggingPattern implements DiggingPattern {
     }
 
     private static void digBlockAndAdjacentOres(Sample sample, Block block) {
-        sample.dig(block.getX(), block.getY(), block.getZ());
+        sample.digBlock(block.getX(), block.getY(), block.getZ());
         Collection<Block> adjacentBlocks = sample.getAdjacentBlocks(block, Wrapping.CUT);
         for (Block adjacentBlock : adjacentBlocks) {
             if (adjacentBlock.isOre() && adjacentBlock.isVisible()) {

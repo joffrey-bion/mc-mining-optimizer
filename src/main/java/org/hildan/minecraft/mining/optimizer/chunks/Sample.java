@@ -99,6 +99,19 @@ public class Sample {
         return x >= 0 && y >= 0 && z >= 0 && x < width && y < height && z < length;
     }
 
+    /**
+     * Returns the index in the internal array of the block at the given position.
+     *
+     * @param x
+     *         the X coordinate of the block to get the index of
+     * @param y
+     *         the Y coordinate of the block to get the index of
+     * @param z
+     *         the Z coordinate of the block to get the index of
+     * @return the index of the given block in teh internal array {@link #blocks}
+     * @throws NoSuchElementException
+     *         if the given coordinates are out of bound
+     */
     private int getIndex(int x, int y, int z) throws NoSuchElementException {
         if (!hasBlock(x, y, z)) {
             throw new NoSuchElementException(String.format("Block (%d,%d,%d) does not exist in this chunk", x, y, z));
@@ -116,6 +129,8 @@ public class Sample {
      * @param z
      *         the Z coordinate of the block to get
      * @return the Block located at the provided coordinates
+     * @throws NoSuchElementException
+     *         if the given coordinates are out of bound
      */
     public Block getBlock(int x, int y, int z) throws NoSuchElementException {
         return blocks[getIndex(x, y, z)];
@@ -127,6 +142,8 @@ public class Sample {
      * @param position
      *         the absolute position of the block to get
      * @return the Block located at the provided coordinates
+     * @throws NoSuchElementException
+     *         if the given coordinates are out of bound
      */
     public Block getBlock(Position position) throws NoSuchElementException {
         return getBlock(position.getX(), position.getY(), position.getZ());
@@ -220,38 +237,71 @@ public class Sample {
         return adjacentBlocks;
     }
 
+    /**
+     * Returns the collection of all blocks matching the given predicate in this sample.
+     *
+     * @param predicate
+     *         the predicate to test the blocks
+     * @return the collection of all blocks matching the given predicate in this sample.
+     */
     public Iterable<Block> getBlocksMatching(Predicate<Block> predicate) {
         return Arrays.stream(blocks).filter(predicate).collect(Collectors.toSet());
     }
 
-    private long getNumberOfBlocksMatching(Predicate<Block> predicate) {
+    /**
+     * Returns the number of blocks matching the given predicate in this sample.
+     *
+     * @param predicate
+     *         the predicate to test the blocks
+     * @return the number of blocks matching the given predicate in this sample.
+     */
+    public long getNumberOfBlocksMatching(Predicate<Block> predicate) {
         return Arrays.stream(blocks).filter(predicate).count();
     }
 
-    public long getOresCount() {
-        return getNumberOfBlocksMatching(Block::isOre);
+    /**
+     * Changes the type of the block at the given position.
+     *
+     * @param x
+     *         the X coordinate of the block to change
+     * @param y
+     *         the Y coordinate of the block to change
+     * @param z
+     *         the Z coordinate of the block to change
+     * @param type
+     *         the new type of the block
+     */
+    public void setBlock(int x, int y, int z, BlockType type) {
+        getBlock(x, y, z).setType(type);
     }
 
-    public long getDugBlocksCount() {
-        return getNumberOfBlocksMatching(Block::isDug);
+    /**
+     * Digs the block at the specified position.
+     *
+     * @param position
+     *         the position to dig at
+     */
+    public void digBlock(Position position) {
+        digBlock(position.getX(), position.getY(), position.getZ());
     }
 
-    public void dig(Position position) {
-        dig(position.getX(), position.getY(), position.getZ());
-    }
-
-    public void dig(int x, int y, int z) {
+    /**
+     * Digs the block at the specified position.
+     *
+     * @param x
+     *         the X coordinate of the block to dig
+     * @param y
+     *         the Y coordinate of the block to dig
+     * @param z
+     *         the Z coordinate of the block to dig
+     */
+    public void digBlock(int x, int y, int z) {
         Block block = getBlock(x, y, z);
         block.setType(BlockType.AIR);
 
         // TODO move visibility logic to external visitor
         block.setVisible(true);
         getAdjacentBlocks(block, Wrapping.WRAP).forEach(b -> b.setVisible(true));
-    }
-
-    public void putOre(int x, int y, int z, BlockType type) {
-        assert type.isOre() : "the provided type has to be an Ore type";
-        getBlock(x, y, z).setType(type);
     }
 
     @Override
