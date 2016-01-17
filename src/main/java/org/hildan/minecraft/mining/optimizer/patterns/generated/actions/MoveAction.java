@@ -115,6 +115,15 @@ public class MoveAction implements Action {
     }
 
     @Override
+    public boolean isInverseOf(Action action) {
+        if (!(action instanceof MoveAction)) {
+            return false;
+        }
+        MoveAction move = (MoveAction) action;
+        return move.distanceX == -distanceX && move.distanceY == -distanceY && move.distanceZ == -distanceZ;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;

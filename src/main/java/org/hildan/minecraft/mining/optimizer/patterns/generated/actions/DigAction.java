@@ -94,6 +94,12 @@ public class DigAction implements Action {
     }
 
     @Override
+    public boolean isInverseOf(Action action) {
+        // can't inverse a dig action
+        return false;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;

@@ -12,7 +12,7 @@ public interface Action {
      * Returns whether this action modifies the sample it is applied on, and thus has a direct impact on the pattern.
      * For instance, moving does not affect the sample, but digging does.
      * <p>
-     * More formally, this method should return true if {@link #executeOn} modifies the sample passed as a parameter.
+     * More formally, this method returns true if {@link #executeOn} modifies the sample passed as a parameter.
      *
      * @return true if this action modifies the sample it is applied on
      */
@@ -41,4 +41,14 @@ public interface Action {
      *         if the action couldn't be performed in the current state
      */
     Position executeOn(Sample sample, Position currentHeadPosition) throws IllegalStateException;
+
+    /**
+     * Returns whether this action is the inverse of the given action.
+     * <p>
+     * More formally, this method returns true if, when applying this action and the given action on the same sample,
+     * the sample gets back into the same state.
+     *
+     * @return true if this action modifies the sample it is applied on
+     */
+    boolean isInverseOf(Action action);
 }

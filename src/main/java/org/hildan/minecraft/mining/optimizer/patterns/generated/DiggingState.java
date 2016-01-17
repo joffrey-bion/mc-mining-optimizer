@@ -99,6 +99,27 @@ class DiggingState {
     }
 
     /**
+     * Returns whether it is acceptable to execute this action in the current situation.
+     *
+     * @param access
+     *         the access for which to execute the action
+     * @param action
+     *         the action to perform
+     * @return true if this action may be performed in the current situation
+     */
+    private boolean isAcceptable(Access access, Action action) {
+        List<Action> actions = actionsPerAccess.get(access);
+        if (!actions.isEmpty()) {
+            Action lastAction = actions.get(actions.size() - 1);
+            if (action.isInverseOf(lastAction)) {
+                return false;
+            }
+        }
+        Position currentHeadPosition = headPositionsPerAccess.get(access);
+        return action.isValidFor(sample, currentHeadPosition);
+    }
+
+    /**
      * Expands the current state by performing every possible action on it. This method does not affect this state.
      *
      * @return the collection of all states resulting of the execution of each possible action on this state.
@@ -107,8 +128,7 @@ class DiggingState {
         return headPositionsPerAccess.keySet()
                                      .stream()
                                      .flatMap(access -> allActions.stream()
-                                                                  .filter(action -> action.isValidFor(sample,
-                                                                          headPositionsPerAccess.get(access)))
+                                                                  .filter(action -> isAcceptable(access, action))
                                                                   .map(action -> transition(access, action)))
                                      .collect(Collectors.toList());
     }
@@ -119,9 +139,30 @@ class DiggingState {
      * @return a {@link GeneratedPattern} that brings any sample to this state.
      */
     DiggingPattern toPattern() {
-
-        // FIXME find a way to give these as arguments...
-
         return new GeneratedPattern(actionsPerAccess, sample.getWidth(), sample.getHeight(), sample.getLength());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        DiggingState state = (DiggingState) obj;
+
+        if (!sample.equals(state.sample)) {
+            return false;
+        }
+        return headPositionsPerAccess.equals(state.headPositionsPerAccess);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = sample.hashCode();
+        result = 31 * result + headPositionsPerAccess.hashCode();
+        return result;
     }
 }
