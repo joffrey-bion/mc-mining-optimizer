@@ -9,6 +9,16 @@ import org.hildan.minecraft.mining.optimizer.geometry.Position;
 public interface Action {
 
     /**
+     * Returns whether this action modifies the sample it is applied on, and thus has a direct impact on the pattern.
+     * For instance, moving does not affect the sample, but digging does.
+     * <p>
+     * More formally, this method should return true if {@link #executeOn} modifies the sample passed as a parameter.
+     *
+     * @return true if this action modifies the sample it is applied on
+     */
+    boolean affectsSample();
+
+    /**
      * Checks whether it is possible to execute this action in the given situation.
      *
      * @param sample

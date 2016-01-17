@@ -10,7 +10,7 @@ import java.util.Collection;
 
 /**
  * An immutable action representing the player moving of one block horizontally. The move can be done in any 4
- * horizontal directions, and can result in the player going up or down one block as well.
+ * horizontal directions (no diagonal), and can result in the player going up or down one block as well.
  */
 public class MoveAction implements Action {
 
@@ -51,13 +51,18 @@ public class MoveAction implements Action {
                         continue; // we have to move horizontally
                     }
                     if (x != 0 && z != 0) {
-                        continue; // we can't move more than a block away
+                        continue; // we don't accept diagonal moves
                     }
                     moves.add(new MoveAction(x, y, z));
                 }
             }
         }
         return moves;
+    }
+
+    @Override
+    public boolean affectsSample() {
+        return false;
     }
 
     @Override

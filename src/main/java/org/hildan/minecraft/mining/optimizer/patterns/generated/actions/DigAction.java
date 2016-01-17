@@ -55,6 +55,11 @@ public class DigAction implements Action {
         return moves.stream().sorted((a1, a2) -> a1.norm() - a2.norm()).collect(Collectors.toList());
     }
 
+    @Override
+    public boolean affectsSample() {
+        return true;
+    }
+
     /**
      * Returns the squared distance of the block to dig.
      *
