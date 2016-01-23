@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A pattern that can be programmatically generated.
@@ -40,25 +41,25 @@ class GeneratedPattern extends AbstractDiggingPattern {
 
     @Override
     public int getWidth() {
-        // TODO calculate pattern's width based on actions, and add pattern spacing
         return width;
     }
 
     @Override
     public int getHeight() {
-        // TODO calculate pattern's height based on actions, and add pattern spacing
         return height;
     }
 
     @Override
     public int getLength() {
-        // TODO calculate pattern's length based on actions, and add pattern spacing
         return length;
     }
 
     @Override
     public Set<Access> getAccesses(int x, int y) {
-        return actionsPerAccess.keySet();
+        return actionsPerAccess.keySet()
+                               .stream()
+                               .map(a -> new Access(a.getX() + x, a.getY() + y))
+                               .collect(Collectors.toSet());
     }
 
     @Override
