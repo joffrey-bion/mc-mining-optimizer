@@ -216,6 +216,26 @@ public class Sample {
     }
 
     /**
+     * Gets the 4 blocks that are horizontally adjacent to given position. If wrapping is set to {@link Wrapping#CUT}
+     * and the given position is on this chunk's side, less than 4 blocks are returned because part of them is cut off.
+     *
+     * @param position
+     *         the position to get the neighbors from
+     * @param wrapping
+     *         the wrapping policy when the given block is on the side of this chunk
+     * @return a list containing blocks adjacent to the given position
+     */
+    public Collection<Block> getHorizontallyAdjacentBlocks(Position position, Wrapping wrapping) {
+        Collection<Block> adjacentBlocks = new HashSet<>(4);
+        adjacentBlocks.add(getBlock(position, +1, 0, 0, wrapping));
+        adjacentBlocks.add(getBlock(position, -1, 0, 0, wrapping));
+        adjacentBlocks.add(getBlock(position, 0, 0, +1, wrapping));
+        adjacentBlocks.add(getBlock(position, 0, 0, -1, wrapping));
+        adjacentBlocks.removeIf(b -> b == null);
+        return adjacentBlocks;
+    }
+
+    /**
      * Gets the 6 blocks that are adjacent to given position. If wrapping is set to {@link Wrapping#CUT} and the given
      * position is on this chunk's side, less than 6 blocks are returned because part of them is cut off.
      *
