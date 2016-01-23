@@ -32,7 +32,7 @@ class GeneratedPattern extends AbstractDiggingPattern {
      * @param actionsPerAccess
      *         defines for each access, the corresponding list of actions
      */
-    public GeneratedPattern(Map<Access, List<Action>> actionsPerAccess, int width, int height, int length) {
+    GeneratedPattern(Map<Access, List<Action>> actionsPerAccess, int width, int height, int length) {
         this.actionsPerAccess = new HashMap<>(actionsPerAccess);
         this.width = width;
         this.height = height;

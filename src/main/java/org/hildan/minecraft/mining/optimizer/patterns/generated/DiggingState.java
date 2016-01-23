@@ -1,5 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated;
 
+import org.hildan.minecraft.mining.optimizer.chunks.Block;
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 import org.hildan.minecraft.mining.optimizer.geometry.Position;
 import org.hildan.minecraft.mining.optimizer.patterns.Access;
@@ -124,7 +125,14 @@ class DiggingState {
      *
      * @return the collection of all states resulting of the execution of each possible action on this state.
      */
-    Collection<DiggingState> expand() {
+    Collection<DiggingState> expand(GenerationConstraints constraints) {
+        long actionsCount = actionsPerAccess.values().stream().mapToLong(List::size).sum();
+        if (actionsCount >= constraints.getMaxActions()) {
+            return new ArrayList<>();
+        }
+        if (sample.getNumberOfBlocksMatching(Block::isDug) >= constraints.getMaxDugBlocks()) {
+            return new ArrayList<>();
+        }
         return headPositionsPerAccess.keySet()
                                      .stream()
                                      .flatMap(access -> allActions.stream()

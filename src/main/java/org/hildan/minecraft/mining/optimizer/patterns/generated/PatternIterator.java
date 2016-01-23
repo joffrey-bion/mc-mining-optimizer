@@ -13,21 +13,18 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
- * Enumerates all possible patterns within the given limits.
+ * Enumerates all possible patterns within the given constraints.
  */
 class PatternIterator implements Iterator<DiggingPattern> {
 
-    private final int maxActions;
-
-    private final int maxDugBlocks;
+    private final GenerationConstraints constraints;
 
     private final Set<DiggingState> exploredStates;
 
     private final Deque<DiggingState> statesToExplore;
 
-    public PatternIterator(Sample initialSample, Collection<Access> accesses, int maxActions, int maxDugBlocks) {
-        this.maxActions = maxActions;
-        this.maxDugBlocks = maxDugBlocks;
+    public PatternIterator(Sample initialSample, Collection<Access> accesses, GenerationConstraints constraints) {
+        this.constraints = constraints;
         this.exploredStates = new HashSet<>(50);
         this.statesToExplore = new ArrayDeque<>(25);
 
@@ -50,15 +47,11 @@ class PatternIterator implements Iterator<DiggingPattern> {
         // never explore this state again
         exploredStates.add(state);
 
-        // FIXME add the maxActions and maxDugBlocks constraints here
-        if (true) {
-            // expand to find other states
-            Collection<DiggingState> newStates = state.expand();
+        // expand to find other states to explore
+        Collection<DiggingState> newStates = state.expand(constraints);
+        newStates.removeIf(exploredStates::contains);
+        statesToExplore.addAll(newStates);
 
-            // enqueue the new states to explore except if already explored
-            newStates.removeIf(exploredStates::contains);
-            statesToExplore.addAll(newStates);
-        }
         return state.toPattern();
     }
 }

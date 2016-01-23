@@ -11,19 +11,17 @@ import java.util.Iterator;
 public class PatternGenerator implements Iterable<DiggingPattern> {
 
     private final Sample base;
-    private final int maxActions;
 
-    private final int maxDugBlocks;
+    private final GenerationConstraints constraints;
 
-    public PatternGenerator(Sample base, int maxActions, int maxDugBlocks) {
+    public PatternGenerator(Sample base, GenerationConstraints constraints) {
         this.base = base;
-        this.maxActions = maxActions;
-        this.maxDugBlocks = maxDugBlocks;
+        this.constraints = constraints;
     }
 
     @Override
     public Iterator<DiggingPattern> iterator() {
         // FIXME generate accesses?
-        return new PatternIterator(base, null, maxActions, maxDugBlocks);
+        return new PatternIterator(base, null, constraints);
     }
 }
