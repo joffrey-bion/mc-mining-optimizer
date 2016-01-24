@@ -44,11 +44,11 @@ public class Statistics {
     }
 
     public double getEfficiency() {
-        return (double) foundOres * 100 / dugBlocks;
+        return dugBlocks == 0 ? 100 : (double) foundOres * 100 / dugBlocks;
     }
 
     public double getThoroughness() {
-        return (double) foundOres * 100 / totalOres;
+        return totalOres == 0 ? 100 : (double) foundOres * 100 / totalOres;
     }
 
     @Override
