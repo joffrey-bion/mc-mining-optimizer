@@ -8,6 +8,7 @@ import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.generated.GenerationConstraints;
 import org.hildan.minecraft.mining.optimizer.patterns.generated.PatternGenerator;
 import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelPattern;
+import org.hildan.minecraft.mining.optimizer.statistics.EvaluatedPattern;
 import org.hildan.minecraft.mining.optimizer.statistics.PatternEvaluator;
 import org.hildan.minecraft.mining.optimizer.statistics.PatternStore;
 import org.hildan.minecraft.mining.optimizer.statistics.Statistics;
@@ -32,11 +33,11 @@ public class McMiningOptimizer {
 
     private static final int BRANCH_OFFSET = 2;
 
-    private static final double MARGIN = 0.01d;
+    private static final double MARGIN = 0.001d;
 
     private static final long NANOSECONDS_IN_A_MILLI = 1_000_000L;
 
-    private static final int MAX_ACTIONS = 30;
+    private static final int MAX_ACTIONS = 20;
 
     private static final int MAX_DUG_BLOCKS = 10;
 
@@ -51,8 +52,13 @@ public class McMiningOptimizer {
         for (DiggingPattern pattern : gen) {
             Statistics stats = evaluator.evaluate(pattern);
             if (store.add(pattern, stats)) {
-                System.out.println(stats);
+                System.out.println(store);
             }
+        }
+
+        for (EvaluatedPattern pattern : store) {
+            System.out.println(pattern.getPattern());
+            System.out.println(pattern.getStatistics().toFullString());
         }
     }
 

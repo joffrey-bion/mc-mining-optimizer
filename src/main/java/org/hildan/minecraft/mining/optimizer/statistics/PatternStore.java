@@ -4,21 +4,12 @@ import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Stores patterns and their stats, keeping only the best ones.
  */
-public class PatternStore {
-
-    private static class EvaluatedPattern {
-        final DiggingPattern pattern;
-        final Statistics statistics;
-
-        EvaluatedPattern(DiggingPattern pattern, Statistics statistics) {
-            this.pattern = pattern;
-            this.statistics = statistics;
-        }
-    }
+public class PatternStore implements Iterable<EvaluatedPattern> {
 
     private final double margin;
 
@@ -29,14 +20,23 @@ public class PatternStore {
     }
 
     public boolean add(DiggingPattern pattern, Statistics stats) {
-        if (patterns.stream().anyMatch(p -> p.statistics.isBetterThan(stats, margin))) {
+        if (patterns.stream().anyMatch(p -> p.getStatistics().isBetterThan(stats, margin))) {
             // new pattern not worth adding
             return false;
         }
         // remove inferior patterns
-        patterns.removeIf(p -> stats.isBetterThan(p.statistics, margin));
+        patterns.removeIf(p -> stats.isBetterThan(p.getStatistics(), margin));
         patterns.add(new EvaluatedPattern(pattern, stats));
         return true;
     }
 
+    @Override
+    public Iterator<EvaluatedPattern> iterator() {
+        return patterns.iterator();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%d patterns: %s", patterns.size(), patterns);
+    }
 }

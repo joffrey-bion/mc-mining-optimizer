@@ -36,6 +36,10 @@ public class Statistics {
 
     @Override
     public String toString() {
+        return String.format("e=%.2f%% t=%.2f%%", getEfficiency(), getThoroughness());
+    }
+
+    public String toFullString() {
         StringBuilder sb = new StringBuilder();
 
         double avgTotalOres = (double) totalOres / nbSamples;
