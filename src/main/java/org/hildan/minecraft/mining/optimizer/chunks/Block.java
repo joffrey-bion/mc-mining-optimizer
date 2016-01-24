@@ -123,7 +123,7 @@ public class Block extends Position {
         }
 
         Block block = (Block) obj;
-        return getX() == block.getX() && getY() == block.getY() && getZ() == block.getZ();
+        return getX() == block.getX() && getY() == block.getY() && getZ() == block.getZ() && type == block.type;
     }
 
     @Override
@@ -131,6 +131,7 @@ public class Block extends Position {
         int result = getX();
         result = 31 * result + getY();
         result = 31 * result + getZ();
+        result = 31 * result + type.hashCode();
         return result;
     }
 
