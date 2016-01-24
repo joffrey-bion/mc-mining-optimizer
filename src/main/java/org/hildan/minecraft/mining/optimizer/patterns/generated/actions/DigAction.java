@@ -78,9 +78,13 @@ public class DigAction implements Action {
         return isPathClear(sample, currentHeadPosition, blockToDig);
     }
 
-    private boolean isPathClear(Sample sample, Position b1, Position b2) {
+    private boolean isPathClear(Sample sample, Position head, Position block) {
+        int norm = norm();
+        if (norm == 1 || (norm == 2 && distanceY == -1)) {
+            return true;
+        }
 
-        // TODO check that the view is not obstructed
+        // TODO implement true algorithm to check that the view is not obstructed
 
         return false;
     }
