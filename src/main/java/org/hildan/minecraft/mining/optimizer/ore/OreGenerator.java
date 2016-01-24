@@ -18,6 +18,12 @@ public class OreGenerator {
      */
     private static final int CHUNK_WIDTH = 16;
 
+    /**
+     * The allowed margin to generate ore outside the sample. The generation might create ores inside the sample even if
+     * the center is outside.
+     */
+    private static final int OUTSIDE_MARGIN = 5;
+
     private final Random random = new Random();
 
     private int lowestY;
@@ -69,8 +75,8 @@ public class OreGenerator {
 
             // coords are generated within a chunk, we check whether it falls in our sample, which is part of a chunk
             // this gives us the same probability as if the sample was actually taken from the Minecraft-generated world
-            if (x + xOffset < sample.getWidth() && z + zOffset < sample.getLength()) {
-                if (lowestY <= y && y < lowestY + sample.getHeight()) {
+            if (x + xOffset < sample.getWidth() + OUTSIDE_MARGIN && z + zOffset < sample.getLength() + OUTSIDE_MARGIN) {
+                if (lowestY - OUTSIDE_MARGIN <= y && y < lowestY + sample.getHeight() + OUTSIDE_MARGIN) {
                     gen.generateInto(sample, random, x + xOffset, y - lowestY, z + zOffset);
                 }
             }
@@ -88,8 +94,8 @@ public class OreGenerator {
 
             // coords are generated within a chunk, we check whether it falls in our sample, which is part of a chunk
             // this gives us the same probability as if the sample was actually taken from the Minecraft-generated world
-            if (x + xOffset < sample.getWidth() && z + zOffset < sample.getLength()) {
-                if (lowestY <= y && y < lowestY + sample.getHeight()) {
+            if (x + xOffset < sample.getWidth() + OUTSIDE_MARGIN && z + zOffset < sample.getLength() + OUTSIDE_MARGIN) {
+                if (lowestY - OUTSIDE_MARGIN <= y && y < lowestY + sample.getHeight() + OUTSIDE_MARGIN) {
                     gen.generateInto(sample, random, x + xOffset, y - lowestY, z + zOffset);
                 }
             }
