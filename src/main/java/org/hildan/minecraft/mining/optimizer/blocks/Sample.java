@@ -23,6 +23,10 @@ public class Sample {
 
     private final Block[] blocks;
 
+    private int oreBlocksCount = 0;
+
+    private int dugBlocksCount = 0;
+
     /**
      * Creates a new pure stone chunk of the given dimensions.
      */
@@ -55,6 +59,8 @@ public class Sample {
         for (int i = 0; i < blocks.length; i++) {
             blocks[i] = new Block(source.blocks[i]);
         }
+        this.oreBlocksCount = source.oreBlocksCount;
+        this.dugBlocksCount = source.dugBlocksCount;
     }
 
     /**
@@ -273,14 +279,21 @@ public class Sample {
     }
 
     /**
-     * Returns the number of blocks matching the given predicate in this sample.
+     * Returns the number of dug blocks.
      *
-     * @param predicate
-     *         the predicate to test the blocks
-     * @return the number of blocks matching the given predicate in this sample.
+     * @return the number of dug blocks.
      */
-    public long getNumberOfBlocksMatching(Predicate<Block> predicate) {
-        return Arrays.stream(blocks).filter(predicate).count();
+    public int getDugBlocksCount() {
+        return dugBlocksCount;
+    }
+
+    /**
+     * Returns the number of ore blocks.
+     *
+     * @return the number of ore blocks.
+     */
+    public int getOreBlocksCount() {
+        return oreBlocksCount;
     }
 
     /**
@@ -296,7 +309,19 @@ public class Sample {
      *         the new type of the block
      */
     public void setBlock(int x, int y, int z, BlockType type) {
-        getBlock(x, y, z).setType(type);
+        Block block = getBlock(x, y, z);
+        BlockType formerType = block.getType();
+        block.setType(type);
+        if (!formerType.isOre() && type.isOre()) {
+            oreBlocksCount++;
+        } else if (formerType.isOre() && !type.isOre()) {
+            oreBlocksCount--;
+        }
+        if (formerType != BlockType.AIR && type == BlockType.AIR) {
+            dugBlocksCount++;
+        } else if (formerType == BlockType.AIR && type != BlockType.AIR) {
+            dugBlocksCount--;
+        }
     }
 
     /**
@@ -320,10 +345,10 @@ public class Sample {
      *         the Z coordinate of the block to dig
      */
     public void digBlock(int x, int y, int z) {
-        Block block = getBlock(x, y, z);
-        block.setType(BlockType.AIR);
+        setBlock(x, y, z, BlockType.AIR);
 
         // TODO move visibility logic to external visitor
+        Block block = getBlock(x, y, z);
         block.setVisible(true);
         getAdjacentBlocks(block, Wrapping.WRAP).forEach(b -> b.setVisible(true));
     }
@@ -362,7 +387,7 @@ public class Sample {
 
     @Override
     public String toString() {
-        return String.format("Size: %d %d %d  Dug: %d", width, height, length, getNumberOfBlocksMatching(Block::isDug));
+        return String.format("Size: %d %d %d  Dug: %d", width, height, length, dugBlocksCount);
     }
 
     public String toFullString() {

@@ -1,6 +1,5 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated;
 
-import org.hildan.minecraft.mining.optimizer.blocks.Block;
 import org.hildan.minecraft.mining.optimizer.blocks.Sample;
 import org.hildan.minecraft.mining.optimizer.geometry.Position;
 import org.hildan.minecraft.mining.optimizer.patterns.Access;
@@ -130,7 +129,7 @@ class DiggingState {
         if (actionsCount >= constraints.getMaxActions()) {
             return new ArrayList<>();
         }
-        if (sample.getNumberOfBlocksMatching(Block::isDug) >= constraints.getMaxDugBlocks()) {
+        if (sample.getDugBlocksCount() >= constraints.getMaxDugBlocks()) {
             return new ArrayList<>();
         }
         return headPositionsPerAccess.keySet().stream().flatMap(this::expandAccess).collect(Collectors.toList());

@@ -22,11 +22,11 @@ public class McMiningOptimizer {
 
     private static final int NUM_ITERATIONS = 20000;
 
-    private static final int SAMPLE_WIDTH = 8;
+    private static final int SAMPLE_WIDTH = 10;
 
     private static final int SAMPLE_HEIGHT = 10;
 
-    private static final int SAMPLE_LENGTH = 8;
+    private static final int SAMPLE_LENGTH = 10;
 
     private static final int BRANCH_LENGTH = 11;
 

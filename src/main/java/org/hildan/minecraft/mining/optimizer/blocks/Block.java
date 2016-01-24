@@ -20,7 +20,7 @@ public class Block extends Position {
     /**
      * Creates a new stone block at the given position.
      */
-    public Block(int x, int y, int z) {
+    Block(int x, int y, int z) {
         super(x, y, z);
         this.type = BlockType.STONE;
 
@@ -37,11 +37,13 @@ public class Block extends Position {
      * @param source
      *         the block to copy
      */
-    public Block(Block source) {
+    Block(Block source) {
         super(source);
         this.type = source.type;
         this.headAccessible = source.headAccessible;
+        this.feetAccessible = source.feetAccessible;
         this.visible = source.visible;
+        this.explored = source.explored;
     }
 
     /**
@@ -63,7 +65,7 @@ public class Block extends Position {
         this.type = type;
     }
 
-    public boolean isHeadAccessible() {
+    boolean isHeadAccessible() {
         return headAccessible;
     }
 
@@ -71,7 +73,7 @@ public class Block extends Position {
         this.headAccessible = headAccessible;
     }
 
-    public boolean isFeetAccessible() {
+    boolean isFeetAccessible() {
         return feetAccessible;
     }
 

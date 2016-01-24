@@ -1,6 +1,5 @@
 package org.hildan.minecraft.mining.optimizer.statistics;
 
-import org.hildan.minecraft.mining.optimizer.blocks.Block;
 import org.hildan.minecraft.mining.optimizer.blocks.Sample;
 import org.hildan.minecraft.mining.optimizer.ore.OreGenerator;
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
@@ -23,13 +22,13 @@ public class PatternEvaluator {
         Statistics stats = new Statistics(samples.length);
         for (Sample refSample : samples) {
             Sample sample = new Sample(refSample);
-            long initialOres = sample.getNumberOfBlocksMatching(Block::isOre);
+            long initialOres = sample.getOreBlocksCount();
             stats.totalOres += initialOres;
 
             pattern.digInto(sample);
 
-            stats.dugBlocks += sample.getNumberOfBlocksMatching(Block::isDug);
-            stats.foundOres += initialOres - sample.getNumberOfBlocksMatching(Block::isOre);
+            stats.dugBlocks += sample.getDugBlocksCount();
+            stats.foundOres += initialOres - sample.getOreBlocksCount();
         }
         return stats;
     }

@@ -10,10 +10,10 @@ import java.util.ArrayList;
 public class PatternStore {
 
     private static class EvaluatedPattern {
-        public DiggingPattern pattern;
-        public Statistics statistics;
+        DiggingPattern pattern;
+        Statistics statistics;
 
-        public EvaluatedPattern(DiggingPattern pattern, Statistics statistics) {
+        EvaluatedPattern(DiggingPattern pattern, Statistics statistics) {
             this.pattern = pattern;
             this.statistics = statistics;
         }

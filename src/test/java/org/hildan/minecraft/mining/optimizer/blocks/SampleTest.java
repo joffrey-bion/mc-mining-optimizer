@@ -154,7 +154,7 @@ public class SampleTest {
         sample.digBlock(0, 0, 0);
         sample.digBlock(1, 2, 3);
         sample.digBlock(0, 5, 4);
-        long dugBlocksCount = sample.getNumberOfBlocksMatching(Block::isDug);
+        long dugBlocksCount = sample.getDugBlocksCount();
         assertEquals(3, dugBlocksCount);
     }
 
@@ -168,7 +168,7 @@ public class SampleTest {
         sample.setBlock(3, 3, 4, BlockType.REDSTONE_ORE);
         sample.setBlock(3, 4, 4, BlockType.STONE);
         sample.setBlock(3, 4, 5, BlockType.AIR);
-        long oreBlocksCount = sample.getNumberOfBlocksMatching(Block::isOre);
+        long oreBlocksCount = sample.getOreBlocksCount();
         assertEquals(6, oreBlocksCount);
     }
 }
