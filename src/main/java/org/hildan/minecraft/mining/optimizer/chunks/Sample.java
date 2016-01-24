@@ -362,6 +362,10 @@ public class Sample {
 
     @Override
     public String toString() {
+        return String.format("Size: %d %d %d  Dug: %d", width, height, length, getNumberOfBlocksMatching(Block::isDug));
+    }
+
+    public String toFullString() {
         StringBuilder sb = new StringBuilder(String.format("Size: %d %d %d%n%n", width, height, length));
         final String layerSeparator = "  ";
 
