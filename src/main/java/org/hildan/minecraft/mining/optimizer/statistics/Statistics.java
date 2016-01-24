@@ -1,10 +1,5 @@
 package org.hildan.minecraft.mining.optimizer.statistics;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Block;
-import org.hildan.minecraft.mining.optimizer.chunks.Sample;
-import org.hildan.minecraft.mining.optimizer.ore.OreGenerator;
-import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
-
 /**
  * Represents statistics about a digging pattern.
  */

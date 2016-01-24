@@ -1,4 +1,4 @@
-package org.hildan.minecraft.mining.optimizer.chunks;
+package org.hildan.minecraft.mining.optimizer.blocks;
 
 /**
  * Defines how some functions behave when reaching the side of the sample.

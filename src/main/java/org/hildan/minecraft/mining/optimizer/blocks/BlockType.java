@@ -1,4 +1,4 @@
-package org.hildan.minecraft.mining.optimizer.chunks;
+package org.hildan.minecraft.mining.optimizer.blocks;
 
 import static org.hildan.minecraft.mining.optimizer.display.AnsiCodes.*;
 

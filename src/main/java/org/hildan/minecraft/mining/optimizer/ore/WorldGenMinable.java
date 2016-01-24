@@ -1,7 +1,7 @@
 package org.hildan.minecraft.mining.optimizer.ore;
 
-import org.hildan.minecraft.mining.optimizer.chunks.BlockType;
-import org.hildan.minecraft.mining.optimizer.chunks.Sample;
+import org.hildan.minecraft.mining.optimizer.blocks.BlockType;
+import org.hildan.minecraft.mining.optimizer.blocks.Sample;
 
 import java.util.Random;
 

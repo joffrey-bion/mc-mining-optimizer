@@ -1,6 +1,6 @@
 package org.hildan.minecraft.mining.optimizer;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Sample;
+import org.hildan.minecraft.mining.optimizer.blocks.Sample;
 import org.hildan.minecraft.mining.optimizer.ore.OreGenerator;
 import org.hildan.minecraft.mining.optimizer.patterns.BranchingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.DigEverythingPattern;

@@ -1,6 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Sample;
+import org.hildan.minecraft.mining.optimizer.blocks.Sample;
 
 import java.util.Set;
 

@@ -1,9 +1,9 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Block;
-import org.hildan.minecraft.mining.optimizer.chunks.Explorer;
-import org.hildan.minecraft.mining.optimizer.chunks.Sample;
-import org.hildan.minecraft.mining.optimizer.chunks.Wrapping;
+import org.hildan.minecraft.mining.optimizer.blocks.Block;
+import org.hildan.minecraft.mining.optimizer.blocks.Explorer;
+import org.hildan.minecraft.mining.optimizer.blocks.Sample;
+import org.hildan.minecraft.mining.optimizer.blocks.Wrapping;
 
 import java.util.ArrayList;
 import java.util.Collection;

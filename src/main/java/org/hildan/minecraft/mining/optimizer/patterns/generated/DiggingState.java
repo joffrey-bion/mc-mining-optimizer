@@ -1,7 +1,7 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Block;
-import org.hildan.minecraft.mining.optimizer.chunks.Sample;
+import org.hildan.minecraft.mining.optimizer.blocks.Block;
+import org.hildan.minecraft.mining.optimizer.blocks.Sample;
 import org.hildan.minecraft.mining.optimizer.geometry.Position;
 import org.hildan.minecraft.mining.optimizer.patterns.Access;
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;

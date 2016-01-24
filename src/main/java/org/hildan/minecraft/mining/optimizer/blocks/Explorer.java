@@ -1,4 +1,4 @@
-package org.hildan.minecraft.mining.optimizer.chunks;
+package org.hildan.minecraft.mining.optimizer.blocks;
 
 import org.hildan.minecraft.mining.optimizer.patterns.Access;
 
