@@ -2,9 +2,9 @@ package org.hildan.minecraft.mining.optimizer.chunks;
 
 import org.hildan.minecraft.mining.optimizer.geometry.Position;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -226,12 +226,14 @@ public class Sample {
      * @return a list containing blocks adjacent to the given position
      */
     public Collection<Block> getHorizontallyAdjacentBlocks(Position position, Wrapping wrapping) {
-        Collection<Block> adjacentBlocks = new HashSet<>(4);
+        Collection<Block> adjacentBlocks = new ArrayList<>(4);
         adjacentBlocks.add(getBlock(position, +1, 0, 0, wrapping));
         adjacentBlocks.add(getBlock(position, -1, 0, 0, wrapping));
         adjacentBlocks.add(getBlock(position, 0, 0, +1, wrapping));
         adjacentBlocks.add(getBlock(position, 0, 0, -1, wrapping));
-        adjacentBlocks.removeIf(b -> b == null);
+        if (wrapping == Wrapping.CUT) {
+            adjacentBlocks.removeIf(b -> b == null);
+        }
         return adjacentBlocks;
     }
 
@@ -246,14 +248,16 @@ public class Sample {
      * @return a list containing blocks adjacent to the given position
      */
     public Collection<Block> getAdjacentBlocks(Position position, Wrapping wrapping) {
-        Collection<Block> adjacentBlocks = new HashSet<>(6);
+        Collection<Block> adjacentBlocks = new ArrayList<>(6);
         adjacentBlocks.add(getBlock(position, +1, 0, 0, wrapping));
         adjacentBlocks.add(getBlock(position, -1, 0, 0, wrapping));
         adjacentBlocks.add(getBlock(position, 0, +1, 0, wrapping));
         adjacentBlocks.add(getBlock(position, 0, -1, 0, wrapping));
         adjacentBlocks.add(getBlock(position, 0, 0, +1, wrapping));
         adjacentBlocks.add(getBlock(position, 0, 0, -1, wrapping));
-        adjacentBlocks.removeIf(b -> b == null);
+        if (wrapping == Wrapping.CUT) {
+            adjacentBlocks.removeIf(b -> b == null);
+        }
         return adjacentBlocks;
     }
 
@@ -265,7 +269,7 @@ public class Sample {
      * @return the collection of all blocks matching the given predicate in this sample.
      */
     public Iterable<Block> getBlocksMatching(Predicate<Block> predicate) {
-        return Arrays.stream(blocks).filter(predicate).collect(Collectors.toSet());
+        return Arrays.stream(blocks).filter(predicate).collect(Collectors.toList());
     }
 
     /**
