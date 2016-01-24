@@ -17,7 +17,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Represents a state while digging a sample. It contains the state of the sample, the position of the player and the
@@ -50,7 +52,9 @@ class DiggingState {
      *         the list of accesses to start digging
      */
     DiggingState(Sample sample, Collection<Access> accesses) {
-        this(sample, new HashMap<>(accesses.size()), new HashMap<>(accesses.size()));
+        this.sample = sample;
+        this.headPositionsPerAccess = new HashMap<>(accesses.size());
+        this.actionsPerAccess = new HashMap<>(accesses.size());
         for (Access access : accesses) {
             Position startingHeadPosition = access.above();
             sample.digBlock(access);
@@ -61,19 +65,18 @@ class DiggingState {
     }
 
     /**
-     * Creates a new state with the given sample, player's position, and list of actions performed so far.
+     * Creates a copy of the given state.
      *
-     * @param sample
-     *         the current sample
-     * @param headPositionsPerAccess
-     *         the current position of the head of the player for each access
-     * @param actionsPerAccess
+     * @param state
+     *         the state to copy
      */
-    private DiggingState(Sample sample, Map<Access, Position> headPositionsPerAccess,
-                         Map<Access, List<Action>> actionsPerAccess) {
-        this.sample = sample;
-        this.headPositionsPerAccess = headPositionsPerAccess;
-        this.actionsPerAccess = actionsPerAccess;
+    private DiggingState(DiggingState state) {
+        this.sample = new Sample(state.sample);
+        this.headPositionsPerAccess = new HashMap<>(state.headPositionsPerAccess);
+        this.actionsPerAccess = new HashMap<>(state.actionsPerAccess.keySet().size());
+        for (Entry<Access, List<Action>> entry : state.actionsPerAccess.entrySet()) {
+            actionsPerAccess.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
     }
 
     /**
@@ -87,16 +90,13 @@ class DiggingState {
      * @return the resulting state
      */
     private DiggingState transition(Access access, Action action) {
-        Sample newSample = new Sample(sample);
+        DiggingState newState = new DiggingState(this);
 
-        Map<Access, Position> newHeadPositions = new HashMap<>(headPositionsPerAccess);
-        Position newHeadPosition = action.executeOn(newSample, headPositionsPerAccess.get(access));
-        newHeadPositions.put(access, newHeadPosition);
+        Position newHeadPosition = action.executeOn(newState.sample, newState.headPositionsPerAccess.get(access));
+        newState.headPositionsPerAccess.put(access, newHeadPosition);
+        newState.actionsPerAccess.get(access).add(action);
 
-        Map<Access, List<Action>> newActions = new HashMap<>(actionsPerAccess);
-        newActions.get(access).add(action);
-
-        return new DiggingState(newSample, newHeadPositions, newActions);
+        return newState;
     }
 
     /**
@@ -133,12 +133,13 @@ class DiggingState {
         if (sample.getNumberOfBlocksMatching(Block::isDug) >= constraints.getMaxDugBlocks()) {
             return new ArrayList<>();
         }
-        return headPositionsPerAccess.keySet()
-                                     .stream()
-                                     .flatMap(access -> allActions.stream()
-                                                                  .filter(action -> isAcceptable(access, action))
-                                                                  .map(action -> transition(access, action)))
-                                     .collect(Collectors.toList());
+        return headPositionsPerAccess.keySet().stream().flatMap(this::expandAccess).collect(Collectors.toList());
+    }
+
+    private Stream<DiggingState> expandAccess(Access access) {
+        return allActions.stream()
+                         .filter(action -> isAcceptable(access, action))
+                         .map(action -> transition(access, action));
     }
 
     /**
@@ -161,10 +162,10 @@ class DiggingState {
 
         DiggingState state = (DiggingState) obj;
 
-        if (!sample.equals(state.sample)) {
+        if (!headPositionsPerAccess.equals(state.headPositionsPerAccess)) {
             return false;
         }
-        return headPositionsPerAccess.equals(state.headPositionsPerAccess);
+        return sample.equals(state.sample);
     }
 
     @Override
@@ -172,5 +173,18 @@ class DiggingState {
         int result = sample.hashCode();
         result = 31 * result + headPositionsPerAccess.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        final String indent = "   ";
+        for (Entry<Access, List<Action>> entry : actionsPerAccess.entrySet()) {
+            sb.append(entry.getKey()).append(String.format("%n"));
+            for (Action action : entry.getValue()) {
+                sb.append(indent).append(action).append(String.format("%n"));
+            }
+        }
+        return sb.toString();
     }
 }
