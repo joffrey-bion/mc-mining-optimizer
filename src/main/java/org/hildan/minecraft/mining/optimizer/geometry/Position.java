@@ -59,4 +59,9 @@ public class Position {
         result = 31 * result + z;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Position(%d,%d,%d)", getX(), getY(), getZ());
+    }
 }
