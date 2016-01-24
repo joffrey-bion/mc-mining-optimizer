@@ -1,4 +1,4 @@
-package org.hildan.minecraft.mining.optimizer;
+package org.hildan.minecraft.mining.optimizer.statistics;
 
 import org.hildan.minecraft.mining.optimizer.chunks.Block;
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
@@ -22,33 +22,35 @@ public class Statistics {
         this.nbSamples = nbSamples;
     }
 
-    public static Statistics evaluate(DiggingPattern pattern, OreGenerator oreGenerator, Sample reference,
-                                      int nbSamples, boolean debug) {
+    public static Statistics evaluate(DiggingPattern pattern, OreGenerator oreGenerator, Sample base, int nbSamples) {
         Statistics stats = new Statistics(nbSamples);
         for (int i = 0; i < nbSamples; i++) {
-            Sample sample = oreGenerator.generate(reference, 5);
+            Sample sample = oreGenerator.generate(base, 5);
             long initialOres = sample.getNumberOfBlocksMatching(Block::isOre);
             stats.totalOres += initialOres;
-            if (debug) {
-                System.out.println(sample);
-            }
 
             pattern.digInto(sample);
             stats.dugBlocks += sample.getNumberOfBlocksMatching(Block::isDug);
             stats.foundOres += initialOres - sample.getNumberOfBlocksMatching(Block::isOre);
-            if (debug) {
-                System.out.println(sample);
-            }
         }
         return stats;
     }
 
-    public double getEfficiency() {
+    private double getEfficiency() {
         return dugBlocks == 0 ? 100 : (double) foundOres * 100 / dugBlocks;
     }
 
-    public double getThoroughness() {
+    private double getThoroughness() {
         return totalOres == 0 ? 100 : (double) foundOres * 100 / totalOres;
+    }
+
+    boolean isBetterThan(Statistics stats, double margin) {
+        double eff = getEfficiency();
+        double tho = getThoroughness();
+        double effOther = stats.getEfficiency();
+        double thoOther = stats.getThoroughness();
+
+        return eff > effOther + margin && tho > thoOther + margin;
     }
 
     @Override

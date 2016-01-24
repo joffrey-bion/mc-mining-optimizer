@@ -8,6 +8,8 @@ import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.generated.GenerationConstraints;
 import org.hildan.minecraft.mining.optimizer.patterns.generated.PatternGenerator;
 import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelPattern;
+import org.hildan.minecraft.mining.optimizer.statistics.PatternStore;
+import org.hildan.minecraft.mining.optimizer.statistics.Statistics;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
@@ -17,28 +19,37 @@ import java.lang.management.ThreadMXBean;
  */
 public class McMiningOptimizer {
 
-    private static final boolean VISUAL_DEBUG = false;
+    private static final int NUM_ITERATIONS = 20000;
 
-    private static final int NB_ITERATIONS = 10000;
+    private static final int SAMPLE_WIDTH = 8;
 
-    private static final int SAMPLE_WIDTH = 16;
     private static final int SAMPLE_HEIGHT = 10;
-    private static final int SAMPLE_LENGTH = 16;
+
+    private static final int SAMPLE_LENGTH = 8;
 
     private static final int BRANCH_LENGTH = 11;
 
     private static final int BRANCH_OFFSET = 2;
 
+    private static final double MARGIN = 0.01d;
+
     private static final long NANOSECONDS_IN_A_MILLI = 1_000_000L;
 
+    private static final int MAX_ACTIONS = 200;
+
+    private static final int MAX_DUG_BLOCKS = 50;
+
     public static void main(String... args) {
-        Sample reference = new Sample(5, 5, 5);
-//        testPatterns(reference);
-        GenerationConstraints constraints = new GenerationConstraints(200, 50);
+        Sample reference = new Sample(SAMPLE_WIDTH, SAMPLE_HEIGHT, SAMPLE_LENGTH);
+        GenerationConstraints constraints = new GenerationConstraints(MAX_ACTIONS, MAX_DUG_BLOCKS);
+        PatternStore store = new PatternStore(MARGIN);
         Iterable<DiggingPattern> gen = new PatternGenerator(new Sample(reference), constraints);
         OreGenerator oreGenerator = new OreGenerator();
         for (DiggingPattern pattern : gen) {
-            printStats(pattern, oreGenerator, reference);
+            Statistics stats = Statistics.evaluate(pattern, oreGenerator, reference, NUM_ITERATIONS);
+            if (store.add(pattern, stats)) {
+                System.out.println(stats);
+            }
         }
     }
 
@@ -72,8 +83,7 @@ public class McMiningOptimizer {
         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
         long startTime = threadMXBean.getCurrentThreadCpuTime();
 
-        final int n = VISUAL_DEBUG ? 1 : NB_ITERATIONS;
-        Statistics stats = Statistics.evaluate(pattern, oreGenerator, reference, n, VISUAL_DEBUG);
+        Statistics stats = Statistics.evaluate(pattern, oreGenerator, reference, NUM_ITERATIONS);
 
         long endTime = threadMXBean.getCurrentThreadCpuTime();
 
