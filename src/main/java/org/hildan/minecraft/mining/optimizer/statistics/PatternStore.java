@@ -3,6 +3,7 @@ package org.hildan.minecraft.mining.optimizer.statistics;
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Stores patterns and their stats, keeping only the best ones.
@@ -10,8 +11,8 @@ import java.util.ArrayList;
 public class PatternStore {
 
     private static class EvaluatedPattern {
-        DiggingPattern pattern;
-        Statistics statistics;
+        final DiggingPattern pattern;
+        final Statistics statistics;
 
         EvaluatedPattern(DiggingPattern pattern, Statistics statistics) {
             this.pattern = pattern;
@@ -21,7 +22,7 @@ public class PatternStore {
 
     private final double margin;
 
-    private final ArrayList<EvaluatedPattern> patterns = new ArrayList<>(20);
+    private final Collection<EvaluatedPattern> patterns = new ArrayList<>(20);
 
     public PatternStore(double margin) {
         this.margin = margin;

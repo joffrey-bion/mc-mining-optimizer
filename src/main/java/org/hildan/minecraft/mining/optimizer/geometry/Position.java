@@ -62,6 +62,6 @@ public class Position {
 
     @Override
     public String toString() {
-        return String.format("Position(%d,%d,%d)", getX(), getY(), getZ());
+        return String.format("Position(%d,%d,%d)", x, y, z);
     }
 }
