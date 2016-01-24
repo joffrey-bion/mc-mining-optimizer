@@ -5,6 +5,8 @@ import org.hildan.minecraft.mining.optimizer.ore.OreGenerator;
 import org.hildan.minecraft.mining.optimizer.patterns.BranchingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.DigEverythingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
+import org.hildan.minecraft.mining.optimizer.patterns.generated.GenerationConstraints;
+import org.hildan.minecraft.mining.optimizer.patterns.generated.PatternGenerator;
 import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelPattern;
 
 import java.lang.management.ManagementFactory;
@@ -30,11 +32,17 @@ public class McMiningOptimizer {
     private static final long NANOSECONDS_IN_A_MILLI = 1_000_000L;
 
     public static void main(String... args) {
-        testPatterns();
+        Sample reference = new Sample(5, 5, 5);
+//        testPatterns(reference);
+        GenerationConstraints constraints = new GenerationConstraints(200, 50);
+        Iterable<DiggingPattern> gen = new PatternGenerator(new Sample(reference), constraints);
+        OreGenerator oreGenerator = new OreGenerator();
+        for (DiggingPattern pattern : gen) {
+            printStats(pattern, oreGenerator, reference);
+        }
     }
 
-    private static void testPatterns() {
-        Sample reference = new Sample(SAMPLE_WIDTH, SAMPLE_HEIGHT, SAMPLE_LENGTH);
+    private static void testPatterns(Sample reference) {
         OreGenerator oreGenerator = new OreGenerator();
 
         DiggingPattern digEverythingPattern = new DigEverythingPattern();
