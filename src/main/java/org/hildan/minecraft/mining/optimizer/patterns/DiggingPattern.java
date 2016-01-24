@@ -1,6 +1,5 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
-import org.hildan.minecraft.mining.optimizer.chunks.Explorer;
 import org.hildan.minecraft.mining.optimizer.chunks.Sample;
 
 import java.util.Set;
@@ -50,14 +49,4 @@ public interface DiggingPattern {
      * starting from the point (0,0,0).
      */
     void digInto(Sample sample);
-
-    /**
-     * Returns whether it is actually possible to dig this pattern in the game.
-     *
-     * @return true if it is actually possible to dig this pattern in the game.
-     */
-    default boolean isValid() {
-        Sample sample = new Sample(getWidth(), getHeight(), getLength());
-        return Explorer.isValid(sample);
-    }
 }

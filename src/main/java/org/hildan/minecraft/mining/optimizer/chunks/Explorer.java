@@ -52,8 +52,7 @@ public class Explorer {
         Collection<Block> adjBlocks = sample.getAdjacentBlocks(block, Wrapping.WRAP);
 
         // FIXME add proper visibility algorithm based on accessible blocks
-        boolean hasDugNeighbor = adjBlocks.stream().anyMatch(Block::isDug);
-        block.setVisible(block.isDug() || hasDugNeighbor);
+        block.setVisible(block.isDug() || adjBlocks.stream().anyMatch(Block::isDug));
 
         if (block.isDug()) {
             setAccessibility(sample, block);
@@ -62,47 +61,44 @@ public class Explorer {
         block.setExplored(true);
     }
 
-    private static void setAccessibility(Sample sample, Block block) {
-        if (!block.isDug()) {
-            block.setHeadAccessible(false);
-            block.setFeetAccessible(false);
-            return;
-        }
-        Block above = sample.getBlockAbove(block, Wrapping.WRAP);
+    private static void setAccessibility(Sample sample, Block dugBlock) {
+        assert dugBlock.isDug() : "the given block must be dug already";
+        Block above = sample.getBlockAbove(dugBlock, Wrapping.WRAP);
         if (above.isExplored() && above.isHeadAccessible()) {
-            block.setFeetAccessible(true);
+            dugBlock.setFeetAccessible(true);
             return;
         }
-        Block below = sample.getBlockBelow(block, Wrapping.WRAP);
+        Block below = sample.getBlockBelow(dugBlock, Wrapping.WRAP);
         if (below.isExplored() && below.isFeetAccessible()) {
-            block.setHeadAccessible(true);
+            dugBlock.setHeadAccessible(true);
             return;
         }
         if (below.isDug()) {
             Block belowBelow = sample.getBlockBelow(below, Wrapping.WRAP);
             if (!belowBelow.isDug()) {
                 // potential head accessible
-                block.setHeadAccessible(isAccessible(sample, below, block, above));
+                dugBlock.setHeadAccessible(isAccessible(sample, below, dugBlock, above));
             }
         } else {
             if (above.isDug()) {
                 Block aboveAbove = sample.getBlockAbove(above, Wrapping.WRAP);
                 // potential feet accessible
-                block.setFeetAccessible(isAccessible(sample, block, above, aboveAbove));
+                dugBlock.setFeetAccessible(isAccessible(sample, dugBlock, above, aboveAbove));
             }
         }
     }
 
     private static boolean isAccessible(Sample sample, Block feet, Block head, Block aboveHead) {
+        Collection<Block> exploredHeadNeighbors = sample.getHorizontallyAdjacentBlocks(head, Wrapping.WRAP);
+        exploredHeadNeighbors.removeIf(b -> !b.isExplored());
+
         // can walk to it
-        boolean directlyAccessible = hasHeadAccessibleHorizontalNeighbor(sample, head);
-        if (directlyAccessible) {
+        if (exploredHeadNeighbors.stream().anyMatch(Block::isHeadAccessible)) {
             return true;
         }
 
         // can jump down to it
-        boolean canStandNextToIt = hasFeetAccessibleHorizontalNeighbor(sample, head);
-        if (canStandNextToIt && aboveHead.isDug()) {
+        if (aboveHead.isDug() && exploredHeadNeighbors.stream().anyMatch(Block::isFeetAccessible)) {
             return true;
         }
 
@@ -113,34 +109,5 @@ public class Explorer {
                      .filter(Block::isHeadAccessible)
                      .map(b -> sample.getBlockAbove(b, Wrapping.WRAP))
                      .anyMatch(Block::isDug);
-    }
-
-    private static boolean hasHeadAccessibleHorizontalNeighbor(Sample sample, Block block) {
-        return sample.getHorizontallyAdjacentBlocks(block, Wrapping.WRAP)
-                     .stream()
-                     .filter(Block::isExplored)
-                     .anyMatch(Block::isHeadAccessible);
-    }
-
-    private static boolean hasFeetAccessibleHorizontalNeighbor(Sample sample, Block block) {
-        return sample.getHorizontallyAdjacentBlocks(block, Wrapping.WRAP)
-                     .stream()
-                     .filter(Block::isExplored)
-                     .anyMatch(Block::isFeetAccessible);
-    }
-
-    /**
-     * Tests whether the given sample could actually have the current state in Minecraft. This includes testing whether
-     * blocks could have been dug this way.
-     *
-     * @param sample
-     *         the sample to test
-     * @return true if the sample is valid
-     */
-    public static boolean isValid(Sample sample) {
-
-        // TODO check whether the dug blocks are arranged in a way that could indeed have been dug
-
-        return true;
     }
 }
