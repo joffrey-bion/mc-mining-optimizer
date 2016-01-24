@@ -8,6 +8,7 @@ import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.generated.GenerationConstraints;
 import org.hildan.minecraft.mining.optimizer.patterns.generated.PatternGenerator;
 import org.hildan.minecraft.mining.optimizer.patterns.tunnels.TunnelPattern;
+import org.hildan.minecraft.mining.optimizer.statistics.PatternEvaluator;
 import org.hildan.minecraft.mining.optimizer.statistics.PatternStore;
 import org.hildan.minecraft.mining.optimizer.statistics.Statistics;
 
@@ -35,55 +36,55 @@ public class McMiningOptimizer {
 
     private static final long NANOSECONDS_IN_A_MILLI = 1_000_000L;
 
-    private static final int MAX_ACTIONS = 200;
+    private static final int MAX_ACTIONS = 30;
 
-    private static final int MAX_DUG_BLOCKS = 50;
+    private static final int MAX_DUG_BLOCKS = 10;
 
     public static void main(String... args) {
         Sample reference = new Sample(SAMPLE_WIDTH, SAMPLE_HEIGHT, SAMPLE_LENGTH);
-        GenerationConstraints constraints = new GenerationConstraints(MAX_ACTIONS, MAX_DUG_BLOCKS);
+
+        PatternEvaluator evaluator = new PatternEvaluator(new OreGenerator(), NUM_ITERATIONS, reference);
         PatternStore store = new PatternStore(MARGIN);
+
+        GenerationConstraints constraints = new GenerationConstraints(MAX_ACTIONS, MAX_DUG_BLOCKS);
         Iterable<DiggingPattern> gen = new PatternGenerator(new Sample(reference), constraints);
-        OreGenerator oreGenerator = new OreGenerator();
         for (DiggingPattern pattern : gen) {
-            Statistics stats = Statistics.evaluate(pattern, oreGenerator, reference, NUM_ITERATIONS);
+            Statistics stats = evaluator.evaluate(pattern);
             if (store.add(pattern, stats)) {
                 System.out.println(stats);
             }
         }
     }
 
-    private static void testPatterns(Sample reference) {
-        OreGenerator oreGenerator = new OreGenerator();
-
+    private static void testPatterns(PatternEvaluator evaluator) {
         DiggingPattern digEverythingPattern = new DigEverythingPattern();
         System.out.println("DIG EVERYTHING");
-        printStats(digEverythingPattern, oreGenerator, reference);
+        printStats(digEverythingPattern, evaluator);
 
         DiggingPattern branchPattern2 =
                 new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_2SPACED, BRANCH_LENGTH,
                         BRANCH_OFFSET);
         System.out.println("STANDARD BRANCHING - 2 spaced");
-        printStats(branchPattern2, oreGenerator, reference);
+        printStats(branchPattern2, evaluator);
 
         DiggingPattern branchPattern3 =
                 new BranchingPattern(TunnelPattern.STANDARD_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED, BRANCH_LENGTH,
                         BRANCH_OFFSET);
         System.out.println("STANDARD BRANCHING - 3 spaced");
-        printStats(branchPattern3, oreGenerator, reference);
+        printStats(branchPattern3, evaluator);
 
         DiggingPattern branchPatternHighShaft3 =
                 new BranchingPattern(TunnelPattern.BIG_SHAFT, TunnelPattern.STANDARD_BRANCH_3SPACED, BRANCH_LENGTH,
                         BRANCH_OFFSET);
         System.out.println("STANDARD BRANCHING (HIGH SHAFT) - 3 spaced");
-        printStats(branchPatternHighShaft3, oreGenerator, reference);
+        printStats(branchPatternHighShaft3, evaluator);
     }
 
-    private static void printStats(DiggingPattern pattern, OreGenerator oreGenerator, Sample reference) {
+    private static void printStats(DiggingPattern pattern, PatternEvaluator evaluator) {
         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
         long startTime = threadMXBean.getCurrentThreadCpuTime();
 
-        Statistics stats = Statistics.evaluate(pattern, oreGenerator, reference, NUM_ITERATIONS);
+        Statistics stats = evaluator.evaluate(pattern);
 
         long endTime = threadMXBean.getCurrentThreadCpuTime();
 

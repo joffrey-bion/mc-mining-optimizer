@@ -12,28 +12,14 @@ public class Statistics {
 
     private final int nbSamples;
 
-    private long totalOres = 0;
+    long totalOres = 0;
 
-    private long foundOres = 0;
+    long foundOres = 0;
 
-    private long dugBlocks = 0;
+    long dugBlocks = 0;
 
-    private Statistics(int nbSamples) {
+    Statistics(int nbSamples) {
         this.nbSamples = nbSamples;
-    }
-
-    public static Statistics evaluate(DiggingPattern pattern, OreGenerator oreGenerator, Sample base, int nbSamples) {
-        Statistics stats = new Statistics(nbSamples);
-        for (int i = 0; i < nbSamples; i++) {
-            Sample sample = oreGenerator.generate(base, 5);
-            long initialOres = sample.getNumberOfBlocksMatching(Block::isOre);
-            stats.totalOres += initialOres;
-
-            pattern.digInto(sample);
-            stats.dugBlocks += sample.getNumberOfBlocksMatching(Block::isDug);
-            stats.foundOres += initialOres - sample.getNumberOfBlocksMatching(Block::isOre);
-        }
-        return stats;
     }
 
     private double getEfficiency() {
