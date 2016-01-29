@@ -14,8 +14,12 @@ public class PatternEvaluator {
     public PatternEvaluator(OreGenerator oreGenerator, int nbSamples, Sample baseSample) {
         samples = new Sample[nbSamples];
         for (int i = 0; i < nbSamples; i++) {
-            samples[i] = oreGenerator.generate(baseSample, 5);
+            //noinspection HardcodedLineSeparator
+            System.out.printf("\r%s generated samples", i);
+            samples[i] = new Sample(baseSample);
+            oreGenerator.generateInto(samples[i], 5);
         }
+        System.out.println();
     }
 
     public Statistics evaluate(DiggingPattern pattern) {
