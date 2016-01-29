@@ -9,10 +9,6 @@ public class Block extends Position {
 
     private BlockType type;
 
-    private boolean headAccessible;
-
-    private boolean feetAccessible;
-
     private boolean visible;
 
     private boolean explored;
@@ -25,8 +21,6 @@ public class Block extends Position {
         this.type = BlockType.STONE;
 
         // exploration does not get to every block, hence the need to initialize to false
-        this.headAccessible = false;
-        this.feetAccessible = false;
         this.visible = false;
         this.explored = false;
     }
@@ -40,8 +34,6 @@ public class Block extends Position {
     Block(Block source) {
         super(source);
         this.type = source.type;
-        this.headAccessible = source.headAccessible;
-        this.feetAccessible = source.feetAccessible;
         this.visible = source.visible;
         this.explored = source.explored;
     }
@@ -63,22 +55,6 @@ public class Block extends Position {
      */
     void setType(BlockType type) {
         this.type = type;
-    }
-
-    boolean isHeadAccessible() {
-        return headAccessible;
-    }
-
-    void setHeadAccessible(boolean headAccessible) {
-        this.headAccessible = headAccessible;
-    }
-
-    boolean isFeetAccessible() {
-        return feetAccessible;
-    }
-
-    void setFeetAccessible(boolean feetAccessible) {
-        this.feetAccessible = feetAccessible;
     }
 
     public boolean isVisible() {
