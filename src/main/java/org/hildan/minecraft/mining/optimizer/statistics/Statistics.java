@@ -1,5 +1,7 @@
 package org.hildan.minecraft.mining.optimizer.statistics;
 
+import java.util.Locale;
+
 /**
  * Represents statistics about a digging pattern.
  */
@@ -36,7 +38,7 @@ public class Statistics {
 
     @Override
     public String toString() {
-        return String.format("e=%.2f%% t=%.2f%%", getEfficiency(), getThoroughness());
+        return String.format(Locale.US, "e=%.2f%% t=%.2f%%", getEfficiency(), getThoroughness());
     }
 
     public String toFullString() {

@@ -37,6 +37,6 @@ public class PatternStore implements Iterable<EvaluatedPattern> {
 
     @Override
     public String toString() {
-        return String.format("%d patterns: %s", patterns.size(), patterns);
+        return String.format("%d pattern%s: %s", patterns.size(), patterns.size() > 1 ? "s" : "", patterns);
     }
 }

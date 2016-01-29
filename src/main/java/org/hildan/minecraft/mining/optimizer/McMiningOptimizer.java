@@ -23,11 +23,11 @@ public class McMiningOptimizer {
 
     private static final int NUM_ITERATIONS = 20000;
 
-    private static final int SAMPLE_WIDTH = 10;
+    private static final int SAMPLE_WIDTH = 16;
 
     private static final int SAMPLE_HEIGHT = 10;
 
-    private static final int SAMPLE_LENGTH = 10;
+    private static final int SAMPLE_LENGTH = 16;
 
     private static final int BRANCH_LENGTH = 11;
 
@@ -37,18 +37,26 @@ public class McMiningOptimizer {
 
     private static final long NANOSECONDS_IN_A_MILLI = 1_000_000L;
 
-    private static final int MAX_ACTIONS = 20;
+    private static final int MAX_ACTIONS = 30;
 
-    private static final int MAX_DUG_BLOCKS = 10;
+    private static final int MAX_DUG_BLOCKS = 20;
 
     public static void main(String... args) {
         Sample reference = new Sample(SAMPLE_WIDTH, SAMPLE_HEIGHT, SAMPLE_LENGTH);
 
+        System.out.printf("Initializing evaluator for %d iterations...%n", NUM_ITERATIONS);
         PatternEvaluator evaluator = new PatternEvaluator(new OreGenerator(), NUM_ITERATIONS, reference);
+
+        System.out.printf("Initializing store with margin of %f%n", MARGIN);
         PatternStore store = new PatternStore(MARGIN);
 
+        System.out.printf("Initializing constraints: %d actions max, %d dug blocks max%n", MAX_ACTIONS, MAX_DUG_BLOCKS);
         GenerationConstraints constraints = new GenerationConstraints(MAX_ACTIONS, MAX_DUG_BLOCKS);
+
+        System.out.println("Initializing pattern generator...");
         Iterable<DiggingPattern> gen = new PatternGenerator(new Sample(reference), constraints);
+
+        System.out.println("Start!");
         for (DiggingPattern pattern : gen) {
             Statistics stats = evaluator.evaluate(pattern);
             if (store.add(pattern, stats)) {
@@ -56,6 +64,7 @@ public class McMiningOptimizer {
             }
         }
 
+        System.out.printf("Finished!%n%n");
         for (EvaluatedPattern pattern : store) {
             System.out.println(pattern.getPattern());
             System.out.println(pattern.getStatistics().toFullString());
