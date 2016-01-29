@@ -23,7 +23,7 @@ class PatternIterator implements Iterator<DiggingPattern> {
 
     private final Deque<DiggingState> statesToExplore;
 
-    public PatternIterator(Sample initialSample, Collection<Access> accesses, GenerationConstraints constraints) {
+    PatternIterator(Sample initialSample, Collection<Access> accesses, GenerationConstraints constraints) {
         this.constraints = constraints;
         this.exploredStates = new HashSet<>(50);
         this.statesToExplore = new ArrayDeque<>(25);
@@ -39,18 +39,22 @@ class PatternIterator implements Iterator<DiggingPattern> {
 
     @Override
     public DiggingPattern next() {
-        DiggingState state = statesToExplore.pollFirst();
-        if (state == null) {
-            throw new NoSuchElementException("no more patterns available");
-        }
+        DiggingState state;
+        do {
+            state = statesToExplore.pollFirst();
+            if (state == null) {
+                throw new NoSuchElementException("no more patterns available");
+            }
 
-        // never explore this state again
-        exploredStates.add(state);
+            // never explore this state again
+            exploredStates.add(state);
 
-        // expand to find other states to explore
-        Collection<DiggingState> newStates = state.expand(constraints);
-        newStates.removeIf(exploredStates::contains);
-        statesToExplore.addAll(newStates);
+            // expand to find other states to explore
+            Collection<DiggingState> newStates = state.expand(constraints);
+            newStates.removeIf(exploredStates::contains);
+            statesToExplore.addAll(newStates);
+
+        } while (!statesToExplore.isEmpty() && !state.isCanonical());
 
         return state.toPattern();
     }

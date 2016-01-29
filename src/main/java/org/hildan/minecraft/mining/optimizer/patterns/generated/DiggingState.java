@@ -142,6 +142,20 @@ class DiggingState {
     }
 
     /**
+     * Returns whether this state is canonical. This means that we can't remove any of the last actions without changing
+     * the resulting pattern. In other words, for every access, the last action must be a dig action, not a move.
+     *
+     * @return true if this state is canonical
+     */
+    boolean isCanonical() {
+        return actionsPerAccess.values()
+                               .stream()
+                               .filter(l -> !l.isEmpty())
+                               .map(l -> l.get(l.size() - 1))
+                               .allMatch(a -> a instanceof DigAction);
+    }
+
+    /**
      * Creates a {@link GeneratedPattern} that brings any sample to this state.
      *
      * @return a {@link GeneratedPattern} that brings any sample to this state.
