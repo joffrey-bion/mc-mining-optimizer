@@ -26,13 +26,13 @@ public class Explorer {
     }
 
     private static void exploreAccess(Sample sample, Access access) {
-        if (!sample.hasBlock(access.getX(), access.getY(), access.getZ())) {
+        if (!sample.hasBlock(access.feet()) || !sample.hasBlock(access.head())) {
             return;
         }
-        Block feetBlock = sample.getBlock(access);
+        Block feetBlock = sample.getBlock(access.feet());
         assert feetBlock.isDug() : "the given sample's access has not been dug at feet level";
 
-        Block headBlock = sample.getBlockAbove(feetBlock, Wrapping.WRAP);
+        Block headBlock = sample.getBlock(access.head());
         assert headBlock.isDug() : "the given sample's access has not been dug at head level";
 
         Deque<Block> blocksToExplore =

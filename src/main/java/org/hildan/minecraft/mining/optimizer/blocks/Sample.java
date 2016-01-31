@@ -106,6 +106,17 @@ public class Sample {
     }
 
     /**
+     * Returns whether the given position belong to this chunk.
+     *
+     * @param position
+     *         the position to test
+     * @return true if the given position belong to this chunk.
+     */
+    public boolean hasBlock(Position position) {
+        return hasBlock(position.getX(), position.getY(), position.getZ());
+    }
+
+    /**
      * Returns the index in the internal array of the block at the given position.
      *
      * @param x

@@ -1,7 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated;
 
 import org.hildan.minecraft.mining.optimizer.blocks.Sample;
-import org.hildan.minecraft.mining.optimizer.blocks.Wrapping;
 import org.hildan.minecraft.mining.optimizer.geometry.Position;
 import org.hildan.minecraft.mining.optimizer.patterns.AbstractDiggingPattern;
 import org.hildan.minecraft.mining.optimizer.patterns.Access;
@@ -58,16 +57,16 @@ class GeneratedPattern extends AbstractDiggingPattern {
     public Set<Access> getAccesses(int x, int y) {
         return actionsPerAccess.keySet()
                                .stream()
-                               .map(a -> new Access(a.getX() + x, a.getY() + y))
+                               .map(a -> new Access(a.feet().getX() + x, a.feet().getY() + y))
                                .collect(Collectors.toSet());
     }
 
     @Override
     protected void digInto(Sample sample, int originX, int originY, int originZ) {
         for (Access access : getAccesses(originX, originY)) {
-            Position feetBlock = sample.getBlock(access);
+            Position feetBlock = sample.getBlock(access.feet());
             sample.digBlock(feetBlock);
-            Position headBlock = sample.getBlockAbove(feetBlock, Wrapping.WRAP);
+            Position headBlock = sample.getBlock(access.head());
             sample.digBlock(headBlock);
             for (Action action : actionsPerAccess.get(access)) {
                 headBlock = action.executeOn(sample, headBlock);

@@ -57,7 +57,7 @@ public class BranchingPattern extends AbstractDiggingPattern {
 
     @Override
     public Set<Access> getAccesses(int x, int y) {
-        Set<Access> accesses = new HashSet<>();
+        Set<Access> accesses = new HashSet<>(2);
         accesses.add(new Access(x + branchLength, y));
         accesses.add(new Access(x + branchLength, y + getLayerHeight()));
         return accesses;

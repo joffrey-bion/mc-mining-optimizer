@@ -24,9 +24,14 @@ import java.util.stream.Stream;
  * Represents a state while digging a sample. It contains the state of the sample, the position of the player and the
  * actions done so far to arrive at this state. It can generate the next possible states from this point using {@link
  * #expand}.
+ * <p>
+ * Can be turned into a {@link DiggingPattern}.
  */
 class DiggingState {
 
+    /**
+     * Contains all possible actions supported to expand DiggingStates.
+     */
     private static final Collection<Action> allActions;
 
     static {
@@ -38,6 +43,10 @@ class DiggingState {
 
     private final Sample sample;
 
+    /**
+     * When multiple accesses are available, we track the head position for each access independently. Hence one head
+     * position per access.
+     */
     private final Map<Access, Position> headPositionsPerAccess;
 
     private final Map<Access, List<Action>> actionsPerAccess;
@@ -55,10 +64,9 @@ class DiggingState {
         this.headPositionsPerAccess = new HashMap<>(accesses.size());
         this.actionsPerAccess = new HashMap<>(accesses.size());
         for (Access access : accesses) {
-            Position startingHeadPosition = access.above();
-            sample.digBlock(access);
-            sample.digBlock(startingHeadPosition);
-            headPositionsPerAccess.put(access, startingHeadPosition);
+            sample.digBlock(access.feet());
+            sample.digBlock(access.head());
+            headPositionsPerAccess.put(access, access.head());
             actionsPerAccess.put(access, new ArrayList<>(10));
         }
     }
@@ -135,6 +143,12 @@ class DiggingState {
         return headPositionsPerAccess.keySet().stream().flatMap(this::expandAccess).collect(Collectors.toList());
     }
 
+    /**
+     * Streams the states representing all possible ways of continuing in the given access.
+     *
+     * @param access the access to operate on
+     * @return a Stream of states resulting of each possible action taken on the given access
+     */
     private Stream<DiggingState> expandAccess(Access access) {
         return allActions.stream()
                          .filter(action -> isAcceptable(access, action))

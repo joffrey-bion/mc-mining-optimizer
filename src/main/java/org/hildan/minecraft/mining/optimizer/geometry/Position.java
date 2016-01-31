@@ -1,5 +1,7 @@
 package org.hildan.minecraft.mining.optimizer.geometry;
 
+import java.util.Objects;
+
 /**
  * Represents an immutable 3D position.
  */
@@ -35,10 +37,6 @@ public class Position {
         return z;
     }
 
-    public Position above() {
-        return new Position(x, y + 1, z);
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -47,17 +45,13 @@ public class Position {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-
         Position position = (Position) obj;
         return x == position.x && y == position.y && z == position.z;
     }
 
     @Override
     public int hashCode() {
-        int result = x;
-        result = 31 * result + y;
-        result = 31 * result + z;
-        return result;
+        return Objects.hash(x, y, z);
     }
 
     @Override
