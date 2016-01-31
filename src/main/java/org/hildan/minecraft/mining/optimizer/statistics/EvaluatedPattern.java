@@ -2,6 +2,8 @@ package org.hildan.minecraft.mining.optimizer.statistics;
 
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern;
 
+import java.util.Locale;
+
 /**
  * A pattern along with its statistics.
  */
@@ -25,6 +27,6 @@ public class EvaluatedPattern {
 
     @Override
     public String toString() {
-        return statistics.toString();
+        return String.format(Locale.US, "e=%.0f%% t=%.0f%%", statistics.getEfficiency(), statistics.getThoroughness());
     }
 }

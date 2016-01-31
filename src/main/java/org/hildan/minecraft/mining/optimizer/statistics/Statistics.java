@@ -19,11 +19,11 @@ public class Statistics {
         this.nbSamples = nbSamples;
     }
 
-    private double getEfficiency() {
+    double getEfficiency() {
         return dugBlocks == 0 ? 100 : (double) foundOres * 100 / dugBlocks;
     }
 
-    private double getThoroughness() {
+    double getThoroughness() {
         return totalOres == 0 ? 100 : (double) foundOres * 100 / totalOres;
     }
 
