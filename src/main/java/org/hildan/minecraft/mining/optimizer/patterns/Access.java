@@ -1,5 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.patterns;
 
+import org.hildan.minecraft.mining.optimizer.geometry.Player;
 import org.hildan.minecraft.mining.optimizer.geometry.Position;
 
 import java.util.Objects;
@@ -29,7 +30,7 @@ public class Access {
      */
     public Access(int x, int y) {
         this.feet = new Position(x, y, 0);
-        this.head = new Position(x, y + 1, 0);
+        this.head = new Position(x, y + Player.HEIGHT - 1, 0);
     }
 
     public Position feet() {
