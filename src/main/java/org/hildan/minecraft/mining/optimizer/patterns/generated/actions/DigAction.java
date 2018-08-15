@@ -1,14 +1,14 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated.actions;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import org.hildan.minecraft.mining.optimizer.blocks.Block;
 import org.hildan.minecraft.mining.optimizer.blocks.Sample;
 import org.hildan.minecraft.mining.optimizer.blocks.Wrapping;
 import org.hildan.minecraft.mining.optimizer.geometry.Position;
 import org.hildan.minecraft.mining.optimizer.geometry.Range3D;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * An immutable action representing the player digging one block in an acceptable range. Digging above or below the
@@ -80,8 +80,20 @@ public class DigAction implements Action {
 
     private boolean isPathClear(Sample sample, Position head, Position block) {
         int norm = norm();
-        if (norm == 1 || (norm == 2 && distanceY == -1)) {
+        if (norm == 1) {
+            // block next to head always accessible
             return true;
+        }
+        if (norm == 2) {
+            if (distanceY == -1) {
+                // block next to feet always accessible
+                return true;
+            }
+            if (distanceY == 1) {
+                Block aboveHead = sample.getBlockAbove(head, Wrapping.WRAP);
+                Block belowTarget = sample.getBlockBelow(block, Wrapping.WRAP);
+                return aboveHead.isDug() || belowTarget.isDug();
+            }
         }
 
         // TODO implement true algorithm to check that the view is not obstructed
