@@ -44,7 +44,7 @@ class Sample {
     /**
      * Creates a new pure stone sample of the given dimensions.
      */
-    constructor(width: Int, height: Int, length: Int) {
+    constructor(width: Int, height: Int, length: Int, initialBlockType: BlockType) {
         this.width = width
         this.height = height
         this.length = length
@@ -53,10 +53,12 @@ class Sample {
         for (z in 0 until length) {
             for (y in 0 until height) {
                 for (x in 0 until width) {
-                    blocks.add(Block(x, y, z))
+                    blocks.add(Block(x, y, z, initialBlockType))
                 }
             }
         }
+        oreBlocksCount = if (initialBlockType.isOre) blocks.size else 0
+        dugBlocksCount = if (initialBlockType == BlockType.AIR) blocks.size else 0
     }
 
     /**

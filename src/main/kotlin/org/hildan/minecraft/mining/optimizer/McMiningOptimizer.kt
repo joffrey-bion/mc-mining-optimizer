@@ -5,6 +5,7 @@ import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.channels.produce
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
+import org.hildan.minecraft.mining.optimizer.blocks.BlockType
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
 import org.hildan.minecraft.mining.optimizer.ore.OreGenerator
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
@@ -24,7 +25,7 @@ private const val MAX_ACTIONS = 30
 private const val MAX_DUG_BLOCKS = 20
 
 fun main(vararg args: String) = runBlocking {
-    val reference = Sample(SAMPLE_WIDTH, SAMPLE_HEIGHT, SAMPLE_LENGTH)
+    val reference = Sample(SAMPLE_WIDTH, SAMPLE_HEIGHT, SAMPLE_LENGTH, BlockType.STONE)
 
     val constraints = GenerationConstraints(MAX_ACTIONS, MAX_DUG_BLOCKS)
     println("Starting pattern generation with constraints: $constraints")

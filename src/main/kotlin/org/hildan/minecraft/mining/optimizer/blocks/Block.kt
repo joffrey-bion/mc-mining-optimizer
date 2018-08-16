@@ -5,10 +5,7 @@ import org.hildan.minecraft.mining.optimizer.geometry.Position
 /**
  * Represents a Minecraft block.
  */
-class Block(x: Int, y: Int, z: Int) : Position(x, y, z) {
-
-    /** The type of this block. */
-    var type: BlockType = BlockType.STONE
+class Block(x: Int, y: Int, z: Int, var type: BlockType) : Position(x, y, z) {
 
     var isVisible: Boolean = false
 
@@ -30,8 +27,7 @@ class Block(x: Int, y: Int, z: Int) : Position(x, y, z) {
      * Creates a copy of this block.
      */
     internal fun copy() : Block {
-        val copy = Block(x, y, z)
-        copy.type = type
+        val copy = Block(x, y, z, type)
         copy.isVisible = isVisible
         copy.isExplored = isExplored
         return copy
