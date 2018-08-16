@@ -16,10 +16,10 @@ class OreGenerator {
      * Replace some stones in the given sample by ores. Only stone blocks may be changed.
      *
      * @param sample the sample to put ore into
-     * @param sampleYPosition the Y index of the lowest layer of the given sample within the chunk
+     * @param yPosition the Y index of the lowest layer of the given sample within the chunk
      */
-    fun generateInto(sample: Sample, sampleYPosition: Int) {
-        this.lowestY = sampleYPosition
+    fun generateInto(sample: Sample, yPosition: Int) {
+        this.lowestY = yPosition
 
         for (x in 0 until sample.width step CHUNK_WIDTH) {
             for (z in 0 until sample.length step CHUNK_LENGTH) {

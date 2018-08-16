@@ -5,7 +5,7 @@ import java.util.Locale
 /**
  * Represents statistics about a digging pattern.
  */
-class Statistics internal constructor(private val nbSamples: Int) {
+class Statistics(private val nbSamples: Int) {
 
     internal var totalOres: Long = 0
 
@@ -21,13 +21,13 @@ class Statistics internal constructor(private val nbSamples: Int) {
 
     private fun proportion(qty: Long, total: Long): Double = if (total == 0L) 100.0 else qty.toDouble() * 100 / total
 
-    internal fun isBetterThan(stats: Statistics, margin: Double): Boolean {
+    internal fun isBetterThan(stats: Statistics): Boolean {
         val eff = efficiency
         val tho = thoroughness
         val effOther = stats.efficiency
         val thoOther = stats.thoroughness
 
-        return eff > effOther + margin && tho > thoOther + margin
+        return eff > effOther && tho > thoOther
     }
 
     override fun toString(): String {

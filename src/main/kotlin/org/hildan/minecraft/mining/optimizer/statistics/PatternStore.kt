@@ -1,24 +1,22 @@
 package org.hildan.minecraft.mining.optimizer.statistics
 
-import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
-
 import java.util.ArrayList
 
 /**
  * Stores patterns and their stats, keeping only the best ones.
  */
-class PatternStore(private val margin: Double) : Iterable<EvaluatedPattern> {
+class PatternStore : Iterable<EvaluatedPattern> {
 
     private val patterns = ArrayList<EvaluatedPattern>(20)
 
-    fun add(pattern: DiggingPattern, stats: Statistics): Boolean {
-        if (patterns.any { it.statistics.isBetterThan(stats, margin) }) {
+    fun add(pattern: EvaluatedPattern): Boolean {
+        if (patterns.any { it.isBetterThan(pattern) }) {
             // new pattern not worth adding
             return false
         }
         // remove inferior patterns
-        patterns.removeIf { stats.isBetterThan(it.statistics, margin) }
-        patterns.add(EvaluatedPattern(pattern, stats))
+        patterns.removeIf { pattern.isBetterThan(it) }
+        patterns.add(pattern)
         return true
     }
 

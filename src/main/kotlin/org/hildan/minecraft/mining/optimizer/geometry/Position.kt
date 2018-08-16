@@ -8,8 +8,6 @@ open class Position(
     val y: Int,
     val z: Int
 ) {
-    constructor(source: Position): this(source.x, source.y, source.z)
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -30,5 +28,5 @@ open class Position(
         return result
     }
 
-    override fun toString(): String = "Position($x,$y,$z)"
+    override fun toString(): String = "($x,$y,$z)"
 }

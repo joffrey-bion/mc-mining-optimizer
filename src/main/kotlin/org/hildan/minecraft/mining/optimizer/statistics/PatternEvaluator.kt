@@ -7,21 +7,21 @@ import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
 /**
  * Creates a pool of Samples to evaluate digging patterns.
  */
-class PatternEvaluator(oreGenerator: OreGenerator, nbSamples: Int, baseSample: Sample) {
+class PatternEvaluator(
+    oreGenerator: OreGenerator,
+    nbSamples: Int,
+    baseSample: Sample,
+    sampleYPosition: Int
+) {
+    private val samples = List(nbSamples) { generateSample(baseSample, oreGenerator, sampleYPosition) }
 
-    private val samples: List<Sample>
-
-    init {
-        samples = List(nbSamples) {
-            print("\rGenerating sample ${it + 1}/$nbSamples...")
-            generateSample(baseSample, oreGenerator)
-        }
-        println("\rAll $nbSamples samples generated")
-    }
-
-    private fun generateSample(baseSample: Sample, oreGenerator: OreGenerator): Sample {
+    private fun generateSample(
+        baseSample: Sample,
+        oreGenerator: OreGenerator,
+        yPosition: Int
+    ): Sample {
         val sample = Sample(baseSample)
-        oreGenerator.generateInto(sample, 5)
+        oreGenerator.generateInto(sample, yPosition)
         return sample
     }
 
