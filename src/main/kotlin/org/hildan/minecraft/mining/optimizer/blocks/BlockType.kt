@@ -44,7 +44,5 @@ enum class BlockType(
     REDSTONE_ORE(true, color("R", RED), 7, 8, 0, 16),
     LAPIS_ORE(true, color("L", BLUE), 6, 1, 16, 16);
 
-    override fun toString(): String {
-        return visual
-    }
+    override fun toString(): String = visual
 }

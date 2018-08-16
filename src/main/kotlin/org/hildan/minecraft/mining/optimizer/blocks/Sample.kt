@@ -172,23 +172,6 @@ class Sample {
     fun getBlockBelow(position: Position, wrapping: Wrapping): Block? = getBlock(position, 0, -1, 0, wrapping)
 
     /**
-     * Gets the 4 blocks that are horizontally adjacent to given position. If wrapping is set to [Wrapping.CUT]
-     * and the given position is on this chunk's side, less than 4 blocks are returned because part of them is cut off.
-     *
-     * @param position the position to get the neighbors from
-     * @param wrapping the wrapping policy when the given block is on the side of this chunk
-     * @return a list containing blocks adjacent to the given position
-     */
-    fun getHorizontallyAdjacentBlocks(position: Position, wrapping: Wrapping): Collection<Block> {
-        val adjacentBlocks = mutableListOf<Block>()
-        adjacentBlocks.addIfNotNull(getBlock(position, +1, 0, 0, wrapping))
-        adjacentBlocks.addIfNotNull(getBlock(position, -1, 0, 0, wrapping))
-        adjacentBlocks.addIfNotNull(getBlock(position, 0, 0, +1, wrapping))
-        adjacentBlocks.addIfNotNull(getBlock(position, 0, 0, -1, wrapping))
-        return adjacentBlocks
-    }
-
-    /**
      * Gets the 6 blocks that are adjacent to given position. If wrapping is set to [Wrapping.CUT] and the given
      * position is on this sample's edge, less than 6 blocks are returned because part of them is cut off.
      *
@@ -196,7 +179,7 @@ class Sample {
      * @param wrapping the wrapping policy when the given block is on the side of this chunk
      * @return a list containing blocks adjacent to the given position
      */
-    fun getAdjacentBlocks(position: Position, wrapping: Wrapping): Collection<Block> {
+    fun getAdjacentBlocks(position: Position, wrapping: Wrapping): List<Block> {
         val adjacentBlocks = mutableListOf<Block>()
         adjacentBlocks.addIfNotNull(getBlock(position, +1, 0, 0, wrapping))
         adjacentBlocks.addIfNotNull(getBlock(position, -1, 0, 0, wrapping))
@@ -207,7 +190,11 @@ class Sample {
         return adjacentBlocks
     }
 
-    private fun MutableList<Block>.addIfNotNull(b: Block?) { if (b != null) { this.add(b) } }
+    private fun MutableList<Block>.addIfNotNull(b: Block?) {
+        if (b != null) {
+            this.add(b)
+        }
+    }
 
     /**
      * Returns the collection of all blocks matching the given predicate in this sample.
@@ -225,8 +212,32 @@ class Sample {
      * @param z the Z coordinate of the block to change
      * @param type the new type of the block
      */
-    fun setBlock(x: Int, y: Int, z: Int, type: BlockType) {
+    fun setBlock(x: Int, y: Int, z: Int, type: BlockType) = changeType(getBlock(x, y, z), type)
+
+    /**
+     * Digs the block at the specified position.
+     *
+     * @param position the position to dig at
+     */
+    fun digBlock(position: Position) = digBlock(position.x, position.y, position.z)
+
+    /**
+     * Digs the block at the specified position.
+     *
+     * @param x the X coordinate of the block to dig
+     * @param y the Y coordinate of the block to dig
+     * @param z the Z coordinate of the block to dig
+     */
+    fun digBlock(x: Int, y: Int, z: Int) {
+        setBlock(x, y, z, BlockType.AIR)
+
+        // TODO move visibility logic to external visitor
         val block = getBlock(x, y, z)
+        block.isVisible = true
+        getAdjacentBlocks(block, Wrapping.WRAP).forEach { b -> b.isVisible = true }
+    }
+
+    private fun changeType(block: Block, type: BlockType) {
         val formerType = block.type
         block.type = type
         if (!formerType.isOre && type.isOre) {
@@ -241,58 +252,7 @@ class Sample {
         }
     }
 
-    /**
-     * Digs the block at the specified position.
-     *
-     * @param position
-     * the position to dig at
-     */
-    fun digBlock(position: Position) = digBlock(position.x, position.y, position.z)
-
-    /**
-     * Digs the block at the specified position.
-     *
-     * @param x
-     * the X coordinate of the block to dig
-     * @param y
-     * the Y coordinate of the block to dig
-     * @param z
-     * the Z coordinate of the block to dig
-     */
-    fun digBlock(x: Int, y: Int, z: Int) {
-        setBlock(x, y, z, BlockType.AIR)
-
-        // TODO move visibility logic to external visitor
-        val block = getBlock(x, y, z)
-        block.isVisible = true
-        getAdjacentBlocks(block, Wrapping.WRAP).forEach { b -> b.isVisible = true }
-    }
-
     override fun toString(): String = "Size: $width $height $length  Dug: $dugBlocksCount"
-
-    fun toFullString(): String {
-        val sb = StringBuilder("Size: $width $height $length\n\n")
-        val layerSeparator = "  "
-
-        val columnTitleFormat = layerSeparator + '%' + width + 's'
-        sb.append(' ')
-        for (y in 0 until height) {
-            sb.append(columnTitleFormat.format("Y = $y"))
-        }
-        sb.append('\n')
-
-        for (z in 0 until length) {
-            sb.append("%2d ".format(z))
-            for (y in 0 until height) {
-                for (x in 0 until width) {
-                    sb.append(getBlock(x, y, z))
-                }
-                sb.append(layerSeparator)
-            }
-            sb.append('\n')
-        }
-        return sb.toString()
-    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
