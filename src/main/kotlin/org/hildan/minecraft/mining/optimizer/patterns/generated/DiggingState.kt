@@ -13,22 +13,20 @@ import java.util.ArrayList
 import java.util.HashMap
 
 /**
- * Represents a state while digging a sample. It contains the state of the sample, the position of the player and the
- * actions done so far to arrive at this state. It can generate the next possible states from this point using [expand].
- *
+ * Represents a state while digging a sample. It contains the history that brought to this state and can be
+ * [replayed on][replayOn] a [Sample]. It can generate the next possible states from this point using [expand].
  *
  * Can be turned into a [DiggingPattern].
  */
-internal class DiggingState {
-
+internal data class DiggingState(
     /**
      * When multiple accesses are available, we track the head position for each access independently. Hence one head
      * position per access.
      */
-    private val headPositionsPerAccess: MutableMap<Access, Position>
+    private val headPositionsPerAccess: MutableMap<Access, Position>,
 
     private val actionsPerAccess: MutableMap<Access, MutableList<Action>>
-
+) {
     /**
      * Returns whether this state is canonical. This means that we can't remove any of the last actions without changing
      * the resulting pattern. In other words, for every access, the last action must be a dig action, not a move.
@@ -43,41 +41,49 @@ internal class DiggingState {
      *
      * @param accesses the list of accesses to start digging
      */
-    constructor(accesses: Collection<Access>) {
-        this.headPositionsPerAccess = HashMap(accesses.size)
-        this.actionsPerAccess = HashMap(accesses.size)
+    constructor(accesses: Collection<Access>): this(HashMap(accesses.size), HashMap(accesses.size)) {
         for (access in accesses) {
             headPositionsPerAccess[access] = access.head
             actionsPerAccess[access] = mutableListOf()
         }
     }
 
-    /**
-     * Creates a copy of the given state.
-     *
-     * @param state the state to copy
-     */
-    private constructor(state: DiggingState) {
-        this.headPositionsPerAccess = HashMap(state.headPositionsPerAccess)
-        this.actionsPerAccess = state.actionsPerAccess.mapValuesTo(HashMap()) { ArrayList(it.value) }
+    fun replayOn(sample: Sample) {
+        actionsPerAccess.forEach { (access, actions) ->
+            access.digInto(sample)
+            actions.executeOn(sample, access.head)
+        }
     }
 
     /**
-     * Returns the `DiggingState` resulting of the execution of the given action on this state. This method does
-     * not affect this state.
+     * Expands the current state by performing every possible action on it. This method does not affect this state.
      *
-     * @param access the access for which to add the action
-     * @param action the action to perform on this state
-     * @return the resulting state
+     * @param sample a test sample reflecting this state, which can be used to test the next possible actions. Such a
+     * sample can be created using [replayOn].
+     * @param constraints some general constraints to limit to possible actions
+     *
+     * @return the collection of all states resulting of the execution of each possible action on this state.
      */
-    private fun transition(sample: Sample, access: Access, action: Action): DiggingState {
-        val newState = DiggingState(this)
-
-        val newHeadPosition = action.executeOn(sample, newState.headPositionsPerAccess[access]!!)
-        newState.headPositionsPerAccess[access] = newHeadPosition
-        newState.actionsPerAccess[access]!!.add(action)
-        return newState
+    fun expand(sample: Sample, constraints: GenerationConstraints): Collection<DiggingState> {
+        val actionsCount = actionsPerAccess.map { it.value.size }.sum()
+        if (actionsCount >= constraints.maxActions) {
+            return emptyList()
+        }
+        if (sample.dugBlocksCount >= constraints.maxDugBlocks) {
+            return emptyList()
+        }
+        return headPositionsPerAccess.flatMap { this.expandAccess(it.key, sample) }
     }
+
+    /**
+     * Streams the states representing all possible ways of continuing in the given access.
+     *
+     * @param access the access to operate on
+     * @return a Stream of states resulting of each possible action taken on the given access
+     */
+    private fun expandAccess(access: Access, sample: Sample) = allActions
+        .filter { action -> isAcceptable(sample, access, action) }
+        .map { action -> next(sample, access, action) }
 
     /**
      * Returns whether it is acceptable to execute this action in the current situation.
@@ -96,37 +102,23 @@ internal class DiggingState {
     }
 
     /**
-     * Expands the current state by performing every possible action on it. This method does not affect this state.
+     * Returns the `DiggingState` resulting of the execution of the given action on this state. This method does
+     * not affect this state.
      *
-     * @return the collection of all states resulting of the execution of each possible action on this state.
+     * @param access the access for which to add the action
+     * @param action the action to perform on this state
+     * @return the resulting state
      */
-    fun expand(sample: Sample, constraints: GenerationConstraints): Collection<DiggingState> {
-        val actionsCount = actionsPerAccess.map { it.value.size }.sum()
-        if (actionsCount >= constraints.maxActions) {
-            return emptyList()
-        }
-        if (sample.dugBlocksCount >= constraints.maxDugBlocks) {
-            return emptyList()
-        }
-        return headPositionsPerAccess.flatMap { this.expandAccess(it.key, sample) }
-    }
+    private fun next(sample: Sample, access: Access, action: Action): DiggingState {
+        val newHeadPositionsPerAccess = HashMap(headPositionsPerAccess)
+        val newActionsPerAccess: MutableMap<Access, MutableList<Action>> =
+            actionsPerAccess.mapValuesTo(HashMap()) { ArrayList(it.value) }
 
-    fun replayOn(sample: Sample) {
-        actionsPerAccess.forEach { (access, actions) ->
-            access.digInto(sample)
-            actions.executeOn(sample, access.head)
-        }
+        val newHeadPosition = action.executeOn(sample, headPositionsPerAccess[access]!!)
+        newHeadPositionsPerAccess[access] = newHeadPosition
+        newActionsPerAccess[access]!!.add(action)
+        return DiggingState(newHeadPositionsPerAccess, newActionsPerAccess)
     }
-
-    /**
-     * Streams the states representing all possible ways of continuing in the given access.
-     *
-     * @param access the access to operate on
-     * @return a Stream of states resulting of each possible action taken on the given access
-     */
-    private fun expandAccess(access: Access, sample: Sample) = allActions
-        .filter { action -> isAcceptable(sample, access, action) }
-        .map { action -> transition(sample, access, action) }
 
     /**
      * Creates a [GeneratedPattern] that brings any sample to this state.
@@ -145,24 +137,6 @@ internal class DiggingState {
             }
         }
         return sb.toString()
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as DiggingState
-
-        if (headPositionsPerAccess != other.headPositionsPerAccess) return false
-        if (actionsPerAccess != other.actionsPerAccess) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = headPositionsPerAccess.hashCode()
-        result = 31 * result + actionsPerAccess.hashCode()
-        return result
     }
 
     companion object {
