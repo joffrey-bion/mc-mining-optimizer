@@ -1,5 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.blocks
 
+import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -21,7 +22,7 @@ class SampleTest {
 
     @Before
     fun initSample() {
-        sample = Sample(10, 10, 10, BlockType.STONE)
+        sample = Sample(Dimensions(10, 10, 10), BlockType.STONE)
         block000 = sample.getBlock(0, 0, 0)
         block222 = sample.getBlock(2, 2, 2)
         block345 = sample.getBlock(3, 4, 5)

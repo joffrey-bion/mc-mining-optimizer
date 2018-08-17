@@ -5,6 +5,7 @@ import org.hildan.minecraft.mining.optimizer.blocks.BlockType
 import org.hildan.minecraft.mining.optimizer.blocks.Explorer
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
 import org.hildan.minecraft.mining.optimizer.blocks.Wrapping
+import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 
 /**
  * This abstract class regroups common behavior for all patterns.
@@ -46,7 +47,7 @@ abstract class AbstractDiggingPattern : DiggingPattern {
     protected abstract fun digInto(sample: Sample, originX: Int, originY: Int, originZ: Int)
 
     override fun toString(): String {
-        val sample = Sample(width, height, length, BlockType.STONE)
+        val sample = Sample(Dimensions(width, height, length), BlockType.STONE)
         digInto(sample)
         return sample.toString()
     }

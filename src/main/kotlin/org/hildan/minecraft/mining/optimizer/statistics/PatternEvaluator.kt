@@ -1,6 +1,8 @@
 package org.hildan.minecraft.mining.optimizer.statistics
 
+import org.hildan.minecraft.mining.optimizer.blocks.BlockType
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
+import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.ore.OreGenerator
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
 
@@ -10,17 +12,17 @@ import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
 class PatternEvaluator(
     oreGenerator: OreGenerator,
     nbEvaluationSamples: Int,
-    baseSample: Sample,
+    sampleDimensions: Dimensions,
     sampleYPosition: Int
 ) {
-    private val samples = List(nbEvaluationSamples) { generateSample(baseSample, oreGenerator, sampleYPosition) }
+    private val samples = List(nbEvaluationSamples) { generateSample(sampleDimensions, oreGenerator, sampleYPosition) }
 
     private fun generateSample(
-        baseSample: Sample,
+        sampleDimensions: Dimensions,
         oreGenerator: OreGenerator,
         yPosition: Int
     ): Sample {
-        val sample = Sample(baseSample)
+        val sample = Sample(sampleDimensions, BlockType.STONE)
         oreGenerator.generateInto(sample, yPosition)
         return sample
     }

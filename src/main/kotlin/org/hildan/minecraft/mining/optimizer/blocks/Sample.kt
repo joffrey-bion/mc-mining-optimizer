@@ -1,5 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.blocks
 
+import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.geometry.Position
 import java.util.NoSuchElementException
 
@@ -44,10 +45,10 @@ class Sample {
     /**
      * Creates a new pure stone sample of the given dimensions.
      */
-    constructor(width: Int, height: Int, length: Int, initialBlockType: BlockType) {
-        this.width = width
-        this.height = height
-        this.length = length
+    constructor(dimensions: Dimensions, initialBlockType: BlockType) {
+        this.width = dimensions.width
+        this.height = dimensions.height
+        this.length = dimensions.length
         this.blocks = mutableListOf()
         // initialize with stone blocks
         for (z in 0 until length) {

@@ -5,8 +5,7 @@ import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.channels.produce
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
-import org.hildan.minecraft.mining.optimizer.blocks.BlockType
-import org.hildan.minecraft.mining.optimizer.blocks.Sample
+import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.ore.OreGenerator
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
 import org.hildan.minecraft.mining.optimizer.patterns.generated.GenerationConstraints
@@ -25,15 +24,15 @@ private const val MAX_ACTIONS = 30
 private const val MAX_DUG_BLOCKS = 20
 
 fun main(vararg args: String) = runBlocking {
-    val reference = Sample(SAMPLE_WIDTH, SAMPLE_HEIGHT, SAMPLE_LENGTH, BlockType.STONE)
+    val sampleDimensions = Dimensions(SAMPLE_WIDTH, SAMPLE_HEIGHT, SAMPLE_LENGTH)
+    val constraints = GenerationConstraints(sampleDimensions, MAX_ACTIONS, MAX_DUG_BLOCKS)
 
-    val constraints = GenerationConstraints(MAX_ACTIONS, MAX_DUG_BLOCKS)
     println("Starting pattern generation with constraints: $constraints")
-    val generator = PatternGenerator(Sample(reference), constraints)
+    val generator = PatternGenerator(constraints)
     val patterns = generator.generateAsync()
 
     println("Initializing evaluator with $NUM_EVAL_SAMPLES evaluation samples...")
-    val evaluator = PatternEvaluator(OreGenerator(), NUM_EVAL_SAMPLES, reference, 5)
+    val evaluator = PatternEvaluator(OreGenerator(), NUM_EVAL_SAMPLES, sampleDimensions, 5)
 
     println("Starting pattern evaluation...")
     val evaluatedPatterns = evaluator.evaluateAsync(patterns)

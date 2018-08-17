@@ -13,7 +13,6 @@ import java.util.NoSuchElementException
  * Enumerates all possible patterns within the given constraints.
  */
 internal class PatternIterator(
-    private val testSample: Sample,
     accesses: Collection<Access>,
     private val constraints: GenerationConstraints
 ) : Iterator<DiggingPattern> {
@@ -21,6 +20,8 @@ internal class PatternIterator(
     private val exploredStates: MutableSet<DiggingState> = HashSet(50)
 
     private val statesToExplore: Deque<DiggingState> = ArrayDeque(25)
+
+    private val testSample: Sample = Sample(constraints.maxDimensions, BlockType.STONE)
 
     init {
         val initialState = DiggingState(accesses)
