@@ -9,11 +9,11 @@ import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
  */
 class PatternEvaluator(
     oreGenerator: OreGenerator,
-    nbSamples: Int,
+    nbEvaluationSamples: Int,
     baseSample: Sample,
     sampleYPosition: Int
 ) {
-    private val samples = List(nbSamples) { generateSample(baseSample, oreGenerator, sampleYPosition) }
+    private val samples = List(nbEvaluationSamples) { generateSample(baseSample, oreGenerator, sampleYPosition) }
 
     private fun generateSample(
         baseSample: Sample,

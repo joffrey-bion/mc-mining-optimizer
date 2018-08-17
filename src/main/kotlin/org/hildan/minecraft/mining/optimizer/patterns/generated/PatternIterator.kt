@@ -1,9 +1,9 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated
 
+import org.hildan.minecraft.mining.optimizer.blocks.BlockType
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
 import org.hildan.minecraft.mining.optimizer.patterns.Access
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
-
 import java.util.ArrayDeque
 import java.util.Deque
 import java.util.HashSet
@@ -13,26 +13,21 @@ import java.util.NoSuchElementException
  * Enumerates all possible patterns within the given constraints.
  */
 internal class PatternIterator(
-    initialSample: Sample,
+    private val testSample: Sample,
     accesses: Collection<Access>,
     private val constraints: GenerationConstraints
 ) : Iterator<DiggingPattern> {
 
-    private val exploredStates: MutableSet<DiggingState>
+    private val exploredStates: MutableSet<DiggingState> = HashSet(50)
 
-    private val statesToExplore: Deque<DiggingState>
+    private val statesToExplore: Deque<DiggingState> = ArrayDeque(25)
 
     init {
-        this.exploredStates = HashSet(50)
-        this.statesToExplore = ArrayDeque(25)
-
-        val initialState = DiggingState(initialSample, accesses)
+        val initialState = DiggingState(accesses)
         statesToExplore.add(initialState)
     }
 
-    override fun hasNext(): Boolean {
-        return !statesToExplore.isEmpty()
-    }
+    override fun hasNext(): Boolean = !statesToExplore.isEmpty()
 
     override fun next(): DiggingPattern {
         var state: DiggingState
@@ -43,10 +38,12 @@ internal class PatternIterator(
             exploredStates.add(state)
 
             // expand to find other states to explore
-            val newStates = state.expand(constraints)
+            testSample.fill(BlockType.STONE)
+            state.replayOn(testSample)
+            val newStates = state.expand(testSample, constraints)
             statesToExplore.addAll(newStates.filterNot(exploredStates::contains))
         } while (!statesToExplore.isEmpty() && !state.isCanonical)
 
-        return state.toPattern()
+        return state.toPattern(testSample.width, testSample.height, testSample.length)
     }
 }

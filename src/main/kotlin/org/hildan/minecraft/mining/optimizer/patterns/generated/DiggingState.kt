@@ -8,6 +8,7 @@ import org.hildan.minecraft.mining.optimizer.patterns.generated.actions.Action
 import org.hildan.minecraft.mining.optimizer.patterns.generated.actions.DigAction
 import org.hildan.minecraft.mining.optimizer.patterns.generated.actions.DigRange3D
 import org.hildan.minecraft.mining.optimizer.patterns.generated.actions.MoveAction
+import org.hildan.minecraft.mining.optimizer.patterns.generated.actions.executeOn
 import java.util.ArrayList
 import java.util.HashMap
 
@@ -19,8 +20,6 @@ import java.util.HashMap
  * Can be turned into a [DiggingPattern].
  */
 internal class DiggingState {
-
-    private val sample: Sample
 
     /**
      * When multiple accesses are available, we track the head position for each access independently. Hence one head
@@ -40,18 +39,14 @@ internal class DiggingState {
         get() = actionsPerAccess.all { (_, l) -> l.isEmpty() || l.last() is DigAction }
 
     /**
-     * Creates an initial state for the given sample based on the given accesses.
+     * Creates an initial state based on the given accesses.
      *
-     * @param sample the current sample
      * @param accesses the list of accesses to start digging
      */
-    constructor(sample: Sample, accesses: Collection<Access>) {
-        this.sample = sample
+    constructor(accesses: Collection<Access>) {
         this.headPositionsPerAccess = HashMap(accesses.size)
         this.actionsPerAccess = HashMap(accesses.size)
         for (access in accesses) {
-            sample.digBlock(access.feet)
-            sample.digBlock(access.head)
             headPositionsPerAccess[access] = access.head
             actionsPerAccess[access] = mutableListOf()
         }
@@ -63,7 +58,6 @@ internal class DiggingState {
      * @param state the state to copy
      */
     private constructor(state: DiggingState) {
-        this.sample = Sample(state.sample)
         this.headPositionsPerAccess = HashMap(state.headPositionsPerAccess)
         this.actionsPerAccess = state.actionsPerAccess.mapValuesTo(HashMap()) { ArrayList(it.value) }
     }
@@ -76,13 +70,12 @@ internal class DiggingState {
      * @param action the action to perform on this state
      * @return the resulting state
      */
-    private fun transition(access: Access, action: Action): DiggingState {
+    private fun transition(sample: Sample, access: Access, action: Action): DiggingState {
         val newState = DiggingState(this)
 
-        val newHeadPosition = action.executeOn(newState.sample, newState.headPositionsPerAccess[access]!!)
+        val newHeadPosition = action.executeOn(sample, newState.headPositionsPerAccess[access]!!)
         newState.headPositionsPerAccess[access] = newHeadPosition
         newState.actionsPerAccess[access]!!.add(action)
-
         return newState
     }
 
@@ -93,7 +86,7 @@ internal class DiggingState {
      * @param action the action to perform
      * @return true if this action may be performed in the current situation
      */
-    private fun isAcceptable(access: Access, action: Action): Boolean {
+    private fun isAcceptable(sample: Sample, access: Access, action: Action): Boolean {
         val actions = actionsPerAccess[access]!!
         if (!actions.isEmpty() && action.isInverseOf(actions.last())) {
             return false
@@ -107,7 +100,7 @@ internal class DiggingState {
      *
      * @return the collection of all states resulting of the execution of each possible action on this state.
      */
-    fun expand(constraints: GenerationConstraints): Collection<DiggingState> {
+    fun expand(sample: Sample, constraints: GenerationConstraints): Collection<DiggingState> {
         val actionsCount = actionsPerAccess.map { it.value.size }.sum()
         if (actionsCount >= constraints.maxActions) {
             return emptyList()
@@ -115,7 +108,14 @@ internal class DiggingState {
         if (sample.dugBlocksCount >= constraints.maxDugBlocks) {
             return emptyList()
         }
-        return headPositionsPerAccess.flatMap { this.expandAccess(it.key) }
+        return headPositionsPerAccess.flatMap { this.expandAccess(it.key, sample) }
+    }
+
+    fun replayOn(sample: Sample) {
+        actionsPerAccess.forEach { (access, actions) ->
+            access.digInto(sample)
+            actions.executeOn(sample, access.head)
+        }
     }
 
     /**
@@ -124,18 +124,16 @@ internal class DiggingState {
      * @param access the access to operate on
      * @return a Stream of states resulting of each possible action taken on the given access
      */
-    private fun expandAccess(access: Access) = allActions
-        .filter { action -> isAcceptable(access, action) }
-        .map { action -> transition(access, action) }
+    private fun expandAccess(access: Access, sample: Sample) = allActions
+        .filter { action -> isAcceptable(sample, access, action) }
+        .map { action -> transition(sample, access, action) }
 
     /**
      * Creates a [GeneratedPattern] that brings any sample to this state.
      *
      * @return a [GeneratedPattern] that brings any sample to this state.
      */
-    fun toPattern() = GeneratedPattern(actionsPerAccess, sample.width, sample.height, sample.length)
-
-
+    fun toPattern(width: Int, height: Int, length: Int) = GeneratedPattern(actionsPerAccess, width, height, length)
 
     override fun toString(): String {
         val sb = StringBuilder()
@@ -155,20 +153,19 @@ internal class DiggingState {
 
         other as DiggingState
 
-        if (sample != other.sample) return false
         if (headPositionsPerAccess != other.headPositionsPerAccess) return false
+        if (actionsPerAccess != other.actionsPerAccess) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = sample.hashCode()
-        result = 31 * result + headPositionsPerAccess.hashCode()
+        var result = headPositionsPerAccess.hashCode()
+        result = 31 * result + actionsPerAccess.hashCode()
         return result
     }
 
     companion object {
-
         /**
          * Contains all possible actions supported to expand DiggingStates.
          */

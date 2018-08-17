@@ -32,13 +32,10 @@ interface Action {
     /**
      * Executes this action on the given sample.
      *
-     * @param sample
-     * the current sample
-     * @param currentHeadPosition
-     * the current position of the head of the player
+     * @param sample the current sample
+     * @param currentHeadPosition the current position of the head of the player
      * @return the new position of the head of the player
-     * @throws IllegalStateException
-     * if the action couldn't be performed in the current state
+     * @throws IllegalStateException if the action couldn't be performed in the current state
      */
     fun executeOn(sample: Sample, currentHeadPosition: Position): Position
 
@@ -51,4 +48,20 @@ interface Action {
      * @return true if this action modifies the sample it is applied on
      */
     fun isInverseOf(action: Action): Boolean
+}
+
+/**
+ * Executes these actions on the given sample.
+ *
+ * @param sample the current sample
+ * @param initialHeadPosition the initial position of the head of the player
+ * @return the new position of the head of the player
+ * @throws IllegalStateException if the action couldn't be performed in the current state
+ */
+fun Iterable<Action>.executeOn(sample: Sample, initialHeadPosition: Position): Position {
+    var headPos = initialHeadPosition
+    for (action in this) {
+        headPos = action.executeOn(sample, headPos)
+    }
+    return headPos
 }

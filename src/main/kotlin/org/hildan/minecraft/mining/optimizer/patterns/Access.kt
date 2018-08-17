@@ -1,5 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.patterns
 
+import org.hildan.minecraft.mining.optimizer.blocks.Sample
 import org.hildan.minecraft.mining.optimizer.geometry.Player
 import org.hildan.minecraft.mining.optimizer.geometry.Position
 
@@ -23,6 +24,11 @@ data class Access(
      * @param y the Y position of the feet of the player
      */
     constructor(x: Int, y: Int): this(Position(x, y, 0), Position(x, y + Player.HEIGHT - 1, 0))
+
+    fun digInto(sample: Sample) {
+        sample.digBlock(feet)
+        sample.digBlock(head)
+    }
 
     override fun toString(): String = "Access(${feet.x},${feet.y})"
 }

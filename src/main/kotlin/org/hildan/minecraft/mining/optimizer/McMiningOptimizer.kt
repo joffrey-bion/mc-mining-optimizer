@@ -15,7 +15,7 @@ import org.hildan.minecraft.mining.optimizer.statistics.EvaluatedPattern
 import org.hildan.minecraft.mining.optimizer.statistics.PatternEvaluator
 import org.hildan.minecraft.mining.optimizer.statistics.PatternStore
 
-private const val NUM_ITERATIONS = 50
+private const val NUM_EVAL_SAMPLES = 50
 
 private const val SAMPLE_WIDTH = 16
 private const val SAMPLE_HEIGHT = 5
@@ -32,8 +32,8 @@ fun main(vararg args: String) = runBlocking {
     val generator = PatternGenerator(Sample(reference), constraints)
     val patterns = generator.generateAsync()
 
-    println("Initializing evaluator for $NUM_ITERATIONS iterations...")
-    val evaluator = PatternEvaluator(OreGenerator(), NUM_ITERATIONS, reference, 5)
+    println("Initializing evaluator with $NUM_EVAL_SAMPLES evaluation samples...")
+    val evaluator = PatternEvaluator(OreGenerator(), NUM_EVAL_SAMPLES, reference, 5)
 
     println("Starting pattern evaluation...")
     val evaluatedPatterns = evaluator.evaluateAsync(patterns)
@@ -41,10 +41,13 @@ fun main(vararg args: String) = runBlocking {
     val store = PatternStore()
     var count = 0
     evaluatedPatterns.consumeEach {
+        count++
+        if (count % 10000 == 0) {
+            println("$count total evaluated patterns")
+        }
         if (store.add(it)) {
             println(store)
         }
-        println("${count++} evaluated patterns stored")
     }
     println("Finished!")
 
@@ -60,12 +63,10 @@ fun PatternGenerator.generateAsync() = produce(capacity = 200) {
 }
 
 fun PatternEvaluator.evaluateAsync(patterns: ReceiveChannel<DiggingPattern>) = produce(capacity = 200) {
-    var count = 0
     repeat(8) {
         launch(coroutineContext) {
             for (p in patterns) {
                 val stats = evaluate(p)
-                println("Evaluator $it: evaluated pattern #${count++}")
                 send(EvaluatedPattern(p, stats))
             }
         }

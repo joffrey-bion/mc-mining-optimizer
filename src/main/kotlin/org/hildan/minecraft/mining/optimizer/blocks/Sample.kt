@@ -214,6 +214,8 @@ class Sample {
      */
     fun setBlock(x: Int, y: Int, z: Int, type: BlockType) = changeType(getBlock(x, y, z), type)
 
+    fun fill(blockType: BlockType) = blocks.forEach { changeType(it, blockType) }
+
     /**
      * Digs the block at the specified position.
      *
