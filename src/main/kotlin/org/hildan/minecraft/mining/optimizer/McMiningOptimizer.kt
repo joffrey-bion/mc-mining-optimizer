@@ -6,7 +6,6 @@ import kotlinx.coroutines.experimental.channels.produce
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
-import org.hildan.minecraft.mining.optimizer.ore.OreGenerator
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
 import org.hildan.minecraft.mining.optimizer.patterns.generated.GenerationConstraints
 import org.hildan.minecraft.mining.optimizer.patterns.generated.PatternGenerator
@@ -20,6 +19,8 @@ private const val SAMPLE_WIDTH = 16
 private const val SAMPLE_HEIGHT = 5
 private const val SAMPLE_LENGTH = 16
 
+private const val SAMPLE_LOW_Y_POSITION = 5
+
 private const val MAX_ACTIONS = 30
 private const val MAX_DUG_BLOCKS = 20
 
@@ -32,7 +33,7 @@ fun main(vararg args: String) = runBlocking {
     val patterns = generator.generateAsync()
 
     println("Initializing evaluator with $NUM_EVAL_SAMPLES evaluation samples...")
-    val evaluator = PatternEvaluator(OreGenerator(), NUM_EVAL_SAMPLES, sampleDimensions, 5)
+    val evaluator = PatternEvaluator(NUM_EVAL_SAMPLES, sampleDimensions, SAMPLE_LOW_Y_POSITION)
 
     println("Starting pattern evaluation...")
     val evaluatedPatterns = evaluator.evaluateAsync(patterns)

@@ -26,11 +26,17 @@ class Block(x: Int, y: Int, z: Int, var type: BlockType) : Position(x, y, z) {
     /**
      * Creates a copy of this block.
      */
-    internal fun copy() : Block {
+    internal fun copy(): Block {
         val copy = Block(x, y, z, type)
         copy.isVisible = isVisible
         copy.isExplored = isExplored
         return copy
+    }
+
+    fun resetTo(refBlock: Block) {
+        type = refBlock.type
+        isVisible = refBlock.isVisible
+        isExplored = refBlock.isExplored
     }
 
     override fun equals(other: Any?): Boolean {

@@ -10,34 +10,37 @@ import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
  * Creates a pool of Samples to evaluate digging patterns.
  */
 class PatternEvaluator(
-    oreGenerator: OreGenerator,
     nbEvaluationSamples: Int,
     sampleDimensions: Dimensions,
     sampleYPosition: Int
 ) {
-    private val samples = List(nbEvaluationSamples) { generateSample(sampleDimensions, oreGenerator, sampleYPosition) }
+    private val referenceSamples = generateReferenceSamples(nbEvaluationSamples, sampleDimensions, sampleYPosition)
 
-    private fun generateSample(
-        sampleDimensions: Dimensions,
-        oreGenerator: OreGenerator,
-        yPosition: Int
-    ): Sample {
-        val sample = Sample(sampleDimensions, BlockType.STONE)
-        oreGenerator.generateInto(sample, yPosition)
+    private val testSamples = referenceSamples.map { Sample(it) }
+
+    private fun generateReferenceSamples(count: Int, dimensions: Dimensions, lowYPosition: Int): List<Sample> {
+        val gen = OreGenerator()
+        return List(count) { generateSample(dimensions, lowYPosition, gen) }
+    }
+    private fun generateSample(dimensions: Dimensions, lowYPosition: Int, oreGenerator: OreGenerator): Sample {
+        val sample = Sample(dimensions, BlockType.STONE)
+        oreGenerator.generateInto(sample, lowYPosition)
         return sample
     }
 
     fun evaluate(pattern: DiggingPattern): Statistics {
-        val stats = Statistics(samples.size)
-        for (refSample in samples) {
-            val sample = Sample(refSample)
-            val initialOres = sample.oreBlocksCount.toLong()
+        val stats = Statistics(referenceSamples.size)
+        for (i in testSamples.indices) {
+            val testSample = testSamples[i]
+            testSample.resetTo(referenceSamples[i])
+
+            val initialOres = testSample.oreBlocksCount.toLong()
             stats.totalOres += initialOres
 
-            pattern.digInto(sample)
+            pattern.digInto(testSample)
 
-            stats.dugBlocks += sample.dugBlocksCount.toLong()
-            stats.foundOres += initialOres - sample.oreBlocksCount
+            stats.dugBlocks += testSample.dugBlocksCount.toLong()
+            stats.foundOres += initialOres - testSample.oreBlocksCount
         }
         return stats
     }

@@ -240,6 +240,14 @@ class Sample {
         getAdjacentBlocks(block, Wrapping.WRAP).forEach { b -> b.isVisible = true }
     }
 
+    fun resetTo(sample: Sample) {
+        for (i in blocks.indices) {
+            blocks[i].resetTo(sample.blocks[i])
+        }
+        oreBlocksCount = sample.oreBlocksCount
+        dugBlocksCount = sample.dugBlocksCount
+    }
+
     private fun changeType(block: Block, type: BlockType) {
         val formerType = block.type
         block.type = type
