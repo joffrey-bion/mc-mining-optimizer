@@ -1,14 +1,14 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated
 
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
+import org.hildan.minecraft.mining.optimizer.geometry.DigRange3D
+import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.geometry.Position
 import org.hildan.minecraft.mining.optimizer.patterns.Access
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
 import org.hildan.minecraft.mining.optimizer.patterns.generated.actions.Action
-import org.hildan.minecraft.mining.optimizer.geometry.DigRange3D
 import org.hildan.minecraft.mining.optimizer.patterns.generated.actions.MoveAction
 import org.hildan.minecraft.mining.optimizer.patterns.generated.actions.RelativeDigAction
-import org.hildan.minecraft.mining.optimizer.patterns.generated.actions.executeOn
 import java.util.ArrayList
 import java.util.HashMap
 
@@ -23,36 +23,12 @@ internal data class DiggingState(
      * When multiple accesses are available, we track the head position for each access independently. Hence one head
      * position per access.
      */
-    private val headPositionByAccess: MutableMap<Access, Position>,
+    private val headPositionByAccess: Map<Access, Position>,
 
-    private val actionsByAccess: MutableMap<Access, MutableList<Action>>
+    private val dugPositions: List<Position>
 ) {
-    /**
-     * Returns whether this state is canonical. This means that we can't remove any of the last actions without changing
-     * the resulting pattern. In other words, for every access, the last action must be a dig action, not a move.
-     *
-     * @return true if this state is canonical
-     */
-    val isCanonical: Boolean
-        get() = actionsByAccess.all { (_, actions) -> actions.isEmpty() || actions.last() is RelativeDigAction }
-
-    /**
-     * Creates an initial state based on the given accesses.
-     *
-     * @param accesses the list of accesses to start digging
-     */
-    constructor(accesses: Collection<Access>): this(HashMap(accesses.size), HashMap(accesses.size)) {
-        for (access in accesses) {
-            headPositionByAccess[access] = access.head
-            actionsByAccess[access] = mutableListOf()
-        }
-    }
-
     fun replayOn(sample: Sample) {
-        actionsByAccess.forEach { (access, actions) ->
-            access.digInto(sample)
-            actions.executeOn(sample, access.head)
-        }
+        dugPositions.forEach { sample.digBlock(it) }
     }
 
     /**
@@ -65,11 +41,7 @@ internal data class DiggingState(
      * @return the collection of all states resulting of the execution of each possible action on this state.
      */
     fun expand(sample: Sample, constraints: GenerationConstraints): Collection<DiggingState> {
-        val actionsCount = actionsByAccess.map { it.value.size }.sum()
-        if (actionsCount >= constraints.maxActions) {
-            return emptyList()
-        }
-        if (sample.dugBlocksCount >= constraints.maxDugBlocks) {
+        if (dugPositions.size >= constraints.maxDugBlocks) {
             return emptyList()
         }
         return headPositionByAccess.flatMap { this.expandAccess(it.key, sample) }
@@ -82,24 +54,8 @@ internal data class DiggingState(
      * @return a Stream of states resulting of each possible action taken on the given access
      */
     private fun expandAccess(access: Access, sample: Sample) = allActions
-        .filter { action -> isAcceptable(sample, access, action) }
+        .filter { action -> action.isValidFor(sample, headPositionByAccess[access]!!) }
         .map { action -> next(sample, access, action) }
-
-    /**
-     * Returns whether it is acceptable to execute this action in the current situation.
-     *
-     * @param access the access for which to execute the action
-     * @param action the action to perform
-     * @return true if this action may be performed in the current situation
-     */
-    private fun isAcceptable(sample: Sample, access: Access, action: Action): Boolean {
-        val actions = actionsByAccess[access]!!
-        if (!actions.isEmpty() && action.isInverseOf(actions.last())) {
-            return false
-        }
-        val currentHeadPosition = headPositionByAccess[access]!!
-        return action.isValidFor(sample, currentHeadPosition)
-    }
 
     /**
      * Returns the `DiggingState` resulting of the execution of the given action on this state. This method does
@@ -109,46 +65,47 @@ internal data class DiggingState(
      * @param action the action to perform on this state
      * @return the resulting state
      */
-    private fun next(sample: Sample, access: Access, action: Action): DiggingState {
-        val newHeadPositionsPerAccess = HashMap(headPositionByAccess)
-        val newActionsPerAccess: MutableMap<Access, MutableList<Action>> =
-            actionsByAccess.mapValuesTo(HashMap()) { ArrayList(it.value) }
+    private fun next(sample: Sample, access: Access, action: Action): DiggingState = when (action) {
+        is RelativeDigAction -> digFromHere(access, action, sample.dimensions)
+        is MoveAction -> moveFromHere(access, action, sample.dimensions)
+    }
 
-        val newHeadPosition = action.executeOn(sample, headPositionByAccess[access]!!)
-        newHeadPositionsPerAccess[access] = newHeadPosition
-        newActionsPerAccess[access]!!.add(action)
-        return DiggingState(newHeadPositionsPerAccess, newActionsPerAccess)
+    private fun moveFromHere(access: Access, action: MoveAction, dimensions: Dimensions): DiggingState {
+        val newHeadPositionsPerAccess = HashMap(headPositionByAccess)
+        newHeadPositionsPerAccess[access] = action.move(headPositionByAccess[access]!!, dimensions)
+        return DiggingState(newHeadPositionsPerAccess, dugPositions)
+    }
+
+    private fun digFromHere(access: Access, action: RelativeDigAction, dimensions: Dimensions): DiggingState {
+        val dugBlockPos = action.digPosition(headPositionByAccess[access]!!, dimensions)
+        return DiggingState(headPositionByAccess, dugPositions + dugBlockPos)
     }
 
     /**
      * Creates a [GeneratedPattern] that brings any sample to this state.
-     *
-     * @return a [GeneratedPattern] that brings any sample to this state.
      */
-    fun toPattern() = GeneratedPattern(actionsByAccess)
-
-    override fun toString(): String {
-        val sb = StringBuilder()
-        val indent = "   "
-        for ((access, actions) in actionsByAccess) {
-            sb.append(access).append(String.format("%n"))
-            for (action in actions) {
-                sb.append(indent).append(action).append(String.format("%n"))
-            }
-        }
-        return sb.toString()
-    }
+    fun toPattern() = GeneratedPattern(headPositionByAccess.keys, dugPositions)
 
     companion object {
         /**
          * Contains all possible actions supported to expand DiggingStates.
          */
-        private val allActions: Collection<Action>
+        private val allActions: Collection<Action> = MoveAction.all + RelativeDigAction.getAll(DigRange3D.STRICT)
 
-        init {
-            allActions = mutableSetOf()
-            allActions.addAll(MoveAction.all)
-            allActions.addAll(RelativeDigAction.getAll(DigRange3D.STRICT))
+        /**
+         * Creates an initial state based on the given accesses.
+         *
+         * @param accesses the list of accesses to start digging
+         */
+        fun initialState(accesses: Collection<Access>): DiggingState {
+            val headPosByAccess = HashMap<Access, Position>(accesses.size)
+            val dugPositions = ArrayList<Position>(accesses.size * 2)
+            for (access in accesses) {
+                headPosByAccess[access] = access.head
+                dugPositions.add(access.head)
+                dugPositions.add(access.feet)
+            }
+            return DiggingState(headPosByAccess, dugPositions)
         }
     }
 }

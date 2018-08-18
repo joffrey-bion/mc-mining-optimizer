@@ -34,7 +34,7 @@ object Explorer {
         val headBlock = sample.getBlock(access.head)
         assert(headBlock.isDug) { "the given sample's access has not been dug at head level" }
 
-        val blocksToExplore = ArrayDeque<Block>(sample.width * sample.height * sample.length / 3)
+        val blocksToExplore = ArrayDeque<Block>()
         blocksToExplore.addLast(headBlock)
         while (!blocksToExplore.isEmpty()) {
             val block = blocksToExplore.pollFirst()

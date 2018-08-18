@@ -7,9 +7,8 @@ import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
  */
 data class GenerationConstraints(
     val maxDimensions: Dimensions,
-    val maxActions: Int,
     val maxDugBlocks: Int
 ) {
 
-    override fun toString(): String = "max $maxActions actions, max $maxDugBlocks dug blocks"
+    override fun toString(): String = "max $maxDugBlocks dug blocks"
 }

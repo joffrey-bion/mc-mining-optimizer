@@ -21,8 +21,8 @@ class OreGenerator {
     fun generateInto(sample: Sample, yPosition: Int) {
         this.lowestY = yPosition
 
-        for (x in 0 until sample.width step CHUNK_WIDTH) {
-            for (z in 0 until sample.length step CHUNK_LENGTH) {
+        for (x in 0 until sample.dimensions.width step CHUNK_WIDTH) {
+            for (z in 0 until sample.dimensions.length step CHUNK_LENGTH) {
                 genStandardOre(sample, BlockType.COAL_ORE, x, z)
                 genStandardOre(sample, BlockType.IRON_ORE, x, z)
                 genStandardOre(sample, BlockType.GOLD_ORE, x, z)
@@ -60,10 +60,11 @@ class OreGenerator {
 
             // coords are generated within a chunk, we check whether it falls in our sample, which is part of a chunk
             // this gives us the same probability as if the sample was actually taken from the Minecraft-generated world
-            if (x + xOffset < sample.width + OUTSIDE_MARGIN && z + zOffset < sample.length + OUTSIDE_MARGIN) {
-                if (lowestY - OUTSIDE_MARGIN <= y && y < lowestY + sample.height + OUTSIDE_MARGIN) {
-                    gen.generateInto(sample, random, x + xOffset, y - lowestY, z + zOffset)
-                }
+            val xInSample = x + xOffset < sample.dimensions.width + OUTSIDE_MARGIN
+            val zInSample = z + zOffset < sample.dimensions.length + OUTSIDE_MARGIN
+            val yInSample = lowestY - OUTSIDE_MARGIN <= y && y < lowestY + sample.dimensions.height + OUTSIDE_MARGIN
+            if (xInSample && zInSample && yInSample) {
+                gen.generateInto(sample, random, x + xOffset, y - lowestY, z + zOffset)
             }
         }
     }

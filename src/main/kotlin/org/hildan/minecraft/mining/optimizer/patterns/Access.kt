@@ -23,12 +23,7 @@ data class Access(
      * @param x the X position of the feet of the player
      * @param y the Y position of the feet of the player
      */
-    constructor(x: Int, y: Int): this(Position(x, y, 0), Position(x, y + Player.HEIGHT - 1, 0))
-
-    fun digInto(sample: Sample) {
-        sample.digBlock(feet)
-        sample.digBlock(head)
-    }
+    constructor(x: Int, y: Int): this(Position.of(x, y, 0), Position.of(x, y + Player.HEIGHT - 1, 0))
 
     override fun toString(): String = "Access(${feet.x},${feet.y})"
 }

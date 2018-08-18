@@ -17,33 +17,29 @@ internal class PatternIterator(
     private val constraints: GenerationConstraints
 ) : Iterator<DiggingPattern> {
 
+    private val testSample: Sample = Sample(constraints.maxDimensions, BlockType.STONE)
+
     private val exploredStates: MutableSet<DiggingState> = HashSet(50)
 
     private val statesToExplore: Deque<DiggingState> = ArrayDeque(25)
 
-    private val testSample: Sample = Sample(constraints.maxDimensions, BlockType.STONE)
-
     init {
-        val initialState = DiggingState(accesses)
-        statesToExplore.add(initialState)
+        statesToExplore.add(DiggingState.initialState(accesses))
     }
 
     override fun hasNext(): Boolean = !statesToExplore.isEmpty()
 
     override fun next(): DiggingPattern {
-        var state: DiggingState
-        do {
-            state = statesToExplore.pollFirst() ?: throw NoSuchElementException("no more patterns available")
+        val state = statesToExplore.pollFirst() ?: throw NoSuchElementException("no more patterns available")
 
-            // never explore this state again
-            exploredStates.add(state)
+        // never explore this state again
+        exploredStates.add(state)
 
-            // expand to find other states to explore
-            testSample.fill(BlockType.STONE)
-            state.replayOn(testSample)
-            val newStates = state.expand(testSample, constraints)
-            statesToExplore.addAll(newStates.filterNot(exploredStates::contains))
-        } while (!statesToExplore.isEmpty() && !state.isCanonical)
+        // expand to find other states to explore
+        testSample.fill(BlockType.STONE)
+        state.replayOn(testSample)
+        val newStates = state.expand(testSample, constraints)
+        statesToExplore.addAll(newStates.filterNot(exploredStates::contains))
 
         return state.toPattern()
     }

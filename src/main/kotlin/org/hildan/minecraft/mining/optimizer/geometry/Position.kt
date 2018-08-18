@@ -29,4 +29,12 @@ open class Position(
     }
 
     override fun toString(): String = "($x,$y,$z)"
+
+    companion object {
+        private val cache: MutableMap<Int, MutableMap<Int, MutableMap<Int, Position>>> = HashMap()
+
+        fun of(x: Int, y: Int, z: Int): Position {
+            return cache.getOrPut(x, ::HashMap).getOrPut(y, ::HashMap).getOrPut(y) { Position(x, y, z) }
+        }
+    }
 }

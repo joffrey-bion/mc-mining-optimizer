@@ -23,12 +23,11 @@ private const val SAMPLE_LENGTH = 16
 
 private const val SAMPLE_LOW_Y_POSITION = 5
 
-private const val MAX_ACTIONS = 30
 private const val MAX_DUG_BLOCKS = 20
 
 fun main(vararg args: String) = runBlocking {
     val sampleDimensions = Dimensions(SAMPLE_WIDTH, SAMPLE_HEIGHT, SAMPLE_LENGTH)
-    val constraints = GenerationConstraints(sampleDimensions, MAX_ACTIONS, MAX_DUG_BLOCKS)
+    val constraints = GenerationConstraints(sampleDimensions, MAX_DUG_BLOCKS)
 
     println("Starting pattern generation with constraints: $constraints")
     val generator = PatternGenerator(constraints)
