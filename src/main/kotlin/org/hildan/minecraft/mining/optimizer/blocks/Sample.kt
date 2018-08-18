@@ -28,7 +28,7 @@ class Sample {
     /**
      * The blocks of this sample.
      */
-    private val blocks: List<Block>
+    val blocks: List<Block>
 
     /**
      * The number of ore blocks currently in this sample.
@@ -203,7 +203,7 @@ class Sample {
      * @param predicate the predicate to test the blocks
      * @return the collection of all blocks matching the given predicate in this sample.
      */
-    fun getBlocksMatching(predicate: (Block) -> Boolean): List<Block> = blocks.filter(predicate)
+    inline fun getBlocksMatching(predicate: (Block) -> Boolean): List<Block> = blocks.filter(predicate)
 
     /**
      * Changes the type of the block at the given position.
