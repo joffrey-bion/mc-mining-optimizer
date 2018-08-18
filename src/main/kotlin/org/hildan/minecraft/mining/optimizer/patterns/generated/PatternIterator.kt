@@ -45,6 +45,6 @@ internal class PatternIterator(
             statesToExplore.addAll(newStates.filterNot(exploredStates::contains))
         } while (!statesToExplore.isEmpty() && !state.isCanonical)
 
-        return state.toPattern(testSample.width, testSample.height, testSample.length)
+        return state.toPattern()
     }
 }

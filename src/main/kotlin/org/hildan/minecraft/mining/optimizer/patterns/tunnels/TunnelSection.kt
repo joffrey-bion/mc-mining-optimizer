@@ -1,7 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.patterns.tunnels
 
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
-import org.hildan.minecraft.mining.optimizer.geometry.Axis
 
 /**
  * Describes the dimensions of a 2D section of a tunnel.
@@ -12,9 +11,9 @@ data class TunnelSection(val width: Int, val height: Int) {
         val xMax = originX + getSizeOnAxis(Axis.X, direction, length)
         val yMax = originY + getSizeOnAxis(Axis.Y, direction, length)
         val zMax = originZ + getSizeOnAxis(Axis.Z, direction, length)
-        for (x in originX until Math.min(xMax, sample.width)) {
-            for (y in originY until Math.min(yMax, sample.height)) {
-                for (z in originZ until Math.min(zMax, sample.length)) {
+        for (x in originX until Math.min(xMax, sample.dimensions.width)) {
+            for (y in originY until Math.min(yMax, sample.dimensions.height)) {
+                for (z in originZ until Math.min(zMax, sample.dimensions.length)) {
                     sample.digBlock(x, y, z)
                 }
             }

@@ -125,7 +125,7 @@ internal data class DiggingState(
      *
      * @return a [GeneratedPattern] that brings any sample to this state.
      */
-    fun toPattern(width: Int, height: Int, length: Int) = GeneratedPattern(actionsByAccess, width, height, length)
+    fun toPattern() = GeneratedPattern(actionsByAccess)
 
     override fun toString(): String {
         val sb = StringBuilder()

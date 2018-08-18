@@ -5,6 +5,8 @@ import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.channels.produce
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
+import org.hildan.minecraft.mining.optimizer.blocks.BlockType
+import org.hildan.minecraft.mining.optimizer.blocks.Sample
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
 import org.hildan.minecraft.mining.optimizer.patterns.generated.GenerationConstraints
@@ -51,10 +53,7 @@ fun main(vararg args: String) = runBlocking {
     }
     println("Finished!")
 
-    for (pattern in store) {
-        System.out.println(pattern.pattern)
-        System.out.println(pattern.statistics.toFullString())
-    }
+    printBestPatterns(sampleDimensions, store)
 }
 
 fun PatternGenerator.generateAsync() = produce(capacity = 200) {
@@ -70,5 +69,15 @@ fun PatternEvaluator.evaluateAsync(patterns: ReceiveChannel<DiggingPattern>) = p
                 send(EvaluatedPattern(p, stats))
             }
         }
+    }
+}
+
+fun printBestPatterns(sampleDimensions: Dimensions, store: PatternStore) {
+    val sample = Sample(sampleDimensions, BlockType.STONE)
+    for (pattern in store) {
+        sample.fill(BlockType.STONE)
+        pattern.pattern.digInto(sample)
+        println(sample)
+        println(pattern.statistics.toFullString())
     }
 }

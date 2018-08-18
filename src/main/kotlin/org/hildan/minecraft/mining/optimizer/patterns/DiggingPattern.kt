@@ -1,6 +1,8 @@
 package org.hildan.minecraft.mining.optimizer.patterns
 
+import org.hildan.minecraft.mining.optimizer.blocks.Explorer
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
+import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 
 /**
  * Represents a way to dig into the stone in 3 dimensions.
@@ -8,35 +10,25 @@ import org.hildan.minecraft.mining.optimizer.blocks.Sample
 interface DiggingPattern {
 
     /**
-     * The width of this pattern. This dimension is related to the X coordinate.
-     */
-    val width: Int
-
-    /**
-     * The height of this pattern. This dimension is related to the Y coordinate.
-     */
-    val height: Int
-
-    /**
-     * The length of this pattern. This dimension is related to the Z coordinate.
-     */
-    val length: Int
-
-    /**
      * Gives the coordinates where the player has to enter a sample to start digging this pattern. Multiple accesses may
-     * be returned, meaning the player has to enter each of them independently to dig this pattern.
-     *
-     * The accesses' positions in the sample depend on the position of the pattern within the sample.
-     *
-     * @param originX the X position of this pattern within the sample
-     * @param originY the Y position of this pattern within the sample
-     * @return the set of accesses at the given pattern position
+     * be returned, meaning the player has to enter each of them independently to dig this pattern. The returned
+     * accesses must all be within the given dimensions.
      */
-    fun getAccesses(originX: Int, originY: Int): Set<Access>
+    fun getAccesses(dimensions: Dimensions): Set<Access>
 
     /**
-     * Digs this pattern into the given sample. The pattern is repeated as many times as necessary in every direction,
-     * starting from the point (0,0,0).
+     * Digs this pattern into the given [sample]. This method must take care of stopping at the edge of the given sample.
      */
     fun digInto(sample: Sample)
+
+    /**
+     * Digs this pattern into the given [sample], and then digs every visible ore recursively until no more ore is
+     * directly visible. This is supposed to represent what a real user will do while digging the pattern.
+     */
+    fun digAndFollowOres(sample: Sample) {
+        digInto(sample)
+        val accesses = getAccesses(sample.dimensions)
+        Explorer.explore(sample, accesses)
+        sample.digVisibleOres()
+    }
 }

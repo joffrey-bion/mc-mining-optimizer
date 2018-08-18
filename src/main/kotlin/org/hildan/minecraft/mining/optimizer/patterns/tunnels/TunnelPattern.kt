@@ -1,7 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.patterns.tunnels
 
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
-import org.hildan.minecraft.mining.optimizer.geometry.Axis
 
 /**
  * Defines how to dig a tunnel. It is based on a [TunnelSection] repeated horizontally and vertically.

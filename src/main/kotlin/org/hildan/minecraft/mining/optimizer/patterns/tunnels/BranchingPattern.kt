@@ -1,9 +1,8 @@
 package org.hildan.minecraft.mining.optimizer.patterns.tunnels
 
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
-import org.hildan.minecraft.mining.optimizer.geometry.Axis
-import org.hildan.minecraft.mining.optimizer.patterns.AbstractDiggingPattern
 import org.hildan.minecraft.mining.optimizer.patterns.Access
+import org.hildan.minecraft.mining.optimizer.patterns.RepeatedDiggingPattern
 
 /**
  * One main shaft with perpendicular branches.
@@ -13,7 +12,7 @@ class BranchingPattern(
     private val branch: TunnelPattern,
     private val branchLength: Int,
     private val branchOffsetByTier: Int
-) : AbstractDiggingPattern() {
+) : RepeatedDiggingPattern {
 
     private val layerHeight = shaft.section.height + shaft.vSpacing
 
@@ -36,14 +35,14 @@ class BranchingPattern(
         }
     }
 
-    override fun getAccesses(originX: Int, originY: Int) = setOf(
-        Access(originX + branchLength, originY),
-        Access(originX + branchLength, originY + layerHeight)
+    override fun getAccesses(offsetX: Int, offsetY: Int) = setOf(
+        Access(offsetX + branchLength, offsetY),
+        Access(offsetX + branchLength, offsetY + layerHeight)
     )
 
-    override fun digInto(sample: Sample, originX: Int, originY: Int, originZ: Int) {
-        digLayer(sample, originX, originY, originZ, 0)
-        digLayer(sample, originX, originY + layerHeight, originZ, branchOffsetByTier)
+    override fun digInto(sample: Sample, offsetX: Int, offsetY: Int, offsetZ: Int) {
+        digLayer(sample, offsetX, offsetY, offsetZ, 0)
+        digLayer(sample, offsetX, offsetY + layerHeight, offsetZ, branchOffsetByTier)
     }
 
     private fun digLayer(sample: Sample, originX: Int, originY: Int, originZ: Int, offset: Int) {

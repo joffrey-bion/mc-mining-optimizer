@@ -37,7 +37,7 @@ class PatternEvaluator(
             val initialOres = testSample.oreBlocksCount.toLong()
             stats.totalOres += initialOres
 
-            pattern.digInto(testSample)
+            pattern.digAndFollowOres(testSample)
 
             stats.dugBlocks += testSample.dugBlocksCount.toLong()
             stats.foundOres += initialOres - testSample.oreBlocksCount

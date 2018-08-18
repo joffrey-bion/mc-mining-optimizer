@@ -8,28 +8,16 @@ import java.util.NoSuchElementException
  * An arbitrary group of blocks. It can have any dimension, thus it is different from a minecraft chunk, which is
  * 16x256x16.
  */
-class Sample {
-
+data class Sample(
     /**
-     * The width of this sample. This dimension is related to the X coordinate.
+     * The dimensions of this sample.
      */
-    val width: Int
-
-    /**
-     * The height of this sample. This dimension is related to the Y coordinate.
-     */
-    val height: Int
-
-    /**
-     * The length of this sample. This dimension is related to the Z coordinate.
-     */
-    val length: Int
-
+    val dimensions: Dimensions,
     /**
      * The blocks of this sample.
      */
-    val blocks: List<Block>
-
+    private val blocks: List<Block>
+) {
     /**
      * The number of ore blocks currently in this sample.
      */
@@ -45,19 +33,10 @@ class Sample {
     /**
      * Creates a new pure stone sample of the given dimensions.
      */
-    constructor(dimensions: Dimensions, initialBlockType: BlockType) {
-        this.width = dimensions.width
-        this.height = dimensions.height
-        this.length = dimensions.length
-        this.blocks = mutableListOf()
-        // initialize with stone blocks
-        for (z in 0 until length) {
-            for (y in 0 until height) {
-                for (x in 0 until width) {
-                    blocks.add(Block(x, y, z, initialBlockType))
-                }
-            }
-        }
+    constructor(dimensions: Dimensions, initialBlockType: BlockType) : this(
+        dimensions,
+        createBlocks(dimensions, initialBlockType)
+    ) {
         oreBlocksCount = if (initialBlockType.isOre) blocks.size else 0
         dugBlocksCount = if (initialBlockType == BlockType.AIR) blocks.size else 0
     }
@@ -67,11 +46,7 @@ class Sample {
      *
      * @param source the Sample to copy
      */
-    constructor(source: Sample) {
-        this.width = source.width
-        this.height = source.height
-        this.length = source.length
-        this.blocks = source.blocks.map { it.copy() }
+    constructor(source: Sample) : this(source.dimensions, source.blocks.map { it.copy() }) {
         this.oreBlocksCount = source.oreBlocksCount
         this.dugBlocksCount = source.dugBlocksCount
     }
@@ -84,7 +59,7 @@ class Sample {
      * @param z the Z coordinate to test
      * @return true if the given coordinates belong to this chunk.
      */
-    fun hasBlock(x: Int, y: Int, z: Int) = x >= 0 && y >= 0 && z >= 0 && x < width && y < height && z < length
+    fun hasBlock(x: Int, y: Int, z: Int) = dimensions.contains(x, y, z)
 
     /**
      * Returns whether the given position belong to this chunk.
@@ -106,7 +81,7 @@ class Sample {
         if (!hasBlock(x, y, z)) {
             throw NoSuchElementException("Block ($x,$y,$z) does not exist in this sample")
         }
-        return x + y * width + z * width * height
+        return x + y * dimensions.width + z * dimensions.width * dimensions.height
     }
 
     /**
@@ -147,9 +122,9 @@ class Sample {
                 if (hasBlock(x, y, z)) getBlock(x, y, z) else null
             }
             Wrapping.WRAP -> {
-                val x = Math.floorMod(origin.x + distanceX, width)
-                val y = Math.floorMod(origin.y + distanceY, height)
-                val z = Math.floorMod(origin.z + distanceZ, length)
+                val x = Math.floorMod(origin.x + distanceX, dimensions.width)
+                val y = Math.floorMod(origin.y + distanceY, dimensions.height)
+                val z = Math.floorMod(origin.z + distanceZ, dimensions.length)
                 getBlock(x, y, z)
             }
         }
@@ -198,14 +173,6 @@ class Sample {
     }
 
     /**
-     * Returns the collection of all blocks matching the given predicate in this sample.
-     *
-     * @param predicate the predicate to test the blocks
-     * @return the collection of all blocks matching the given predicate in this sample.
-     */
-    inline fun getBlocksMatching(predicate: (Block) -> Boolean): List<Block> = blocks.filter(predicate)
-
-    /**
      * Changes the type of the block at the given position.
      *
      * @param x the X coordinate of the block to change
@@ -240,8 +207,22 @@ class Sample {
         getAdjacentBlocks(block, Wrapping.WRAP).forEach { b -> b.isVisible = true }
     }
 
+    fun digVisibleOres() {
+        blocks.filter { it: Block -> it.isOre && it.isVisible }.forEach { digBlockAndAdjacentOres(it) }
+    }
+
+    private fun digBlockAndAdjacentOres(block: Block) {
+        digBlock(block.x, block.y, block.z)
+        val adjacentBlocks = getAdjacentBlocks(block, Wrapping.CUT)
+        for (adjacentBlock in adjacentBlocks) {
+            if (adjacentBlock.isOre && adjacentBlock.isVisible) {
+                digBlockAndAdjacentOres(adjacentBlock)
+            }
+        }
+    }
+
     fun resetTo(sample: Sample) {
-        assert(width == sample.width && height == sample.height && length == sample.length) {
+        assert(dimensions == sample.dimensions) {
             "the given sample does not have the same dimensions as this one"
         }
         for (i in blocks.indices) {
@@ -266,27 +247,20 @@ class Sample {
         }
     }
 
-    override fun toString(): String = "Size: $width $height $length  Dug: $dugBlocksCount"
+    override fun toString(): String = "Size: $dimensions  Dug: $dugBlocksCount"
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Sample
-
-        if (width != other.width) return false
-        if (height != other.height) return false
-        if (length != other.length) return false
-        if (blocks != other.blocks) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = width
-        result = 31 * result + height
-        result = 31 * result + length
-        result = 31 * result + blocks.hashCode()
-        return result
+    companion object {
+        private fun createBlocks(dimensions: Dimensions, initialBlockType: BlockType): List<Block> {
+            val blocks = ArrayList<Block>(dimensions.width * dimensions.height * dimensions.length)
+            // initialize with stone blocks
+            for (z in 0 until dimensions.length) {
+                for (y in 0 until dimensions.height) {
+                    for (x in 0 until dimensions.width) {
+                        blocks.add(Block(x, y, z, initialBlockType))
+                    }
+                }
+            }
+            return blocks
+        }
     }
 }

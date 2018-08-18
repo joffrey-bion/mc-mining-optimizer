@@ -1,4 +1,4 @@
-package org.hildan.minecraft.mining.optimizer.geometry
+package org.hildan.minecraft.mining.optimizer.patterns.tunnels
 
 /**
  * Defines a spatial dimensions.
