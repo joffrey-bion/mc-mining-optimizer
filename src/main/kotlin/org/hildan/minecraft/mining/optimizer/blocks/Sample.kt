@@ -241,6 +241,9 @@ class Sample {
     }
 
     fun resetTo(sample: Sample) {
+        assert(width == sample.width && height == sample.height && length == sample.length) {
+            "the given sample does not have the same dimensions as this one"
+        }
         for (i in blocks.indices) {
             blocks[i].resetTo(sample.blocks[i])
         }
