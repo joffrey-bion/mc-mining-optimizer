@@ -33,8 +33,6 @@ data class MoveAction(
         }
     }
 
-    override fun affectsSample(): Boolean = false
-
     override fun isValidFor(sample: Sample, currentHeadPosition: Position): Boolean {
         // check that there is room for the head
         val headDestination = sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.CUT)

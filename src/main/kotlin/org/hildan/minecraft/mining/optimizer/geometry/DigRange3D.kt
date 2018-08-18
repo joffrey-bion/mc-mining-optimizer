@@ -1,6 +1,4 @@
-package org.hildan.minecraft.mining.optimizer.patterns.generated.actions
-
-import org.hildan.minecraft.mining.optimizer.geometry.Range3D
+package org.hildan.minecraft.mining.optimizer.geometry
 
 /**
  * Represents a 3D range of what can be dug, which is symmetric with respect to the XY, YZ, and XZ planes, and has

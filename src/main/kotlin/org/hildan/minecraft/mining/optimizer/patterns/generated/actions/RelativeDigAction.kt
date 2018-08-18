@@ -9,7 +9,7 @@ import org.hildan.minecraft.mining.optimizer.geometry.Range3D
  * An immutable action representing the player digging one block in an acceptable range. Digging above or below the
  * player is forbidden (we don't want to fall in a cave, or be covered in lava).
  */
-data class DigAction(
+data class RelativeDigAction(
     private val distanceX: Int,
     private val distanceY: Int,
     private val distanceZ: Int
@@ -20,8 +20,6 @@ data class DigAction(
             throw IllegalArgumentException("Never dig above the head or below the feet")
         }
     }
-
-    override fun affectsSample() = true
 
     /**
      * Returns the squared distance of the block to dig.
@@ -79,7 +77,7 @@ data class DigAction(
          * @return a collection of actions that can potentially be done
          */
         fun getAll(range: Range3D): Collection<Action> {
-            val moves = mutableListOf<DigAction>()
+            val moves = mutableListOf<RelativeDigAction>()
             for (dY in range.minY()..range.maxY()) {
                 for (dX in range.minX(dY)..range.maxX(dY)) {
                     for (dZ in range.minZ(dY)..range.maxZ(dY)) {
@@ -87,7 +85,7 @@ data class DigAction(
                             continue // never dig above the head or below the feet
                         }
                         if (range.inRange(dX, dY, dZ)) {
-                            moves.add(DigAction(dX, dY, dZ))
+                            moves.add(RelativeDigAction(dX, dY, dZ))
                         }
                     }
                 }
