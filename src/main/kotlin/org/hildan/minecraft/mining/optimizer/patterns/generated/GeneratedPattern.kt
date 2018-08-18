@@ -21,8 +21,11 @@ internal class GeneratedPattern(
 
     private val actionsPerAccess: Map<Access, List<Action>> = HashMap(actionsPerAccess)
 
-    override fun getAccesses(originX: Int, originY: Int) =
+    override fun getAccesses(originX: Int, originY: Int) = if (originX == 0 && originY == 0) {
+        actionsPerAccess.keys
+    } else {
         actionsPerAccess.keys.map { a -> Access(a.feet.x + originX, a.feet.y + originY) }.toSet()
+    }
 
     override fun digInto(sample: Sample, originX: Int, originY: Int, originZ: Int) {
         for (access in getAccesses(originX, originY)) {
