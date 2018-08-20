@@ -5,21 +5,16 @@ import java.util.Locale
 /**
  * Represents statistics about a digging pattern.
  */
-class Statistics(private val nbSamples: Int) {
+data class Statistics(
+    private val dugBlocks: Long,
+    private val foundOres: Long,
+    private val totalOres: Long
+) {
+    private val efficiency: Double = proportion(foundOres, dugBlocks)
 
-    internal var totalOres: Long = 0
+    private val thoroughness: Double = proportion(foundOres, totalOres)
 
-    internal var foundOres: Long = 0
-
-    internal var dugBlocks: Long = 0
-
-    private val efficiency: Double
-        get() = proportion(foundOres, dugBlocks)
-
-    private val thoroughness: Double
-        get() = proportion(foundOres, totalOres)
-
-    private fun proportion(qty: Long, total: Long): Double = if (total == 0L) 100.0 else qty.toDouble() * 100 / total
+    private fun proportion(qty: Long, total: Long): Double = if (total == 0L) 100.0 else qty.toDouble() * 100.0 / total
 
     internal fun isBetterThan(stats: Statistics): Boolean {
         val eff = efficiency
@@ -27,14 +22,18 @@ class Statistics(private val nbSamples: Int) {
         val effOther = stats.efficiency
         val thoOther = stats.thoroughness
 
-        return eff > effOther && tho > thoOther
+        return when {
+            eff > effOther -> tho >= thoOther
+            eff == effOther -> tho > thoOther
+            else -> false
+        }
     }
 
     override fun toString(): String {
         return String.format(Locale.US, "e=%.2f%% t=%.2f%%", efficiency, thoroughness)
     }
 
-    fun toFullString(): String {
+    fun toFullString(nbSamples: Int): String {
         val sb = StringBuilder()
 
         val avgTotalOres = totalOres.toDouble() / nbSamples

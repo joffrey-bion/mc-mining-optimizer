@@ -77,6 +77,6 @@ fun printBestPatterns(sampleDimensions: Dimensions, store: PatternStore) {
         sample.fill(BlockType.STONE)
         pattern.pattern.digInto(sample)
         println(sample)
-        println(pattern.statistics.toFullString())
+        println(pattern.statistics.toFullString(NUM_EVAL_SAMPLES))
     }
 }

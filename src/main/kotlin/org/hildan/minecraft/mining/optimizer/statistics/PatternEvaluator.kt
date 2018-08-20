@@ -18,6 +18,8 @@ class PatternEvaluator(
 
     private val testSamples = referenceSamples.map { Sample(it) }
 
+    private val totalOres = testSamples.map { it.oreBlocksCount }.sum().toLong()
+
     private fun generateReferenceSamples(count: Int, dimensions: Dimensions, lowYPosition: Int): List<Sample> {
         val gen = OreGenerator()
         return List(count) { generateSample(dimensions, lowYPosition, gen) }
@@ -29,19 +31,19 @@ class PatternEvaluator(
     }
 
     fun evaluate(pattern: DiggingPattern): Statistics {
-        val stats = Statistics(referenceSamples.size)
+        var dugBlocks = 0L
+        var foundOres = 0L
         for (i in testSamples.indices) {
             val testSample = testSamples[i]
             testSample.resetTo(referenceSamples[i])
 
             val initialOres = testSample.oreBlocksCount.toLong()
-            stats.totalOres += initialOres
 
             pattern.digAndFollowOres(testSample)
 
-            stats.dugBlocks += testSample.dugBlocksCount.toLong()
-            stats.foundOres += initialOres - testSample.oreBlocksCount
+            dugBlocks += testSample.dugBlocksCount.toLong()
+            foundOres += initialOres - testSample.oreBlocksCount
         }
-        return stats
+        return Statistics(dugBlocks, foundOres, totalOres)
     }
 }
