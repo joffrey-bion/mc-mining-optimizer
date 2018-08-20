@@ -34,6 +34,12 @@ data class Dimensions(
                 val z = Math.floorMod(origin.z + distanceZ, length)
                 Position.of(x, y, z)
             }
+            Wrapping.WRAP_XZ -> {
+                val x = Math.floorMod(origin.x + distanceX, width)
+                val y = origin.y + distanceY
+                val z = Math.floorMod(origin.z + distanceZ, length)
+                if (contains(x, y, z)) Position.of(x, y, z) else null
+            }
         }
 
     override fun toString(): String = "${width}x${height}x$length"

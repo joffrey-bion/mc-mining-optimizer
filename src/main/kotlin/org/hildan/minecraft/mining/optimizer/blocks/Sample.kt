@@ -114,27 +114,14 @@ data class Sample(
      * [Wrapping.CUT].
      */
     fun getBlock(origin: Position, distanceX: Int, distanceY: Int, distanceZ: Int, wrapping: Wrapping): Block? =
-        when (wrapping) {
-            Wrapping.CUT -> {
-                val x = origin.x + distanceX
-                val y = origin.y + distanceY
-                val z = origin.z + distanceZ
-                if (hasBlock(x, y, z)) getBlock(x, y, z) else null
-            }
-            Wrapping.WRAP -> {
-                val x = Math.floorMod(origin.x + distanceX, dimensions.width)
-                val y = Math.floorMod(origin.y + distanceY, dimensions.height)
-                val z = Math.floorMod(origin.z + distanceZ, dimensions.length)
-                getBlock(x, y, z)
-            }
-        }
+        dimensions.getPos(origin, distanceX, distanceY, distanceZ, wrapping)?.let { getBlock(it) }
 
     /**
      * Gets the block above the given position.
      *
      * @param position the position above which to get a block
      * @param wrapping the wrapping policy when the given block is the ceiling of this sample
-     * @return the above block, or null if the given block is the ceiling of this sample and wrapping is set to [ ][Wrapping.CUT]
+     * @return the above block, or null if the given block is the ceiling of this sample and wrapping is set to [Wrapping.CUT]
      */
     fun getBlockAbove(position: Position, wrapping: Wrapping): Block? = getBlock(position, 0, 1, 0, wrapping)
 
@@ -143,7 +130,7 @@ data class Sample(
      *
      * @param position the position below which to get a block
      * @param wrapping the wrapping policy when the given block is the floor of this sample
-     * @return the above block, or null if the given block is the floor of this sample and wrapping is set to [ ][Wrapping.CUT]
+     * @return the above block, or null if the given block is the floor of this sample and wrapping is set to [Wrapping.CUT]
      */
     fun getBlockBelow(position: Position, wrapping: Wrapping): Block? = getBlock(position, 0, -1, 0, wrapping)
 
@@ -213,10 +200,9 @@ data class Sample(
 
     private fun digBlockAndAdjacentOres(block: Block) {
         digBlock(block.x, block.y, block.z)
-        val adjacentBlocks = getAdjacentBlocks(block, Wrapping.CUT)
-        for (adjacentBlock in adjacentBlocks) {
-            if (adjacentBlock.isOre && adjacentBlock.isVisible) {
-                digBlockAndAdjacentOres(adjacentBlock)
+        for (ab in getAdjacentBlocks(block, Wrapping.WRAP_XZ)) {
+            if (ab.isOre && ab.isVisible) {
+                digBlockAndAdjacentOres(ab)
             }
         }
     }

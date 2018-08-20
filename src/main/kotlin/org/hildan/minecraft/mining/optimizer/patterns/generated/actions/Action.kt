@@ -51,15 +51,13 @@ data class MoveAction(
     }
 
     override fun isValidFor(sample: Sample, currentHeadPosition: Position): Boolean {
-        // TODO check block wrapping here
-
         // check that there is room for the head
-        val headDestination = sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.WRAP)!!
-        if (!headDestination.isDug) {
+        val headDestination = sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.WRAP_XZ)
+        if (headDestination == null || !headDestination.isDug) {
             return false
         }
         // check that there is room for the feet
-        val feetDestination = sample.getBlockBelow(headDestination, Wrapping.CUT)
+        val feetDestination = sample.getBlockBelow(headDestination, Wrapping.WRAP_XZ)
         if (feetDestination == null || !feetDestination.isDug) {
             return false
         }
@@ -127,39 +125,39 @@ data class RelativeDigAction(
     private val distanceZ: Int
 ) : Action() {
     /**
-     * Returns the squared distance of the block to dig.
-     *
-     * @return the squared distance of the block to dig.
+     * The squared distance of the block to dig.
      */
-    private fun norm(): Int = distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ
+    private val norm: Int = distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ
 
     override fun isValidFor(sample: Sample, currentHeadPosition: Position): Boolean {
-        val blockToDig = sample.getBlock(
-            currentHeadPosition, distanceX, distanceY, distanceZ,
-            Wrapping.CUT
-        )
+        // we wrap horizontally because we want to allow diagonally shaped patterns to exist
+        // we don't wrap vertically because the probabilities of ores are not equivalent at the top and bottom
+        val blockToDig = sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.WRAP_XZ)
         return blockToDig != null && !blockToDig.isDug && isPathClear(sample, currentHeadPosition, blockToDig)
     }
 
     private fun isPathClear(sample: Sample, head: Position, block: Position): Boolean {
-        val norm = norm()
         when (norm) {
             1 -> return true // block next to head always accessible
             2 -> when (distanceY) {
                 -1 -> return true // block next to feet always accessible
-                1 -> {
-                    val aboveHead = sample.getBlockAbove(head, Wrapping.WRAP)!!
-                    val belowTarget = sample.getBlockBelow(block, Wrapping.WRAP)!!
-                    return aboveHead.isDug || belowTarget.isDug
-                }
+                1 -> return canDigAroundBlockAboveHead(sample, head, block)
             }
         }
         // TODO implement true algorithm to check that the view is not obstructed
         return false
     }
 
+    private fun canDigAroundBlockAboveHead(sample: Sample, head: Position, block: Position): Boolean {
+        // we know the target block is within Y bounds, the block above the head is at the same level, so it fits too
+        val aboveHead = sample.getBlockAbove(head, Wrapping.CUT)!!
+        // we know the head is within Y bounds, the block below target is around the head, so it fits too
+        val belowTarget = sample.getBlockBelow(block, Wrapping.CUT)!!
+        return aboveHead.isDug || belowTarget.isDug
+    }
+
     fun digPosition(currentHeadPosition: Position, dimensions: Dimensions): Position =
-        dimensions.getPos(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.WRAP)!!
+        dimensions.getPos(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.WRAP_XZ)!!
 
     override fun toString(): String = "Dig($distanceX,$distanceY,$distanceZ)"
 
@@ -185,7 +183,7 @@ data class RelativeDigAction(
                     }
                 }
             }
-            return moves.sortedBy { it.norm() }
+            return moves.sortedBy { it.norm }
         }
     }
 }
