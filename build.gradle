@@ -17,7 +17,7 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.21"
-    testCompile 'junit:junit:4.+'
+    testCompile 'org.jetbrains.kotlin:kotlin-test-junit5'
 }
 
 kotlin {

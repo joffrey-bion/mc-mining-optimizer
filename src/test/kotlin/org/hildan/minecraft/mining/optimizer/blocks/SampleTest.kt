@@ -1,12 +1,12 @@
 package org.hildan.minecraft.mining.optimizer.blocks
 
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class SampleTest {
 
@@ -20,7 +20,7 @@ class SampleTest {
 
     private lateinit var block567: Block
 
-    @Before
+    @BeforeEach
     fun initSample() {
         sample = Sample(Dimensions(10, 10, 10), BlockType.STONE)
         block000 = sample.getBlock(0, 0, 0)
