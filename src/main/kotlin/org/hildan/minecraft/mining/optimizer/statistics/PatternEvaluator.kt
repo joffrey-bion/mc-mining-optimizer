@@ -44,6 +44,6 @@ class PatternEvaluator(
             dugBlocks += testSample.dugBlocksCount.toLong()
             foundOres += initialOres - testSample.oreBlocksCount
         }
-        return Statistics(dugBlocks, foundOres, totalOres)
+        return Statistics(foundOres, dugBlocks, totalOres)
     }
 }

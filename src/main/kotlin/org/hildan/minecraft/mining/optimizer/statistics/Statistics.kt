@@ -6,27 +6,20 @@ import java.util.Locale
  * Represents statistics about a digging pattern.
  */
 data class Statistics(
-    private val dugBlocks: Long,
     private val foundOres: Long,
+    private val dugBlocks: Long,
     private val totalOres: Long
-) {
-    private val efficiency: Double = proportion(foundOres, dugBlocks)
+) : Comparable<Statistics> {
 
+    private val efficiency: Double = proportion(foundOres, dugBlocks)
     private val thoroughness: Double = proportion(foundOres, totalOres)
 
     private fun proportion(qty: Long, total: Long): Double = if (total == 0L) 100.0 else qty.toDouble() * 100.0 / total
 
-    internal fun isBetterThan(stats: Statistics): Boolean {
-        val eff = efficiency
-        val tho = thoroughness
-        val effOther = stats.efficiency
-        val thoOther = stats.thoroughness
-
-        return when {
-            eff > effOther -> tho >= thoOther
-            eff == effOther -> tho > thoOther
-            else -> false
-        }
+    override fun compareTo(other: Statistics) = when {
+        efficiency > other.efficiency -> if (thoroughness >= other.thoroughness) 1 else 0
+        efficiency < other.efficiency -> if (thoroughness <= other.thoroughness) -1 else 0
+        else -> thoroughness.compareTo(other.thoroughness)
     }
 
     override fun toString(): String {

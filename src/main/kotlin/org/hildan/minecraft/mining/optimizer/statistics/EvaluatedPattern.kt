@@ -5,9 +5,12 @@ import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
 /**
  * A pattern along with its statistics.
  */
-class EvaluatedPattern(val pattern: DiggingPattern, val statistics: Statistics) {
+class EvaluatedPattern(
+    val pattern: DiggingPattern,
+    val statistics: Statistics
+): Comparable<EvaluatedPattern> {
 
-    internal fun isBetterThan(pattern: EvaluatedPattern) = statistics.isBetterThan(pattern.statistics)
+    override fun compareTo(other: EvaluatedPattern): Int = statistics.compareTo(other.statistics)
 
     override fun toString(): String = statistics.toString()
 }
