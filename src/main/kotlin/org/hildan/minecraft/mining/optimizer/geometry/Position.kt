@@ -34,7 +34,7 @@ open class Position(
         private val cache: MutableMap<Int, MutableMap<Int, MutableMap<Int, Position>>> = HashMap()
 
         fun of(x: Int, y: Int, z: Int): Position {
-            return cache.getOrPut(x, ::HashMap).getOrPut(y, ::HashMap).getOrPut(y) { Position(x, y, z) }
+            return cache.getOrPut(x, ::HashMap).getOrPut(y, ::HashMap).getOrPut(z) { Position(x, y, z) }
         }
     }
 }
