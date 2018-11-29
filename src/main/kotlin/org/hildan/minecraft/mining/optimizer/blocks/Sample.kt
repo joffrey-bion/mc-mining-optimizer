@@ -1,6 +1,13 @@
 package org.hildan.minecraft.mining.optimizer.blocks
 
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
+import org.hildan.minecraft.mining.optimizer.geometry.Distance3D
+import org.hildan.minecraft.mining.optimizer.geometry.ONE_ABOVE
+import org.hildan.minecraft.mining.optimizer.geometry.ONE_BELOW
+import org.hildan.minecraft.mining.optimizer.geometry.ONE_EAST
+import org.hildan.minecraft.mining.optimizer.geometry.ONE_NORTH
+import org.hildan.minecraft.mining.optimizer.geometry.ONE_SOUTH
+import org.hildan.minecraft.mining.optimizer.geometry.ONE_WEST
 import org.hildan.minecraft.mining.optimizer.geometry.Position
 import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
 import java.util.NoSuchElementException
@@ -71,51 +78,38 @@ data class Sample(
     fun hasBlock(position: Position) = hasBlock(position.x, position.y, position.z)
 
     /**
-     * Returns the index in the internal array of the block at the given position.
-     *
-     * @param x the X coordinate of the block to get the index of
-     * @param y the Y coordinate of the block to get the index of
-     * @param z the Z coordinate of the block to get the index of
-     * @return the index of the given block in the internal array [blocks]
+     * Returns the index (in the internal array) of the block at the given [x], [y], [z] coordinates.
      */
     private fun getIndex(x: Int, y: Int, z: Int): Int {
-        if (!hasBlock(x, y, z)) {
-            throw NoSuchElementException("Block ($x,$y,$z) does not exist in this sample")
+        with (dimensions) {
+            if (!contains(x, y, z)) {
+                throw NoSuchElementException("Block ($x,$y,$z) does not exist in this sample")
+            }
+            return x + y * width + z * width * height
         }
-        return x + y * dimensions.width + z * dimensions.width * dimensions.height
     }
 
     /**
-     * Gets the Block located at the given absolute position.
-     *
-     * @param x the X coordinate of the block to get
-     * @param y the Y coordinate of the block to get
-     * @param z the Z coordinate of the block to get
-     * @return the Block located at the provided coordinates
+     * Gets the [Block] located at the given [x], [y], [z] coordinates.
      */
     fun getBlock(x: Int, y: Int, z: Int): Block = blocks[getIndex(x, y, z)]
 
     /**
-     * Gets the Block located at the given absolute position.
-     *
-     * @param position the absolute position of the block to get
-     * @return the Block located at the provided coordinates
+     * Gets the [Block] located at the given absolute [position].
      */
     fun getBlock(position: Position): Block = getBlock(position.x, position.y, position.z)
 
     /**
-     * Gets the Block located at the given relative position.
+     * Gets the [Block] located at the given [distance] from the given [origin] position.
      *
      * @param origin the position to start from
-     * @param distanceX the distance to travel in the X direction (may be negative)
-     * @param distanceY the distance to travel in the Y direction (may be negative)
-     * @param distanceZ the distance to travel in the Z direction (may be negative)
+     * @param distance the 3D distance to travel (each dimension may be negative)
      * @param wrapping defines the decision to take when reaching the edge of the sample
-     * @return the Block located at the given position, or null if the block is out of bounds and wrapping is set to
+     * @return the Block located at the resulting position, or null if the block is out of bounds and wrapping is set to
      * [Wrapping.CUT].
      */
-    fun getBlock(origin: Position, distanceX: Int, distanceY: Int, distanceZ: Int, wrapping: Wrapping): Block? =
-        dimensions.getPos(origin, distanceX, distanceY, distanceZ, wrapping)?.let { getBlock(it) }
+    fun getBlock(origin: Position, distance: Distance3D, wrapping: Wrapping): Block? =
+        dimensions.getPos(origin, distance, wrapping)?.let { getBlock(it) }
 
     /**
      * Gets the block above the given position.
@@ -124,16 +118,16 @@ data class Sample(
      * @param wrapping the wrapping policy when the given block is the ceiling of this sample
      * @return the above block, or null if the given block is the ceiling of this sample and wrapping is set to [Wrapping.CUT]
      */
-    fun getBlockAbove(position: Position, wrapping: Wrapping): Block? = getBlock(position, 0, 1, 0, wrapping)
+    fun getBlockAbove(position: Position, wrapping: Wrapping): Block? = getBlock(position, ONE_ABOVE, wrapping)
 
     /**
      * Gets the block below the given one.
      *
      * @param position the position below which to get a block
      * @param wrapping the wrapping policy when the given block is the floor of this sample
-     * @return the above block, or null if the given block is the floor of this sample and wrapping is set to [Wrapping.CUT]
+     * @return the block below, or null if the given block is the floor of this sample and wrapping is set to [Wrapping.CUT]
      */
-    fun getBlockBelow(position: Position, wrapping: Wrapping): Block? = getBlock(position, 0, -1, 0, wrapping)
+    fun getBlockBelow(position: Position, wrapping: Wrapping): Block? = getBlock(position, ONE_BELOW, wrapping)
 
     /**
      * Gets the 6 blocks that are adjacent to given position. If wrapping is set to [Wrapping.CUT] and the given
@@ -145,12 +139,12 @@ data class Sample(
      */
     fun getAdjacentBlocks(position: Position, wrapping: Wrapping): List<Block> {
         val adjacentBlocks = mutableListOf<Block>()
-        adjacentBlocks.addIfNotNull(getBlock(position, +1, 0, 0, wrapping))
-        adjacentBlocks.addIfNotNull(getBlock(position, -1, 0, 0, wrapping))
-        adjacentBlocks.addIfNotNull(getBlock(position, 0, +1, 0, wrapping))
-        adjacentBlocks.addIfNotNull(getBlock(position, 0, -1, 0, wrapping))
-        adjacentBlocks.addIfNotNull(getBlock(position, 0, 0, +1, wrapping))
-        adjacentBlocks.addIfNotNull(getBlock(position, 0, 0, -1, wrapping))
+        adjacentBlocks.addIfNotNull(getBlock(position, ONE_EAST, wrapping))
+        adjacentBlocks.addIfNotNull(getBlock(position, ONE_WEST, wrapping))
+        adjacentBlocks.addIfNotNull(getBlock(position, ONE_ABOVE, wrapping))
+        adjacentBlocks.addIfNotNull(getBlock(position, ONE_BELOW, wrapping))
+        adjacentBlocks.addIfNotNull(getBlock(position, ONE_NORTH, wrapping))
+        adjacentBlocks.addIfNotNull(getBlock(position, ONE_SOUTH, wrapping))
         return adjacentBlocks
     }
 

@@ -1,10 +1,11 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated.actions
 
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
-import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
+import org.hildan.minecraft.mining.optimizer.geometry.Distance3D
 import org.hildan.minecraft.mining.optimizer.geometry.Position
 import org.hildan.minecraft.mining.optimizer.geometry.Range3D
+import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
 import java.util.ArrayList
 
 /**
@@ -26,33 +27,29 @@ sealed class Action {
  * An immutable action representing the player moving of one block horizontally. The move can be done in any 4
  * horizontal directions (no diagonal), and can result in the player going up or down one block as well.
  */
-data class MoveAction(
-    private val distanceX: Int,
-    private val distanceY: Int,
-    private val distanceZ: Int
-) : Action() {
+data class MoveAction(private val distance: Distance3D) : Action() {
 
     init {
-        if (distanceY > 1) {
+        if (distance.y > 1) {
             throw IllegalArgumentException("Can't jump higher than 1 block")
         }
-        if (distanceY < -1) {
+        if (distance.y < -1) {
             throw IllegalArgumentException("No going down lower than 1 block, to be able to go back")
         }
-        if (distanceX == 0 && distanceZ == 0) {
+        if (distance.x == 0 && distance.z == 0) {
             throw IllegalArgumentException("Cannot stay in the same horizontal place, falls are not actions")
         }
-        if (distanceX != 0 && distanceZ != 0) {
+        if (distance.x != 0 && distance.z != 0) {
             throw IllegalArgumentException("Moves are accepted only along one axis at a time")
         }
-        if (Math.abs(distanceX) > 1 || Math.abs(distanceZ) > 1) {
+        if (Math.abs(distance.x) > 1 || Math.abs(distance.z) > 1) {
             throw IllegalArgumentException("Only moves of one block are accepted")
         }
     }
 
     override fun isValidFor(sample: Sample, currentHeadPosition: Position): Boolean {
         // check that there is room for the head
-        val headDestination = sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.WRAP_XZ)
+        val headDestination = sample.getBlock(currentHeadPosition, distance, Wrapping.WRAP_XZ)
         if (headDestination == null || !headDestination.isDug) {
             return false
         }
@@ -66,13 +63,13 @@ data class MoveAction(
     }
 
     private fun hasRoomForMovement(sample: Sample, headPositionBefore: Position, headPositionAfter: Position) =
-        when (distanceY) {
+        when (distance.y) {
             0 -> true
             1 -> canJumpBeforeMoving(sample, headPositionBefore)
             -1 -> canMoveBeforeFalling(sample, headPositionAfter)
             else ->
                 // can't jump higher than 1
-                // (counts also for the negative Ys because we want to be able to go back)
+                // and can't fall too low because we want to be able to go back
                 false
         }
 
@@ -86,9 +83,9 @@ data class MoveAction(
         sample.getBlockAbove(headPositionBefore, Wrapping.CUT)!!.isDug
 
     fun move(currentHeadPosition: Position, dimensions: Dimensions): Position =
-        dimensions.getPos(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.WRAP)!!
+        dimensions.getPos(currentHeadPosition, distance, Wrapping.WRAP)!!
 
-    override fun toString(): String = "MoveOf($distanceX,$distanceY,$distanceZ)"
+    override fun toString(): String = "MoveOf($distance)"
 
     companion object {
 
@@ -97,16 +94,16 @@ data class MoveAction(
         val all: Collection<Action>
             get() {
                 val moves = ArrayList<MoveAction>(12)
-                for (y in values) {
-                    for (x in values) {
-                        for (z in values) {
+                for (dy in values) {
+                    for (dx in values) {
+                        for (dz in values) {
                             // we have to move horizontally
-                            if (x == 0 && z == 0) continue
+                            if (dx == 0 && dz == 0) continue
 
                             // we don't want diagonal moves
-                            if (x != 0 && z != 0) continue
+                            if (dx != 0 && dz != 0) continue
 
-                            moves.add(MoveAction(x, y, z))
+                            moves.add(MoveAction(Distance3D.of(dx, dy, dz)))
                         }
                     }
                 }
@@ -119,27 +116,19 @@ data class MoveAction(
  * An immutable action representing the player digging one block in an acceptable range. Digging above or below the
  * player is forbidden (we don't want to fall in a cave, or be covered in lava).
  */
-data class RelativeDigAction(
-    private val distanceX: Int,
-    private val distanceY: Int,
-    private val distanceZ: Int
-) : Action() {
-    /**
-     * The squared distance of the block to dig.
-     */
-    private val norm: Int = distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ
+data class RelativeDigAction(private val distanceFromHead: Distance3D) : Action() {
 
     override fun isValidFor(sample: Sample, currentHeadPosition: Position): Boolean {
         // we wrap horizontally because we want to allow diagonally shaped patterns to exist
         // we don't wrap vertically because the probabilities of ores are not equivalent at the top and bottom
-        val blockToDig = sample.getBlock(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.WRAP_XZ)
+        val blockToDig = sample.getBlock(currentHeadPosition, distanceFromHead, Wrapping.WRAP_XZ)
         return blockToDig != null && !blockToDig.isDug && isPathClear(sample, currentHeadPosition, blockToDig)
     }
 
     private fun isPathClear(sample: Sample, head: Position, block: Position): Boolean {
-        when (norm) {
+        when (distanceFromHead.sqNorm) {
             1 -> return true // block next to head always accessible
-            2 -> when (distanceY) {
+            2 -> when (distanceFromHead.y) {
                 -1 -> return true // block next to feet always accessible
                 1 -> return canDigAroundBlockAboveHead(sample, head, block)
             }
@@ -157,9 +146,9 @@ data class RelativeDigAction(
     }
 
     fun digPosition(currentHeadPosition: Position, dimensions: Dimensions): Position =
-        dimensions.getPos(currentHeadPosition, distanceX, distanceY, distanceZ, Wrapping.WRAP_XZ)!!
+        dimensions.getPos(currentHeadPosition, distanceFromHead, Wrapping.WRAP_XZ)!!
 
-    override fun toString(): String = "Dig($distanceX,$distanceY,$distanceZ)"
+    override fun toString(): String = "Dig($distanceFromHead)"
 
     companion object {
 
@@ -178,12 +167,12 @@ data class RelativeDigAction(
                             continue // never dig above the head or below the feet
                         }
                         if (range.inRange(dX, dY, dZ)) {
-                            moves.add(RelativeDigAction(dX, dY, dZ))
+                            moves.add(RelativeDigAction(Distance3D.of(dX, dY, dZ)))
                         }
                     }
                 }
             }
-            return moves.sortedBy { it.norm }
+            return moves.sortedBy { it.distanceFromHead.sqNorm }
         }
     }
 }

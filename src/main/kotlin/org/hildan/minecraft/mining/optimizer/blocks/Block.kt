@@ -5,7 +5,9 @@ import org.hildan.minecraft.mining.optimizer.geometry.Position
 /**
  * Represents a Minecraft block.
  */
-class Block(x: Int, y: Int, z: Int, var type: BlockType) : Position(x, y, z) {
+class Block(val position: Position, var type: BlockType) : Position by position {
+
+    constructor(x: Int, y: Int, z: Int, type: BlockType) : this(Position.of(x, y, z), type)
 
     var isVisible: Boolean = false
 
@@ -27,7 +29,7 @@ class Block(x: Int, y: Int, z: Int, var type: BlockType) : Position(x, y, z) {
      * Creates a copy of this block.
      */
     internal fun copy(): Block {
-        val copy = Block(x, y, z, type)
+        val copy = Block(position, type)
         copy.isVisible = isVisible
         copy.isExplored = isExplored
         return copy
@@ -42,10 +44,10 @@ class Block(x: Int, y: Int, z: Int, var type: BlockType) : Position(x, y, z) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-        if (!super.equals(other)) return false
 
         other as Block
 
+        if (position != other.position) return false
         if (type != other.type) return false
         if (isVisible != other.isVisible) return false
         if (isExplored != other.isExplored) return false
@@ -54,7 +56,7 @@ class Block(x: Int, y: Int, z: Int, var type: BlockType) : Position(x, y, z) {
     }
 
     override fun hashCode(): Int {
-        var result = super.hashCode()
+        var result = position.hashCode()
         result = 31 * result + type.hashCode()
         result = 31 * result + isVisible.hashCode()
         result = 31 * result + isExplored.hashCode()

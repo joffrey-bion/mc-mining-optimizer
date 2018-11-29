@@ -11,29 +11,30 @@ data class Dimensions(
     /**
      * Returns whether the given [x], [y] and [z] coordinates fit in these dimensions.
      */
-    fun contains(x: Int, y: Int, z: Int) = x >= 0 && y >= 0 && z >= 0 && x < width && y < height && z < length
+    fun contains(x: Int, y: Int, z: Int) = 0 <= x && 0 <= y && 0 <= z && x < width && y < height && z < length
 
-    fun getPos(origin: Position, distanceX: Int, distanceY: Int, distanceZ: Int, wrapping: Wrapping): Position? =
-        when (wrapping) {
-            Wrapping.CUT -> {
-                val x = origin.x + distanceX
-                val y = origin.y + distanceY
-                val z = origin.z + distanceZ
-                if (contains(x, y, z)) Position.of(x, y, z) else null
-            }
-            Wrapping.WRAP -> {
-                val x = Math.floorMod(origin.x + distanceX, width)
-                val y = Math.floorMod(origin.y + distanceY, height)
-                val z = Math.floorMod(origin.z + distanceZ, length)
-                Position.of(x, y, z)
-            }
-            Wrapping.WRAP_XZ -> {
-                val x = Math.floorMod(origin.x + distanceX, width)
-                val y = origin.y + distanceY
-                val z = Math.floorMod(origin.z + distanceZ, length)
-                if (contains(x, y, z)) Position.of(x, y, z) else null
-            }
+    fun getPos(origin: Position, distance: Distance3D, wrapping: Wrapping): Position? = when (wrapping) {
+        Wrapping.CUT -> {
+            val x = origin.x + distance.x
+            val y = origin.y + distance.y
+            val z = origin.z + distance.z
+            positionIfValid(x, y, z)
         }
+        Wrapping.WRAP -> {
+            val x = Math.floorMod(origin.x + distance.x, width)
+            val y = Math.floorMod(origin.y + distance.y, height)
+            val z = Math.floorMod(origin.z + distance.z, length)
+            Position.of(x, y, z)
+        }
+        Wrapping.WRAP_XZ -> {
+            val x = Math.floorMod(origin.x + distance.x, width)
+            val y = origin.y + distance.y
+            val z = Math.floorMod(origin.z + distance.z, length)
+            positionIfValid(x, y, z)
+        }
+    }
+
+    private fun positionIfValid(x: Int, y: Int, z: Int) = if (contains(x, y, z)) Position.of(x, y, z) else null
 
     override fun toString(): String = "${width}x${height}x$length"
 }
