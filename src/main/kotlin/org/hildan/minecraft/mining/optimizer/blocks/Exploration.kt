@@ -1,5 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.blocks
 
+import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
 import org.hildan.minecraft.mining.optimizer.patterns.Access
 
 import java.util.ArrayDeque

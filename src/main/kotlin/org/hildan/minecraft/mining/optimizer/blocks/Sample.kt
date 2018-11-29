@@ -2,6 +2,7 @@ package org.hildan.minecraft.mining.optimizer.blocks
 
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.geometry.Position
+import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
 import java.util.NoSuchElementException
 
 /**

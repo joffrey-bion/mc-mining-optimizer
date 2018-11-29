@@ -1,7 +1,5 @@
 package org.hildan.minecraft.mining.optimizer.geometry
 
-import org.hildan.minecraft.mining.optimizer.blocks.Wrapping
-
 /**
  * Represents an immutable 3D dimensions specification.
  */
@@ -11,12 +9,7 @@ data class Dimensions(
     val length: Int
 ) {
     /**
-     * Returns whether the given coordinates fit in these dimensions.
-     *
-     * @param x the X coordinate to test
-     * @param y the Y coordinate to test
-     * @param z the Z coordinate to test
-     * @return true if the given coordinates fit in these dimensions.
+     * Returns whether the given [x], [y] and [z] coordinates fit in these dimensions.
      */
     fun contains(x: Int, y: Int, z: Int) = x >= 0 && y >= 0 && z >= 0 && x < width && y < height && z < length
 
@@ -43,4 +36,31 @@ data class Dimensions(
         }
 
     override fun toString(): String = "${width}x${height}x$length"
+}
+
+/**
+ * Defines how some functions behave when accessing positions outside of some [Dimensions].
+ */
+enum class Wrapping {
+
+    /**
+     * Does not consider blocks that are outside the sample.
+     */
+    CUT,
+    /**
+     * Wraps to the other side of the sample. This means that when reaching for instance a Y value of 1 above the height
+     * of the sample, it wraps it back to Y=0.
+     */
+    WRAP,
+    /**
+     * Only wraps horizontally (on X and Z) but not vertically (Y).
+     *
+     * Behaves like [WRAP] when reaching the sides of the sample, but like [CUT] when reaching the ceiling/floor.
+     *
+     * This is useful when doing digging-related stuff because the probabilities of finding ores only depend on the
+     * vertical (Y) position. Therefore, wrapping horizontally is valid because digging the next sample gives the same
+     * kind  of results as digging the other side of the same sample, but only when these samples are side by side, not
+     * on top of each other.
+     */
+    WRAP_XZ
 }

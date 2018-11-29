@@ -1,7 +1,7 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated.actions
 
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
-import org.hildan.minecraft.mining.optimizer.blocks.Wrapping
+import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.geometry.Position
 import org.hildan.minecraft.mining.optimizer.geometry.Range3D
