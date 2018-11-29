@@ -50,15 +50,12 @@ enum class DigRange3D(
         for (dY in 0..maxY()) {
             for (dX in minX(dY)..maxX(dY)) {
                 for (dZ in minZ(dY)..maxZ(dY)) {
-                    if (inRange(dX, dY, dZ)) {
-                        sb.append('.')
-                    } else {
-                        sb.append('X')
-                    }
+                    val c = if (inRange(dX, dY, dZ)) '.' else 'X'
+                    sb.append(c)
                 }
-                sb.append(String.format("%n"))
+                sb.appendln()
             }
-            sb.append(String.format("%n"))
+            sb.appendln()
         }
         return sb.toString()
     }

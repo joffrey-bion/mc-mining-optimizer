@@ -1,49 +1,43 @@
 package org.hildan.minecraft.mining.optimizer.display
 
+private const val RESET_COLOR = "\u001B[0m"
+
 /**
  * Provides ANSI color codes to print colors in the console.
  */
 object AnsiCodes {
 
-    private val RESET = "\u001B[0m"
+    const val BLACK = "\u001B[30m"
 
-    val BLACK = "\u001B[30m"
+    const val RED = "\u001B[31m"
 
-    val RED = "\u001B[31m"
+    const val GREEN = "\u001B[32m"
 
-    val GREEN = "\u001B[32m"
+    const val YELLOW = "\u001B[33m"
 
-    val YELLOW = "\u001B[33m"
+    const val BLUE = "\u001B[34m"
 
-    val BLUE = "\u001B[34m"
+    const val PURPLE = "\u001B[35m"
 
-    val PURPLE = "\u001B[35m"
+    const val CYAN = "\u001B[36m"
 
-    val CYAN = "\u001B[36m"
+    const val WHITE = "\u001B[37m"
 
-    val WHITE = "\u001B[37m"
+    const val BLACK_BG = "\u001B[40m"
 
-    val BLACK_BG = "\u001B[40m"
+    const val RED_BG = "\u001B[41m"
 
-    val RED_BG = "\u001B[41m"
+    const val GREEN_BG = "\u001B[42m"
 
-    val GREEN_BG = "\u001B[42m"
+    const val YELLOW_BG = "\u001B[43m"
 
-    val YELLOW_BG = "\u001B[43m"
+    const val BLUE_BG = "\u001B[44m"
 
-    val BLUE_BG = "\u001B[44m"
+    const val PURPLE_BG = "\u001B[45m"
 
-    val PURPLE_BG = "\u001B[45m"
+    const val CYAN_BG = "\u001B[46m"
 
-    val CYAN_BG = "\u001B[46m"
-
-    val WHITE_BG = "\u001B[47m"
-
-    fun color(s: String, color1: String, color2: String): String {
-        return color1 + color2 + s + RESET
-    }
-
-    fun color(s: String, color: String): String {
-        return color + s + RESET
-    }
+    const val WHITE_BG = "\u001B[47m"
 }
+
+fun String.colorized(color: String): String = color + this + RESET_COLOR

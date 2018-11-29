@@ -1,6 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.patterns
 
-import org.hildan.minecraft.mining.optimizer.blocks.Explorer
+import org.hildan.minecraft.mining.optimizer.blocks.explore
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 
@@ -28,7 +28,7 @@ interface DiggingPattern {
     fun digAndFollowOres(sample: Sample) {
         digInto(sample)
         val accesses = getAccesses(sample.dimensions)
-        Explorer.explore(sample, accesses)
+        sample.explore(accesses)
         sample.digVisibleOres()
     }
 }

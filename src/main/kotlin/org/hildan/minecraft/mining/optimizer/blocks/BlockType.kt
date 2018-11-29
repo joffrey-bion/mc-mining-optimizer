@@ -4,7 +4,7 @@ import org.hildan.minecraft.mining.optimizer.display.AnsiCodes.BLUE
 import org.hildan.minecraft.mining.optimizer.display.AnsiCodes.CYAN
 import org.hildan.minecraft.mining.optimizer.display.AnsiCodes.RED
 import org.hildan.minecraft.mining.optimizer.display.AnsiCodes.YELLOW
-import org.hildan.minecraft.mining.optimizer.display.AnsiCodes.color
+import org.hildan.minecraft.mining.optimizer.display.colorized
 
 /**
  * Represents the content of a Minecraft block.
@@ -39,10 +39,10 @@ enum class BlockType(
     STONE(false, "\u2588", -1, -1, -1, -1),
     COAL_ORE(true, "C", 16, 20, 0, 128),
     IRON_ORE(true, "I", 8, 20, 0, 64),
-    GOLD_ORE(true, color("G", YELLOW), 8, 2, 0, 32),
-    DIAMOND_ORE(true, color("D", CYAN), 7, 1, 0, 16),
-    REDSTONE_ORE(true, color("R", RED), 7, 8, 0, 16),
-    LAPIS_ORE(true, color("L", BLUE), 6, 1, 16, 16);
+    GOLD_ORE(true, "G".colorized(YELLOW), 8, 2, 0, 32),
+    DIAMOND_ORE(true, "D".colorized(CYAN), 7, 1, 0, 16),
+    REDSTONE_ORE(true, "R".colorized(RED), 7, 8, 0, 16),
+    LAPIS_ORE(true, "L".colorized(BLUE), 6, 1, 16, 16);
 
     override fun toString(): String = visual
 }

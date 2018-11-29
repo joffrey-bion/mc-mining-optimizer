@@ -8,7 +8,7 @@ import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
 class EvaluatedPattern(
     val pattern: DiggingPattern,
     val statistics: Statistics
-): Comparable<EvaluatedPattern> {
+) : Comparable<EvaluatedPattern> {
 
     override fun compareTo(other: EvaluatedPattern): Int = statistics.compareTo(other.statistics)
 
