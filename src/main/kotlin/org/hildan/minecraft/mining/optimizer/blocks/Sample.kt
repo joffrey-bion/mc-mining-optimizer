@@ -4,13 +4,8 @@ import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.geometry.Distance3D
 import org.hildan.minecraft.mining.optimizer.geometry.ONE_ABOVE
 import org.hildan.minecraft.mining.optimizer.geometry.ONE_BELOW
-import org.hildan.minecraft.mining.optimizer.geometry.ONE_EAST
-import org.hildan.minecraft.mining.optimizer.geometry.ONE_NORTH
-import org.hildan.minecraft.mining.optimizer.geometry.ONE_SOUTH
-import org.hildan.minecraft.mining.optimizer.geometry.ONE_WEST
 import org.hildan.minecraft.mining.optimizer.geometry.Position
 import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
-import java.util.NoSuchElementException
 
 /**
  * An arbitrary group of blocks. It can have any dimension, thus it is different from a minecraft chunk, which is
@@ -60,44 +55,24 @@ data class Sample(
     }
 
     /**
-     * Returns whether the given coordinates belong to this chunk.
-     *
-     * @param x the X coordinate to test
-     * @param y the Y coordinate to test
-     * @param z the Z coordinate to test
-     * @return true if the given coordinates belong to this chunk.
+     * Returns whether the given [x], [y], [z] coordinates belong to this sample.
      */
-    fun hasBlock(x: Int, y: Int, z: Int) = dimensions.contains(x, y, z)
+    fun contains(x: Int, y: Int, z: Int) = dimensions.contains(x, y, z)
 
     /**
-     * Returns whether the given position belong to this chunk.
-     *
-     * @param position the position to test
-     * @return true if the given position belong to this chunk.
+     * Returns whether the given [position] belong to this sample.
      */
-    fun hasBlock(position: Position) = hasBlock(position.x, position.y, position.z)
-
-    /**
-     * Returns the index (in the internal array) of the block at the given [x], [y], [z] coordinates.
-     */
-    private fun getIndex(x: Int, y: Int, z: Int): Int {
-        with (dimensions) {
-            if (!contains(x, y, z)) {
-                throw NoSuchElementException("Block ($x,$y,$z) does not exist in this sample")
-            }
-            return x + y * width + z * width * height
-        }
-    }
+    fun contains(position: Position) = contains(position.x, position.y, position.z)
 
     /**
      * Gets the [Block] located at the given [x], [y], [z] coordinates.
      */
-    fun getBlock(x: Int, y: Int, z: Int): Block = blocks[getIndex(x, y, z)]
+    fun getBlock(x: Int, y: Int, z: Int): Block = blocks[dimensions.getIndex(x, y, z)]
 
     /**
      * Gets the [Block] located at the given absolute [position].
      */
-    fun getBlock(position: Position): Block = getBlock(position.x, position.y, position.z)
+    fun getBlock(position: Position): Block = blocks[dimensions.getIndex(position)]
 
     /**
      * Gets the [Block] located at the given [distance] from the given [origin] position.
@@ -109,7 +84,7 @@ data class Sample(
      * [Wrapping.CUT].
      */
     fun getBlock(origin: Position, distance: Distance3D, wrapping: Wrapping): Block? =
-        dimensions.getPos(origin, distance, wrapping)?.let { getBlock(it) }
+        dimensions.getIndex(origin, distance, wrapping)?.let { blocks[it] }
 
     /**
      * Gets the block above the given position.
@@ -137,48 +112,23 @@ data class Sample(
      * @param wrapping the wrapping policy when the given block is on the side of this chunk
      * @return a list containing blocks adjacent to the given position
      */
-    fun getAdjacentBlocks(position: Position, wrapping: Wrapping): List<Block> {
-        val adjacentBlocks = mutableListOf<Block>()
-        adjacentBlocks.addIfNotNull(getBlock(position, ONE_EAST, wrapping))
-        adjacentBlocks.addIfNotNull(getBlock(position, ONE_WEST, wrapping))
-        adjacentBlocks.addIfNotNull(getBlock(position, ONE_ABOVE, wrapping))
-        adjacentBlocks.addIfNotNull(getBlock(position, ONE_BELOW, wrapping))
-        adjacentBlocks.addIfNotNull(getBlock(position, ONE_NORTH, wrapping))
-        adjacentBlocks.addIfNotNull(getBlock(position, ONE_SOUTH, wrapping))
-        return adjacentBlocks
-    }
-
-    private fun MutableList<Block>.addIfNotNull(b: Block?) {
-        if (b != null) {
-            this.add(b)
-        }
-    }
+    fun getAdjacentBlocks(position: Position, wrapping: Wrapping): List<Block> =
+        dimensions.getAdjacentIndices(position, wrapping).map { blocks[it] }
 
     /**
-     * Changes the type of the block at the given position.
-     *
-     * @param x the X coordinate of the block to change
-     * @param y the Y coordinate of the block to change
-     * @param z the Z coordinate of the block to change
-     * @param type the new type of the block
+     * Changes the type of the block at the given [x], [y], [z] coordinates.
      */
     fun setBlock(x: Int, y: Int, z: Int, type: BlockType) = changeType(getBlock(x, y, z), type)
 
     fun fill(blockType: BlockType) = blocks.forEach { changeType(it, blockType) }
 
     /**
-     * Digs the block at the specified position.
-     *
-     * @param position the position to dig at
+     * Digs the block at the specified [position].
      */
     fun digBlock(position: Position) = digBlock(position.x, position.y, position.z)
 
     /**
-     * Digs the block at the specified position.
-     *
-     * @param x the X coordinate of the block to dig
-     * @param y the Y coordinate of the block to dig
-     * @param z the Z coordinate of the block to dig
+     * Digs the block at the specified [x], [y], [z] coordinates.
      */
     fun digBlock(x: Int, y: Int, z: Int) {
         setBlock(x, y, z, BlockType.AIR)
@@ -231,17 +181,7 @@ data class Sample(
     override fun toString(): String = "Size: $dimensions  Dug: $dugBlocksCount"
 
     companion object {
-        private fun createBlocks(dimensions: Dimensions, initialBlockType: BlockType): List<Block> {
-            val blocks = ArrayList<Block>(dimensions.width * dimensions.height * dimensions.length)
-            // initialize with stone blocks
-            for (z in 0 until dimensions.length) {
-                for (y in 0 until dimensions.height) {
-                    for (x in 0 until dimensions.width) {
-                        blocks.add(Block(x, y, z, initialBlockType))
-                    }
-                }
-            }
-            return blocks
-        }
+        private fun createBlocks(dimensions: Dimensions, initialBlockType: BlockType): List<Block> =
+            dimensions.positions.map { (Block(it.x, it.y, it.z, initialBlockType)) }
     }
 }

@@ -1,5 +1,7 @@
 package org.hildan.minecraft.mining.optimizer.geometry
 
+import java.util.EnumMap
+
 /**
  * Represents an immutable 3D dimensions specification.
  */
@@ -8,33 +10,89 @@ data class Dimensions(
     val height: Int,
     val length: Int
 ) {
+    private val nbPositions = width * height * length
+
+    val positions: List<Position> = ArrayList<Position>(nbPositions).apply {
+        for (z in 0 until length) {
+            for (y in 0 until height) {
+                for (x in 0 until width) {
+                    add(Position.of(x, y, z))
+                }
+            }
+        }
+    }
+
+    private val adjacentIndicesCache: EnumMap<Wrapping, MutableMap<Position, IntArray>> =
+        Wrapping.values().map { it to HashMap<Position, IntArray>() }.toMap(EnumMap(Wrapping::class.java))
+
     /**
      * Returns whether the given [x], [y] and [z] coordinates fit in these dimensions.
      */
     fun contains(x: Int, y: Int, z: Int) = 0 <= x && 0 <= y && 0 <= z && x < width && y < height && z < length
 
-    fun getPos(origin: Position, distance: Distance3D, wrapping: Wrapping): Position? = when (wrapping) {
-        Wrapping.CUT -> {
-            val x = origin.x + distance.x
-            val y = origin.y + distance.y
-            val z = origin.z + distance.z
-            positionIfValid(x, y, z)
-        }
-        Wrapping.WRAP -> {
-            val x = Math.floorMod(origin.x + distance.x, width)
-            val y = Math.floorMod(origin.y + distance.y, height)
-            val z = Math.floorMod(origin.z + distance.z, length)
-            Position.of(x, y, z)
-        }
-        Wrapping.WRAP_XZ -> {
-            val x = Math.floorMod(origin.x + distance.x, width)
-            val y = origin.y + distance.y
-            val z = Math.floorMod(origin.z + distance.z, length)
-            positionIfValid(x, y, z)
+    fun getPos(origin: Position, distance: Distance3D, wrapping: Wrapping): Position? =
+        getIndex(origin, distance, wrapping)?.let { positions[it] }
+
+    fun getIndex(origin: Position, distance: Distance3D, wrapping: Wrapping): Int? {
+        return when (wrapping) {
+            Wrapping.CUT -> {
+                val x = origin.x + distance.x
+                val y = origin.y + distance.y
+                val z = origin.z + distance.z
+                getIndexIfValid(x, y, z)
+            }
+            Wrapping.WRAP -> {
+                val x = Math.floorMod(origin.x + distance.x, width)
+                val y = Math.floorMod(origin.y + distance.y, height)
+                val z = Math.floorMod(origin.z + distance.z, length)
+                getIndex(x, y, z)
+            }
+            Wrapping.WRAP_XZ -> {
+                val x = Math.floorMod(origin.x + distance.x, width)
+                val y = origin.y + distance.y
+                val z = Math.floorMod(origin.z + distance.z, length)
+                getIndexIfValid(x, y, z)
+            }
         }
     }
 
-    private fun positionIfValid(x: Int, y: Int, z: Int) = if (contains(x, y, z)) Position.of(x, y, z) else null
+    private fun getIndexIfValid(x: Int, y: Int, z: Int): Int? =
+        if (contains(x, y, z)) getIndex(x, y, z) else null
+
+    /**
+     * Returns the index (in a position array) of the given [position].
+     */
+    fun getIndex(position: Position): Int = getIndex(position.x, position.y, position.z)
+
+    /**
+     * Returns the index (in a position array) corresponding to the given [x], [y], [z] coordinates.
+     */
+    fun getIndex(x: Int, y: Int, z: Int): Int {
+        if (!contains(x, y, z)) {
+            throw NoSuchElementException("Position ($x,$y,$z) does not exist in this sample")
+        }
+        return x + y * width + z * width * height
+    }
+
+    fun getAdjacentIndices(position: Position, wrapping: Wrapping): IntArray {
+        val cache = adjacentIndicesCache[wrapping]!!
+        return cache[position] ?: findAdjacentIndices(position, wrapping).also { cache[position] = it }
+    }
+
+    private fun findAdjacentIndices(position: Position, wrapping: Wrapping): IntArray = mutableListOf<Int>().apply {
+        addIfNotNull(getIndex(position, ONE_EAST, wrapping))
+        addIfNotNull(getIndex(position, ONE_WEST, wrapping))
+        addIfNotNull(getIndex(position, ONE_ABOVE, wrapping))
+        addIfNotNull(getIndex(position, ONE_BELOW, wrapping))
+        addIfNotNull(getIndex(position, ONE_NORTH, wrapping))
+        addIfNotNull(getIndex(position, ONE_SOUTH, wrapping))
+    }.toIntArray()
+
+    private fun MutableList<Int>.addIfNotNull(b: Int?) {
+        if (b != null) {
+            this.add(b)
+        }
+    }
 
     override fun toString(): String = "${width}x${height}x$length"
 }

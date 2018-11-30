@@ -14,7 +14,7 @@ fun Sample.explore(accesses: Iterable<Access>) {
 }
 
 private fun Sample.exploreAccess(access: Access) {
-    if (!hasBlock(access.feet) || !hasBlock(access.head)) {
+    if (!contains(access.feet) || !contains(access.head)) {
         return
     }
     val feetBlock = getBlock(access.feet)

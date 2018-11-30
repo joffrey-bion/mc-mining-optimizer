@@ -68,7 +68,7 @@ internal class WorldGenMinable(
                                 val d14 = (z.toDouble() + 0.5 - scaledZ) / radius
                                 val sqD14 = d14 * d14
 
-                                if (sqD12 + sqD13 + sqD14 < 1.0 && sample.hasBlock(x, y, z)
+                                if (sqD12 + sqD13 + sqD14 < 1.0 && sample.contains(x, y, z)
                                     && sample.getBlock(x, y, z).type == blockTypeToReplace
                                 ) {
                                     sample.setBlock(x, y, z, blockTypeToGenerate)
