@@ -2,25 +2,37 @@ package org.hildan.minecraft.mining.optimizer.ore
 
 import org.hildan.minecraft.mining.optimizer.blocks.BlockType
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
+import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 
 import java.util.EnumMap
 import java.util.Random
 
-class OreGenerator {
+/**
+ * Generates [Sample]s with ore inside, respecting Minecraft's ore distribution.
+ */
+class SampleGenerator(
+    val dimensions: Dimensions,
+    lowestY: Int,
+    random: Random = Random()
+) {
+    private val oreInjector: OreInjector = OreInjector(lowestY, random)
 
-    private val random = Random()
+    fun generate(count: Int): List<Sample> = List(count) { generate() }
 
-    private var lowestY: Int = 0
+    private fun generate() = Sample(dimensions, BlockType.STONE).also { oreInjector.inject(it) }
+}
 
+/**
+ * Generates ores into samples, respecting Minecraft's ore distribution.
+ */
+private class OreInjector(
+    private val lowestY: Int,
+    private val random: Random = Random()
+) {
     /**
-     * Replace some stones in the given sample by ores. Only stone blocks may be changed.
-     *
-     * @param sample the sample to put ore into
-     * @param yPosition the Y index of the lowest layer of the given sample within the chunk
+     * Replace some stones in the given [sample] by ores. Only stone blocks may be changed.
      */
-    fun generateInto(sample: Sample, yPosition: Int) {
-        this.lowestY = yPosition
-
+    fun inject(sample: Sample) {
         for (x in 0 until sample.dimensions.width step CHUNK_WIDTH) {
             for (z in 0 until sample.dimensions.length step CHUNK_LENGTH) {
                 genStandardOre(sample, BlockType.COAL_ORE, x, z)
@@ -33,15 +45,11 @@ class OreGenerator {
         }
     }
 
-    private fun genStandardOre(sample: Sample, type: BlockType, xOffset: Int, zOffset: Int) {
-        val yGenerator = { minY: Int, maxY: Int -> random.nextInt(maxY - minY) + minY }
-        generateOre(sample, type, xOffset, zOffset, yGenerator)
-    }
+    private fun genStandardOre(sample: Sample, type: BlockType, xOffset: Int, zOffset: Int) =
+        generateOre(sample, type, xOffset, zOffset) { minY: Int, maxY: Int -> random.nextInt(maxY - minY) + minY }
 
-    private fun genLayeredOre(sample: Sample, type: BlockType, xOffset: Int, zOffset: Int) {
-        val yGenerator = { minY: Int, maxY: Int -> 2 * random.nextInt(maxY) + (minY - maxY) }
-        generateOre(sample, type, xOffset, zOffset, yGenerator)
-    }
+    private fun genLayeredOre(sample: Sample, type: BlockType, xOffset: Int, zOffset: Int) =
+        generateOre(sample, type, xOffset, zOffset) { minY: Int, maxY: Int -> 2 * random.nextInt(maxY) + (minY - maxY) }
 
     private fun generateOre(
         sample: Sample,
@@ -53,7 +61,7 @@ class OreGenerator {
         val gen = oreGenerators[type]!!
         val minY = type.minYAvailability
         val maxY = type.maxYAvailability
-        for (i in 0 until type.veinsCountPerChunk) {
+        repeat (type.veinsCountPerChunk) {
             val x = random.nextInt(CHUNK_WIDTH)
             val y = yGenerator(minY, maxY)
             val z = random.nextInt(CHUNK_LENGTH)
@@ -70,15 +78,10 @@ class OreGenerator {
     }
 
     companion object {
-
-        /**
-         * The length of a standard Minecraft chunk.
-         */
+        /** The length of a standard Minecraft chunk. */
         private const val CHUNK_LENGTH = 16
 
-        /**
-         * The width of a standard Minecraft chunk.
-         */
+        /** The width of a standard Minecraft chunk. */
         private const val CHUNK_WIDTH = 16
 
         /**
