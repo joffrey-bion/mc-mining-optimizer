@@ -26,7 +26,7 @@ internal data class DiggingState(
      */
     private val headPositionByAccess: Map<Access, Position>,
 
-    private val dugPositions: List<Position>
+    private val dugPositions: Set<Position>
 ) {
     fun replayOn(sample: Sample) {
         dugPositions.forEach { sample.digBlock(it) }
@@ -93,7 +93,7 @@ internal data class DiggingState(
  */
 internal fun initialState(accesses: Collection<Access>): DiggingState {
     val headPosByAccess = HashMap<Access, Position>(accesses.size)
-    val dugPositions = ArrayList<Position>(accesses.size * 2)
+    val dugPositions = HashSet<Position>(accesses.size * 2)
     for (access in accesses) {
         headPosByAccess[access] = access.head
         dugPositions.add(access.head)
