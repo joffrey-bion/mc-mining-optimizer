@@ -1,6 +1,7 @@
-package org.hildan.minecraft.mining.optimizer.patterns.generated.actions
+package org.hildan.minecraft.mining.optimizer.patterns.generated
 
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
+import org.hildan.minecraft.mining.optimizer.geometry.DigRange3D
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.geometry.Distance3D
 import org.hildan.minecraft.mining.optimizer.geometry.Position
@@ -9,7 +10,12 @@ import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
 import java.util.ArrayList
 
 /**
- * Represents an action the player can perform. An action is performed on a sample, from a given position.
+ * Gets all possible actions supported for the given [digRange].
+ */
+fun allActionsFor(digRange: DigRange3D) = MoveAction.ALL + RelativeDigAction.generateAllFor(digRange)
+
+/**
+ * An action the player can perform. An action is performed on a sample, from a given position.
  */
 sealed class Action {
 
@@ -89,11 +95,9 @@ data class MoveAction(private val distance: Distance3D) : Action() {
 
     companion object {
 
-        private val values = intArrayOf(0, 1, -1)
-
-        val all: Collection<Action>
-            get() {
-                val moves = ArrayList<MoveAction>(12)
+        val ALL: Collection<Action> by lazy {
+            val values = intArrayOf(0, 1, -1)
+            ArrayList<MoveAction>(12).apply {
                 for (dy in values) {
                     for (dx in values) {
                         for (dz in values) {
@@ -103,12 +107,12 @@ data class MoveAction(private val distance: Distance3D) : Action() {
                             // we don't want diagonal moves
                             if (dx != 0 && dz != 0) continue
 
-                            moves.add(MoveAction(Distance3D.of(dx, dy, dz)))
+                            add(MoveAction(Distance3D.of(dx, dy, dz)))
                         }
                     }
                 }
-                return moves
             }
+        }
     }
 }
 
@@ -158,7 +162,7 @@ data class RelativeDigAction(private val distanceFromHead: Distance3D) : Action(
          * @param range the digging range of the player
          * @return a collection of actions that can potentially be done
          */
-        fun getAll(range: Range3D): Collection<Action> {
+        fun generateAllFor(range: Range3D): Collection<Action> {
             val moves = mutableListOf<RelativeDigAction>()
             for (dY in range.minY()..range.maxY()) {
                 for (dX in range.minX(dY)..range.maxX(dY)) {
