@@ -12,7 +12,7 @@ import java.util.ArrayList
 /**
  * Gets all possible actions supported for the given [digRange].
  */
-fun allActionsFor(digRange: DigRange3D) = MoveAction.ALL + RelativeDigAction.generateAllFor(digRange)
+fun allActionsFor(digRange: DigRange3D) = MoveAction.ALL + RelativeDigAction.allIn(digRange)
 
 /**
  * An action the player can perform. An action is performed on a sample, from a given position.
@@ -20,11 +20,7 @@ fun allActionsFor(digRange: DigRange3D) = MoveAction.ALL + RelativeDigAction.gen
 sealed class Action {
 
     /**
-     * Checks whether it is possible to execute this action in the given situation.
-     *
-     * @param sample the current sample
-     * @param currentHeadPosition the current position of the head of the player
-     * @return true if this action can be performed in the given situation
+     * Checks whether it is possible to execute this action from the given [currentHeadPosition] in the given [sample].
      */
     abstract fun isValidFor(sample: Sample, currentHeadPosition: Position): Boolean
 }
@@ -155,28 +151,13 @@ data class RelativeDigAction(private val distanceFromHead: Distance3D) : Action(
     override fun toString(): String = "Dig($distanceFromHead)"
 
     companion object {
-
         /**
-         * Gets all the possible digging actions for the given accepted range.
-         *
-         * @param range the digging range of the player
-         * @return a collection of actions that can potentially be done
+         * Gets all the possible digging actions for the given accepted [range].
          */
-        fun generateAllFor(range: Range3D): Collection<Action> {
-            val moves = mutableListOf<RelativeDigAction>()
-            for (dY in range.minY()..range.maxY()) {
-                for (dX in range.minX(dY)..range.maxX(dY)) {
-                    for (dZ in range.minZ(dY)..range.maxZ(dY)) {
-                        if (dX == 0 && dZ == 0) {
-                            continue // never dig above the head or below the feet
-                        }
-                        if (range.inRange(dX, dY, dZ)) {
-                            moves.add(RelativeDigAction(Distance3D.of(dX, dY, dZ)))
-                        }
-                    }
-                }
-            }
-            return moves.sortedBy { it.distanceFromHead.sqNorm }
-        }
+        fun allIn(range: Range3D): Collection<Action> = range.allDistancesInRange()
+            .filterNot { it.x == 0 && it.z == 0 } // never dig above the head or below the feet
+            .sortedBy { it.sqNorm }
+            .map(::RelativeDigAction)
+            .toList()
     }
 }

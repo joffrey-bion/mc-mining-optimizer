@@ -72,4 +72,16 @@ interface Range3D {
      * @return true if the given point is in range
      */
     fun inRange(distanceX: Int, distanceY: Int, distanceZ: Int): Boolean
+
+    fun allDistancesInRange(): Sequence<Distance3D> = sequence {
+        for (dY in minY()..maxY()) {
+            for (dX in minX(dY)..maxX(dY)) {
+                for (dZ in minZ(dY)..maxZ(dY)) {
+                    if (inRange(dX, dY, dZ)) {
+                        yield(Distance3D.of(dX, dY, dZ))
+                    }
+                }
+            }
+        }
+    }
 }
