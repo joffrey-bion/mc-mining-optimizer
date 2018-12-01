@@ -3,14 +3,24 @@ package org.hildan.minecraft.mining.optimizer.geometry
 import java.util.EnumMap
 
 /**
- * Represents an immutable 3D dimensions specification.
+ * The index of a block in 1-dimensional array representing a 3D matrix.
+ */
+typealias BlockIndex = Int
+
+/**
+ * An array of [BlockIndex].
+ */
+typealias BlockIndices = IntArray
+
+/**
+ * Represents 3D dimensions and allows to map 3D [Position]s to [BlockIndex] / [BlockIndices].
  */
 data class Dimensions(
     val width: Int,
     val height: Int,
     val length: Int
 ) {
-    private val nbPositions = width * height * length
+    val nbPositions = width * height * length
 
     val positions: List<Position> = ArrayList<Position>(nbPositions).apply {
         for (z in 0 until length) {
@@ -30,10 +40,13 @@ data class Dimensions(
      */
     fun contains(x: Int, y: Int, z: Int) = 0 <= x && 0 <= y && 0 <= z && x < width && y < height && z < length
 
-    fun getPos(origin: Position, distance: Distance3D, wrapping: Wrapping): Position? =
+    fun getPosition(origin: Position, distance: Distance3D, wrapping: Wrapping = Wrapping.WRAP_XZ): Position? =
         getIndex(origin, distance, wrapping)?.let { positions[it] }
 
-    fun getIndex(origin: Position, distance: Distance3D, wrapping: Wrapping): Int? {
+    private fun getIndex(origin: BlockIndex, distance: Distance3D, wrapping: Wrapping = Wrapping.WRAP_XZ): BlockIndex? =
+        getIndex(positions[origin], distance, wrapping)
+
+    fun getIndex(origin: Position, distance: Distance3D, wrapping: Wrapping = Wrapping.WRAP_XZ): BlockIndex? {
         return when (wrapping) {
             Wrapping.CUT -> {
                 val x = origin.x + distance.x
@@ -56,30 +69,41 @@ data class Dimensions(
         }
     }
 
-    private fun getIndexIfValid(x: Int, y: Int, z: Int): Int? =
+    private fun getIndexIfValid(x: Int, y: Int, z: Int): BlockIndex? =
         if (contains(x, y, z)) getIndex(x, y, z) else null
 
+    val BlockIndex.above
+        get() = this + ONE_ABOVE
+
+    val BlockIndex.below
+        get() = this + ONE_BELOW
+
+    operator fun BlockIndex.plus(distance: Distance3D): BlockIndex? = getIndex(this, distance)
+
     /**
-     * Returns the index (in a position array) of the given [position].
+     * The index (in a position array) of this position.
      */
-    fun getIndex(position: Position): Int = getIndex(position.x, position.y, position.z)
+    val Position.index
+        get() = getIndex(x, y, z)
+
+    operator fun Position.plus(distance: Distance3D): BlockIndex? = getIndex(this, distance)
 
     /**
      * Returns the index (in a position array) corresponding to the given [x], [y], [z] coordinates.
      */
-    fun getIndex(x: Int, y: Int, z: Int): Int {
+    fun getIndex(x: Int, y: Int, z: Int): BlockIndex {
         if (!contains(x, y, z)) {
             throw NoSuchElementException("Position ($x,$y,$z) does not exist in this sample")
         }
         return x + y * width + z * width * height
     }
 
-    fun getAdjacentIndices(position: Position, wrapping: Wrapping): IntArray {
+    fun getAdjacentIndices(position: Position, wrapping: Wrapping = Wrapping.WRAP_XZ): BlockIndices {
         val cache = adjacentIndicesCache[wrapping]!!
         return cache[position] ?: findAdjacentIndices(position, wrapping).also { cache[position] = it }
     }
 
-    private fun findAdjacentIndices(position: Position, wrapping: Wrapping): IntArray = mutableListOf<Int>().apply {
+    private fun findAdjacentIndices(position: Position, wrapping: Wrapping): BlockIndices = mutableListOf<Int>().apply {
         addIfNotNull(getIndex(position, ONE_EAST, wrapping))
         addIfNotNull(getIndex(position, ONE_WEST, wrapping))
         addIfNotNull(getIndex(position, ONE_ABOVE, wrapping))

@@ -1,13 +1,11 @@
 package org.hildan.minecraft.mining.optimizer.blocks
 
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
-import org.hildan.minecraft.mining.optimizer.geometry.Distance3D
 import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class SampleTest {
@@ -29,67 +27,6 @@ class SampleTest {
         block222 = sample.getBlock(2, 2, 2)
         block345 = sample.getBlock(3, 4, 5)
         block567 = sample.getBlock(5, 6, 7)
-    }
-
-    @Test
-    fun testGetBlockAbove() {
-        val block505 = sample.getBlock(5, 0, 5)
-        val block355 = sample.getBlock(3, 5, 5)
-        val block595 = sample.getBlock(5, 9, 5)
-        val relative355 = sample.getBlockAbove(block345, Wrapping.WRAP)
-        val relative355Cut = sample.getBlockAbove(block345, Wrapping.CUT)
-        val relative505 = sample.getBlockAbove(block595, Wrapping.WRAP)
-        val relative505Cut = sample.getBlockAbove(block595, Wrapping.CUT)
-        assertEquals(block355, relative355)
-        assertEquals(block355, relative355Cut)
-        assertEquals(block505, relative505)
-        assertNull(relative505Cut)
-    }
-
-    @Test
-    fun testGetBlockRelative_CUT_standard() {
-        val relative000 = sample.getBlock(block345, Distance3D.of(-3, -4, -5), Wrapping.CUT)
-        val relative222 = sample.getBlock(block345, Distance3D.of(-1, -2, -3), Wrapping.CUT)
-        val relative345 = sample.getBlock(block000, Distance3D.of(3, 4, 5), Wrapping.CUT)
-        val relative567 = sample.getBlock(block222, Distance3D.of(3, 4, 5), Wrapping.CUT)
-        assertEquals(block000, relative000)
-        assertEquals(block222, relative222)
-        assertEquals(block345, relative345)
-        assertEquals(block567, relative567)
-    }
-
-    @Test
-    fun testGetBlockRelative_WRAP_standard() {
-        val relative000 = sample.getBlock(block345, Distance3D.of(-3, -4, -5), Wrapping.WRAP)
-        val relative222 = sample.getBlock(block345, Distance3D.of(-1, -2, -3), Wrapping.WRAP)
-        val relative345 = sample.getBlock(block000, Distance3D.of(3, 4, 5), Wrapping.WRAP)
-        val relative567 = sample.getBlock(block222, Distance3D.of(3, 4, 5), Wrapping.WRAP)
-        assertEquals(block000, relative000)
-        assertEquals(block222, relative222)
-        assertEquals(block345, relative345)
-        assertEquals(block567, relative567)
-    }
-
-    @Test
-    fun testGetBlockRelative_CUT_side() {
-        val relative000 = sample.getBlock(block000, Distance3D.of(10, 10, 10), Wrapping.CUT)
-        val relative345 = sample.getBlock(block000, Distance3D.of(13, 14, 5), Wrapping.CUT)
-        val relative567 = sample.getBlock(block222, Distance3D.of(3, 14, 15), Wrapping.CUT)
-        val relative987 = sample.getBlock(block222, Distance3D.of(-3, -4, -5), Wrapping.CUT)
-        assertNull(relative000)
-        assertNull(relative345)
-        assertNull(relative567)
-        assertNull(relative987)
-    }
-
-    @Test
-    fun testGetBlockRelative_WRAP_side() {
-        val relative000 = sample.getBlock(block000, Distance3D.of(10, 10, 10), Wrapping.WRAP)
-        val relative345 = sample.getBlock(block000, Distance3D.of(13, 14, 5), Wrapping.WRAP)
-        val relative567 = sample.getBlock(block222, Distance3D.of(3, 14, 15), Wrapping.WRAP)
-        assertEquals(block000, relative000)
-        assertEquals(block345, relative345)
-        assertEquals(block567, relative567)
     }
 
     @Test

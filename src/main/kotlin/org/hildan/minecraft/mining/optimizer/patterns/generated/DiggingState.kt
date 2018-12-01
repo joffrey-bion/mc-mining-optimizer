@@ -28,8 +28,8 @@ internal data class DiggingState(
 
     private val dugPositions: Set<Position>
 ) {
-    fun replayOn(sample: Sample) {
-        dugPositions.forEach { sample.digBlock(it) }
+    fun replayOn(sample: DigMatrix) {
+        dugPositions.forEach { sample.dig(it) }
     }
 
     /**
@@ -41,7 +41,7 @@ internal data class DiggingState(
      *
      * @return the collection of all states resulting of the execution of each possible action on this state.
      */
-    fun expand(sample: Sample, constraints: GenerationConstraints): Collection<DiggingState> {
+    fun expand(sample: DigMatrix, constraints: GenerationConstraints): Collection<DiggingState> {
         if (dugPositions.size >= constraints.maxDugBlocks) {
             return emptyList()
         }
@@ -54,7 +54,7 @@ internal data class DiggingState(
      * @param access the access to operate on
      * @return a Stream of states resulting of each possible action taken on the given access
      */
-    private fun expandAccess(access: Access, sample: Sample) = EXPANDING_ACTIONS
+    private fun expandAccess(access: Access, sample: DigMatrix) = EXPANDING_ACTIONS
         .filter { action -> action.isValidFor(sample, headPositionByAccess[access]!!) }
         .map { action -> next(sample, access, action) }
 
@@ -66,7 +66,7 @@ internal data class DiggingState(
      * @param action the action to perform on this state
      * @return the resulting state
      */
-    private fun next(sample: Sample, access: Access, action: Action): DiggingState = when (action) {
+    private fun next(sample: DigMatrix, access: Access, action: Action): DiggingState = when (action) {
         is RelativeDigAction -> digFromHere(access, action, sample.dimensions)
         is MoveAction -> moveFromHere(access, action, sample.dimensions)
     }

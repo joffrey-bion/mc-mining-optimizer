@@ -31,7 +31,7 @@ private class PatternIterator(
     private val constraints: GenerationConstraints
 ) : Iterator<DiggingPattern> {
 
-    private val testSample: Sample = Sample(constraints.maxDimensions, BlockType.STONE)
+    private val testSample: DigMatrix = DigMatrix(constraints.maxDimensions)
 
     private val exploredStates: MutableSet<DiggingState> = HashSet(50)
 
@@ -48,7 +48,7 @@ private class PatternIterator(
         exploredStates.add(state)
 
         // expand to find other states to explore
-        testSample.fill(BlockType.STONE)
+        testSample.reset()
         state.replayOn(testSample)
         val newStates = state.expand(testSample, constraints)
         statesToExplore.addAll(newStates.filterNot(exploredStates::contains))

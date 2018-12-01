@@ -1,9 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.blocks
 
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
-import org.hildan.minecraft.mining.optimizer.geometry.Distance3D
-import org.hildan.minecraft.mining.optimizer.geometry.ONE_ABOVE
-import org.hildan.minecraft.mining.optimizer.geometry.ONE_BELOW
 import org.hildan.minecraft.mining.optimizer.geometry.Position
 import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
 
@@ -72,37 +69,7 @@ data class Sample(
     /**
      * Gets the [Block] located at the given absolute [position].
      */
-    fun getBlock(position: Position): Block = blocks[dimensions.getIndex(position)]
-
-    /**
-     * Gets the [Block] located at the given [distance] from the given [origin] position.
-     *
-     * @param origin the position to start from
-     * @param distance the 3D distance to travel (each dimension may be negative)
-     * @param wrapping defines the decision to take when reaching the edge of the sample
-     * @return the Block located at the resulting position, or null if the block is out of bounds and wrapping is set to
-     * [Wrapping.CUT].
-     */
-    fun getBlock(origin: Position, distance: Distance3D, wrapping: Wrapping): Block? =
-        dimensions.getIndex(origin, distance, wrapping)?.let { blocks[it] }
-
-    /**
-     * Gets the block above the given position.
-     *
-     * @param position the position above which to get a block
-     * @param wrapping the wrapping policy when the given block is the ceiling of this sample
-     * @return the above block, or null if the given block is the ceiling of this sample and wrapping is set to [Wrapping.CUT]
-     */
-    fun getBlockAbove(position: Position, wrapping: Wrapping): Block? = getBlock(position, ONE_ABOVE, wrapping)
-
-    /**
-     * Gets the block below the given one.
-     *
-     * @param position the position below which to get a block
-     * @param wrapping the wrapping policy when the given block is the floor of this sample
-     * @return the block below, or null if the given block is the floor of this sample and wrapping is set to [Wrapping.CUT]
-     */
-    fun getBlockBelow(position: Position, wrapping: Wrapping): Block? = getBlock(position, ONE_BELOW, wrapping)
+    fun getBlock(position: Position): Block = with(dimensions) { blocks[position.index] }
 
     /**
      * Gets the 6 blocks that are adjacent to given position. If wrapping is set to [Wrapping.CUT] and the given
