@@ -1,11 +1,9 @@
 package org.hildan.minecraft.mining.optimizer.blocks
 
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
-import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class SampleTest {
@@ -27,50 +25,6 @@ class SampleTest {
         block222 = sample.getBlock(2, 2, 2)
         block345 = sample.getBlock(3, 4, 5)
         block567 = sample.getBlock(5, 6, 7)
-    }
-
-    @Test
-    fun testGetAdjacentBlocks_CUT_standard() {
-        val adjBlocks = sample.getAdjacentBlocks(sample.getBlock(2, 2, 2), Wrapping.CUT)
-        assertTrue(adjBlocks.contains(sample.getBlock(1, 2, 2)))
-        assertTrue(adjBlocks.contains(sample.getBlock(3, 2, 2)))
-        assertTrue(adjBlocks.contains(sample.getBlock(2, 1, 2)))
-        assertTrue(adjBlocks.contains(sample.getBlock(2, 3, 2)))
-        assertTrue(adjBlocks.contains(sample.getBlock(2, 2, 1)))
-        assertTrue(adjBlocks.contains(sample.getBlock(2, 2, 3)))
-    }
-
-    @Test
-    fun testGetAdjacentBlocks_WRAP_standard() {
-        val adjBlocks = sample.getAdjacentBlocks(sample.getBlock(2, 2, 2), Wrapping.WRAP)
-        assertTrue(adjBlocks.contains(sample.getBlock(1, 2, 2)))
-        assertTrue(adjBlocks.contains(sample.getBlock(3, 2, 2)))
-        assertTrue(adjBlocks.contains(sample.getBlock(2, 1, 2)))
-        assertTrue(adjBlocks.contains(sample.getBlock(2, 3, 2)))
-        assertTrue(adjBlocks.contains(sample.getBlock(2, 2, 1)))
-        assertTrue(adjBlocks.contains(sample.getBlock(2, 2, 3)))
-    }
-
-    @Test
-    fun testGetAdjacentBlocks_CUT_side() {
-        val adjBlocks = sample.getAdjacentBlocks(sample.getBlock(0, 2, 2), Wrapping.CUT)
-        assertFalse(adjBlocks.contains(sample.getBlock(9, 2, 2)))
-        assertTrue(adjBlocks.contains(sample.getBlock(1, 2, 2)))
-        assertTrue(adjBlocks.contains(sample.getBlock(0, 1, 2)))
-        assertTrue(adjBlocks.contains(sample.getBlock(0, 3, 2)))
-        assertTrue(adjBlocks.contains(sample.getBlock(0, 2, 1)))
-        assertTrue(adjBlocks.contains(sample.getBlock(0, 2, 3)))
-    }
-
-    @Test
-    fun testGetAdjacentBlocks_WRAP_side() {
-        val adjBlocks = sample.getAdjacentBlocks(sample.getBlock(0, 2, 0), Wrapping.WRAP)
-        assertTrue(adjBlocks.contains(sample.getBlock(9, 2, 0)))
-        assertTrue(adjBlocks.contains(sample.getBlock(1, 2, 0)))
-        assertTrue(adjBlocks.contains(sample.getBlock(0, 1, 0)))
-        assertTrue(adjBlocks.contains(sample.getBlock(0, 3, 0)))
-        assertTrue(adjBlocks.contains(sample.getBlock(0, 2, 9)))
-        assertTrue(adjBlocks.contains(sample.getBlock(0, 2, 1)))
     }
 
     @Test

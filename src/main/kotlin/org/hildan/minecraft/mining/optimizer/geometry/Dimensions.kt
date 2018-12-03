@@ -32,8 +32,20 @@ data class Dimensions(
         }
     }
 
-    private val adjacentIndicesCache: EnumMap<Wrapping, MutableMap<Position, IntArray>> =
-        Wrapping.values().map { it to HashMap<Position, IntArray>() }.toMap(EnumMap(Wrapping::class.java))
+    private val adjacentIndices: EnumMap<Wrapping, Map<Position, BlockIndices>> =
+        Wrapping.values().associateTo(EnumMap(Wrapping::class.java)) { it to findAdjacentIndices(positions, it) }
+
+    private fun findAdjacentIndices(positions: List<Position>, wrapping: Wrapping): Map<Position, BlockIndices> =
+            positions.associate { it to findAdjacentIndices(it, wrapping) }
+
+    private fun findAdjacentIndices(position: Position, wrapping: Wrapping): BlockIndices = mutableListOf<Int>().apply {
+        addIfNotNull(getIndex(position, ONE_EAST, wrapping))
+        addIfNotNull(getIndex(position, ONE_WEST, wrapping))
+        addIfNotNull(getIndex(position, ONE_ABOVE, wrapping))
+        addIfNotNull(getIndex(position, ONE_BELOW, wrapping))
+        addIfNotNull(getIndex(position, ONE_NORTH, wrapping))
+        addIfNotNull(getIndex(position, ONE_SOUTH, wrapping))
+    }.toIntArray()
 
     /**
      * Returns whether the given [x], [y] and [z] coordinates fit in these dimensions.
@@ -51,6 +63,9 @@ data class Dimensions(
     /** The index (in a position array) of this position. */
     val Position.index
         get() = getIndex(x, y, z)
+
+    val Position.neighbours
+        get() = adjacentIndices[Wrapping.WRAP_XZ]!![this]!!
 
     operator fun Position.plus(distance: Distance3D): Position? = getIndex(this, distance)?.let { positions[it] }
 
@@ -90,19 +105,8 @@ data class Dimensions(
         return x + y * width + z * width * height
     }
 
-    fun getAdjacentIndices(position: Position, wrapping: Wrapping = Wrapping.WRAP_XZ): BlockIndices {
-        val cache = adjacentIndicesCache[wrapping]!!
-        return cache[position] ?: findAdjacentIndices(position, wrapping).also { cache[position] = it }
-    }
-
-    private fun findAdjacentIndices(position: Position, wrapping: Wrapping): BlockIndices = mutableListOf<Int>().apply {
-        addIfNotNull(getIndex(position, ONE_EAST, wrapping))
-        addIfNotNull(getIndex(position, ONE_WEST, wrapping))
-        addIfNotNull(getIndex(position, ONE_ABOVE, wrapping))
-        addIfNotNull(getIndex(position, ONE_BELOW, wrapping))
-        addIfNotNull(getIndex(position, ONE_NORTH, wrapping))
-        addIfNotNull(getIndex(position, ONE_SOUTH, wrapping))
-    }.toIntArray()
+    fun getAdjacentIndices(position: Position, wrapping: Wrapping = Wrapping.WRAP_XZ): BlockIndices =
+        adjacentIndices[wrapping]!![position]!!
 
     private fun MutableList<Int>.addIfNotNull(b: Int?) {
         if (b != null) {

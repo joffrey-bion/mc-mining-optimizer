@@ -1,8 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.blocks
 
-import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
 import org.hildan.minecraft.mining.optimizer.patterns.Access
-
 import java.util.ArrayDeque
 import java.util.Deque
 
@@ -34,7 +32,7 @@ private fun Sample.exploreAccess(access: Access) {
 }
 
 private fun Sample.exploreBlock(block: Block, blocksToExplore: Deque<Block>) {
-    val adjBlocks = getAdjacentBlocks(block)
+    val adjBlocks = block.neighbours
 
     // FIXME add proper visibility algorithm based on accessible blocks
     block.isVisible = block.isDug || adjBlocks.any { it.isDug }

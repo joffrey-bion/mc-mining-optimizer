@@ -144,6 +144,30 @@ internal class DimensionsTest {
     }
 
     @Test
+    fun `neighbours in middle`() {
+        with(Dimensions(3, 3, 3)) {
+            val expected = listOf(pos011, pos101, pos110, pos211, pos121, pos112).map { it.index }.toSet()
+            assertEquals(expected, pos111.neighbours.toSet())
+        }
+    }
+
+    @Test
+    fun `neighbours on the side`() {
+        with(Dimensions(2, 3, 4)) {
+            val expected = setOf(pos011, pos101, pos110, pos121, pos112, pos011).map { it.index }.toSet()
+            assertEquals(expected, pos111.neighbours.toSet())
+        }
+    }
+
+    @Test
+    fun `neighbours in the corner`() {
+        with(Dimensions(2, 3, 4)) {
+            val expected = setOf(pos001, pos010, pos100, pos003).map { it.index }.toSet()
+            assertEquals(expected, pos000.neighbours.toSet())
+        }
+    }
+
+    @Test
     fun `findAdjacentIndices in middle`() {
         with(Dimensions(3, 3, 3)) {
             val expected = listOf(pos011, pos101, pos110, pos211, pos121, pos112).map { it.index }.toSet()

@@ -10,29 +10,21 @@ import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
  * 16x256x16.
  */
 data class Sample(
-    /**
-     * The dimensions of this sample.
-     */
+    /** The dimensions of this sample. */
     val dimensions: Dimensions,
-    /**
-     * The blocks of this sample.
-     */
+    /** The blocks of this sample. */
     private val blocks: List<Block>
 ) {
-    /**
-     * The number of ore blocks currently in this sample.
-     */
+    /** The number of ore blocks currently in this sample. */
     var oreBlocksCount = 0
         private set
 
-    /**
-     * The number of dug blocks currently in this sample.
-     */
+    /** The number of dug blocks currently in this sample. */
     var dugBlocksCount = 0
         private set
 
     /**
-     * Creates a new pure stone sample of the given dimensions.
+     * Creates a new pure sample of the given [dimensions] containing only blocks of the given [initialBlockType].
      */
     constructor(dimensions: Dimensions, initialBlockType: BlockType) : this(
         dimensions,
@@ -43,14 +35,19 @@ data class Sample(
     }
 
     /**
-     * Creates a copy of the given Sample.
-     *
-     * @param source the Sample to copy
+     * Creates a copy of the given [source] Sample.
      */
     constructor(source: Sample) : this(source.dimensions, source.blocks.map { it.copy() }) {
         this.oreBlocksCount = source.oreBlocksCount
         this.dugBlocksCount = source.dugBlocksCount
     }
+
+    /**
+     * Gets the 6 blocks that are adjacent to this block, with [Wrapping.WRAP_XZ] wrapping. If this block is on the
+     * floor on ceiling of this sample, less than 6 blocks are returned because part of them is cut off.
+     */
+    val Block.neighbours
+        get() = with(dimensions) { position.neighbours.map { blocks[it] } }
 
     /**
      * Returns whether the given [x], [y], [z] coordinates belong to this sample.
@@ -73,17 +70,6 @@ data class Sample(
     fun getBlock(position: Position): Block = with(dimensions) { blocks[position.index] }
 
     /**
-     * Gets the 6 blocks that are adjacent to given position. If wrapping is set to [Wrapping.CUT] and the given
-     * position is on this sample's edge, less than 6 blocks are returned because part of them is cut off.
-     *
-     * @param position the position to get the neighbors from
-     * @param wrapping the wrapping policy when the given block is on the side of this chunk
-     * @return a list containing blocks adjacent to the given position
-     */
-    fun getAdjacentBlocks(position: Position, wrapping: Wrapping = Wrapping.WRAP_XZ): List<Block> =
-        dimensions.getAdjacentIndices(position, wrapping).map { blocks[it] }
-
-    /**
      * Changes the type of the block at the given [x], [y], [z] coordinates.
      */
     fun setBlock(x: Int, y: Int, z: Int, type: BlockType) = changeType(getBlock(x, y, z), type)
@@ -99,7 +85,7 @@ data class Sample(
 
         // TODO move visibility logic to external visitor
         block.isVisible = true
-        getAdjacentBlocks(block).forEach { b -> b.isVisible = true }
+        block.neighbours.forEach { b -> b.isVisible = true }
     }
 
     /**
@@ -112,10 +98,10 @@ data class Sample(
     }
 
     private fun digBlockAndAdjacentOres(block: Block) {
-        digBlock(block.x, block.y, block.z)
-        for (ab in getAdjacentBlocks(block)) {
-            if (ab.isOre && ab.isVisible) {
-                digBlockAndAdjacentOres(ab)
+        digBlock(block.index)
+        for (ngb in block.neighbours) {
+            if (ngb.isOre && ngb.isVisible) {
+                digBlockAndAdjacentOres(ngb)
             }
         }
     }
@@ -150,6 +136,8 @@ data class Sample(
 
     companion object {
         private fun createBlocks(dimensions: Dimensions, initialBlockType: BlockType): List<Block> =
-            dimensions.positions.map { (Block(it.x, it.y, it.z, initialBlockType)) }
+            with(dimensions) {
+                positions.map { (Block(it.index, it, initialBlockType)) }
+            }
     }
 }
