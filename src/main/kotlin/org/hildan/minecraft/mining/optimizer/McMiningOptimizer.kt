@@ -1,6 +1,7 @@
 package org.hildan.minecraft.mining.optimizer
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -61,14 +62,15 @@ fun main() = runBlocking {
 }
 
 @ExperimentalCoroutinesApi
-private fun CoroutineScope.generateAsync(patternGenerator: PatternGenerator) = produce(capacity = 200) {
-    patternGenerator.iterator().forEach { send(it) }
-    close()
-}
+private fun CoroutineScope.generateAsync(patternGenerator: PatternGenerator) =
+    produce(Dispatchers.Default, capacity = 200) {
+        patternGenerator.iterator().forEach { send(it) }
+        close()
+    }
 
 @ExperimentalCoroutinesApi
 private fun CoroutineScope.evaluateAsync(patternEvaluator: PatternEvaluator, patterns: ReceiveChannel<DiggingPattern>) =
-    produce(capacity = 200) {
+    produce(Dispatchers.Default, capacity = 200) {
         repeat(8) {
             launch {
                 for (p in patterns) {
