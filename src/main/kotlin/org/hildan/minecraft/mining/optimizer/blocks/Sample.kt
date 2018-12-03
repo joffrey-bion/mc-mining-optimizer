@@ -80,7 +80,7 @@ data class Sample(
      * @param wrapping the wrapping policy when the given block is on the side of this chunk
      * @return a list containing blocks adjacent to the given position
      */
-    fun getAdjacentBlocks(position: Position, wrapping: Wrapping): List<Block> =
+    fun getAdjacentBlocks(position: Position, wrapping: Wrapping = Wrapping.WRAP_XZ): List<Block> =
         dimensions.getAdjacentIndices(position, wrapping).map { blocks[it] }
 
     /**
@@ -99,7 +99,7 @@ data class Sample(
 
         // TODO move visibility logic to external visitor
         block.isVisible = true
-        getAdjacentBlocks(block, Wrapping.WRAP).forEach { b -> b.isVisible = true }
+        getAdjacentBlocks(block).forEach { b -> b.isVisible = true }
     }
 
     /**
@@ -113,7 +113,7 @@ data class Sample(
 
     private fun digBlockAndAdjacentOres(block: Block) {
         digBlock(block.x, block.y, block.z)
-        for (ab in getAdjacentBlocks(block, Wrapping.WRAP_XZ)) {
+        for (ab in getAdjacentBlocks(block)) {
             if (ab.isOre && ab.isVisible) {
                 digBlockAndAdjacentOres(ab)
             }

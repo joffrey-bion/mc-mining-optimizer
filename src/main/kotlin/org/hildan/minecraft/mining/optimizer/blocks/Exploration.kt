@@ -34,7 +34,7 @@ private fun Sample.exploreAccess(access: Access) {
 }
 
 private fun Sample.exploreBlock(block: Block, blocksToExplore: Deque<Block>) {
-    val adjBlocks = getAdjacentBlocks(block, Wrapping.WRAP)
+    val adjBlocks = getAdjacentBlocks(block)
 
     // FIXME add proper visibility algorithm based on accessible blocks
     block.isVisible = block.isDug || adjBlocks.any { it.isDug }
