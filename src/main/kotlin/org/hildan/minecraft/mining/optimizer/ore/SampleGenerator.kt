@@ -7,11 +7,14 @@ import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import java.util.EnumMap
 import java.util.Random
 
+fun generateSamples(count: Int, dimensions: Dimensions, lowestY: Int, random: Random = Random()): List<Sample> =
+    SampleGenerator(dimensions, lowestY, random).generate(count)
+
 /**
  * Generates [Sample]s with ore inside, respecting Minecraft's ore distribution.
  */
-class SampleGenerator(
-    val dimensions: Dimensions,
+private class SampleGenerator(
+    private val dimensions: Dimensions,
     lowestY: Int,
     random: Random = Random()
 ) {
