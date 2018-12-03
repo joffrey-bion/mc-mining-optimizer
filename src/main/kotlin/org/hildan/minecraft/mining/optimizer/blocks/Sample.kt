@@ -1,5 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.blocks
 
+import org.hildan.minecraft.mining.optimizer.geometry.BlockIndex
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.geometry.Position
 import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
@@ -90,21 +91,21 @@ data class Sample(
     fun fill(blockType: BlockType) = blocks.forEach { changeType(it, blockType) }
 
     /**
-     * Digs the block at the specified [position].
+     * Digs the block at the specified [index].
      */
-    fun digBlock(position: Position) = digBlock(position.x, position.y, position.z)
+    fun digBlock(index: BlockIndex) {
+        val block = blocks[index]
+        changeType(block, BlockType.AIR)
+
+        // TODO move visibility logic to external visitor
+        block.isVisible = true
+        getAdjacentBlocks(block, Wrapping.WRAP).forEach { b -> b.isVisible = true }
+    }
 
     /**
      * Digs the block at the specified [x], [y], [z] coordinates.
      */
-    fun digBlock(x: Int, y: Int, z: Int) {
-        setBlock(x, y, z, BlockType.AIR)
-
-        // TODO move visibility logic to external visitor
-        val block = getBlock(x, y, z)
-        block.isVisible = true
-        getAdjacentBlocks(block, Wrapping.WRAP).forEach { b -> b.isVisible = true }
-    }
+    fun digBlock(x: Int, y: Int, z: Int) = digBlock(dimensions.getIndex(x, y, z))
 
     fun digVisibleOres() {
         blocks.filter { it: Block -> it.isOre && it.isVisible }.forEach { digBlockAndAdjacentOres(it) }

@@ -1,8 +1,8 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated
 
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
+import org.hildan.minecraft.mining.optimizer.geometry.BlockIndex
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
-import org.hildan.minecraft.mining.optimizer.geometry.Position
 import org.hildan.minecraft.mining.optimizer.patterns.Access
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
 
@@ -11,7 +11,7 @@ import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
  */
 internal class GeneratedPattern(
     private val accesses: Set<Access>,
-    private val dugPositions: Set<Position>
+    private val dugPositions: Set<BlockIndex>
 ) : DiggingPattern {
 
     override fun getAccesses(dimensions: Dimensions) = accesses

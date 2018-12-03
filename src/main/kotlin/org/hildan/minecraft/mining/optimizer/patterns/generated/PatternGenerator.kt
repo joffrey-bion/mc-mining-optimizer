@@ -1,7 +1,5 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated
 
-import org.hildan.minecraft.mining.optimizer.blocks.BlockType
-import org.hildan.minecraft.mining.optimizer.blocks.Sample
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.patterns.Access
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
@@ -36,7 +34,7 @@ private class PatternIterator(
     private val exploredStates: MutableSet<DiggingState> = HashSet(50)
 
     private val statesToExplore: Deque<DiggingState> = ArrayDeque<DiggingState>(25).apply {
-        add(initialState(accesses))
+        add(initialState(constraints.maxDimensions, accesses))
     }
 
     override fun hasNext(): Boolean = !statesToExplore.isEmpty()

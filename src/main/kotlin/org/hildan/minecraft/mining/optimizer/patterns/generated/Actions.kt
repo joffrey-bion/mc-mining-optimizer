@@ -4,9 +4,7 @@ import org.hildan.minecraft.mining.optimizer.geometry.BlockIndex
 import org.hildan.minecraft.mining.optimizer.geometry.DigRange3D
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.geometry.Distance3D
-import org.hildan.minecraft.mining.optimizer.geometry.Position
 import org.hildan.minecraft.mining.optimizer.geometry.Range3D
-import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
 import java.util.ArrayList
 
 /**
@@ -21,7 +19,7 @@ sealed class Action {
     /**
      * Checks whether it is possible to execute this action from the given [currentHeadPosition] in the given [sample].
      */
-    abstract fun isValidFor(sample: DigMatrix, currentHeadPosition: Position): Boolean
+    abstract fun isValidFor(sample: DigMatrix, currentHeadPosition: BlockIndex): Boolean
 }
 
 /**
@@ -48,14 +46,14 @@ data class MoveAction(private val distance: Distance3D) : Action() {
         }
     }
 
-    override fun isValidFor(sample: DigMatrix, currentHeadPosition: Position): Boolean = with (sample.dimensions) {
+    override fun isValidFor(sample: DigMatrix, currentHeadPosition: BlockIndex): Boolean = with (sample.dimensions) {
         val headDestination = currentHeadPosition + distance ?: return false
         val feetDestination = headDestination.below ?: return false
 
         if (!canStandAtPosition(sample, headDestination, feetDestination)) {
             return false
         }
-        return hasRoomForMovement(sample, currentHeadPosition.index, headDestination)
+        return hasRoomForMovement(sample, currentHeadPosition, headDestination)
     }
 
     private fun canStandAtPosition(sample: DigMatrix, head: BlockIndex, feet: BlockIndex) =
@@ -78,8 +76,9 @@ data class MoveAction(private val distance: Distance3D) : Action() {
     private fun canMoveBeforeFalling(sample: DigMatrix, headPositionAfter: BlockIndex) =
         sample.isDugAbove(headPositionAfter)
 
-    fun move(currentHeadPosition: Position, dimensions: Dimensions): Position =
-        dimensions.getPosition(currentHeadPosition, distance)!!
+    fun move(currentHeadPosition: BlockIndex, dimensions: Dimensions): BlockIndex = with(dimensions) {
+        (currentHeadPosition + distance)!!
+    }
 
     override fun toString(): String = "MoveOf($distance)"
 
@@ -112,9 +111,9 @@ data class MoveAction(private val distance: Distance3D) : Action() {
  */
 data class RelativeDigAction(private val distanceFromHead: Distance3D) : Action() {
 
-    override fun isValidFor(sample: DigMatrix, currentHeadPosition: Position): Boolean = with(sample.dimensions) {
+    override fun isValidFor(sample: DigMatrix, currentHeadPosition: BlockIndex): Boolean = with(sample.dimensions) {
         val blockToDig = currentHeadPosition + distanceFromHead ?: return false
-        return !sample.isDug(blockToDig) && isPathClear(sample, currentHeadPosition.index, blockToDig)
+        return !sample.isDug(blockToDig) && isPathClear(sample, currentHeadPosition, blockToDig)
     }
 
     private fun isPathClear(sample: DigMatrix, head: BlockIndex, block: BlockIndex): Boolean {
@@ -135,8 +134,9 @@ data class RelativeDigAction(private val distanceFromHead: Distance3D) : Action(
         sample.isDug(head.above!!) || sample.isDug(target.below!!)
     }
 
-    fun digPosition(currentHeadPosition: Position, dimensions: Dimensions): Position =
-        dimensions.getPosition(currentHeadPosition, distanceFromHead, Wrapping.WRAP_XZ)!!
+    fun digPosition(currentHeadPosition: BlockIndex, dimensions: Dimensions): BlockIndex = with(dimensions) {
+        (currentHeadPosition + distanceFromHead)!!
+    }
 
     override fun toString(): String = "Dig($distanceFromHead)"
 

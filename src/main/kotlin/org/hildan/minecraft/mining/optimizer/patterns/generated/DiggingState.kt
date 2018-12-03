@@ -1,9 +1,9 @@
 package org.hildan.minecraft.mining.optimizer.patterns.generated
 
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
+import org.hildan.minecraft.mining.optimizer.geometry.BlockIndex
 import org.hildan.minecraft.mining.optimizer.geometry.DigRange3D
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
-import org.hildan.minecraft.mining.optimizer.geometry.Position
 import org.hildan.minecraft.mining.optimizer.patterns.Access
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
 import java.util.HashMap
@@ -24,9 +24,9 @@ internal data class DiggingState(
      * When multiple accesses are available, we track the head position for each access independently. Hence one head
      * position per access.
      */
-    private val headPositionByAccess: Map<Access, Position>,
+    private val headPositionByAccess: Map<Access, BlockIndex>,
 
-    private val dugPositions: Set<Position>
+    private val dugPositions: Set<BlockIndex>
 ) {
     fun replayOn(sample: DigMatrix) {
         dugPositions.forEach { sample.dig(it) }
@@ -91,13 +91,16 @@ internal data class DiggingState(
 /**
  * Creates an initial digging state based on the given [accesses].
  */
-internal fun initialState(accesses: Collection<Access>): DiggingState {
-    val headPosByAccess = HashMap<Access, Position>(accesses.size)
-    val dugPositions = HashSet<Position>(accesses.size * 2)
-    for (access in accesses) {
-        headPosByAccess[access] = access.head
-        dugPositions.add(access.head)
-        dugPositions.add(access.feet)
+internal fun initialState(dimensions: Dimensions, accesses: Collection<Access>): DiggingState {
+    val headPosByAccess = HashMap<Access, BlockIndex>(accesses.size)
+    val dugPositions = HashSet<BlockIndex>(accesses.size * 2)
+
+    with(dimensions) {
+        for (access in accesses) {
+            headPosByAccess[access] = access.head.index
+            dugPositions.add(access.head.index)
+            dugPositions.add(access.feet.index)
+        }
     }
     return DiggingState(headPosByAccess, dugPositions)
 }

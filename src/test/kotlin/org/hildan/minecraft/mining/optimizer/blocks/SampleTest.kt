@@ -75,18 +75,20 @@ class SampleTest {
 
     @Test
     fun testDigBlock() {
-        sample.digBlock(block000)
-        sample.digBlock(block222)
-        sample.digBlock(block345)
-        sample.digBlock(1, 2, 3)
-        sample.digBlock(0, 5, 4)
-        sample.digBlock(7, 2, 6)
-        assertTrue(block000.isDug)
-        assertTrue(block222.isDug)
-        assertTrue(block345.isDug)
-        assertTrue(sample.getBlock(1, 2, 3).isDug)
-        assertTrue(sample.getBlock(0, 5, 4).isDug)
-        assertTrue(sample.getBlock(7, 2, 6).isDug)
+        with(sample.dimensions) {
+            sample.digBlock(block000.index)
+            sample.digBlock(block222.index)
+            sample.digBlock(block345.index)
+            sample.digBlock(1, 2, 3)
+            sample.digBlock(0, 5, 4)
+            sample.digBlock(7, 2, 6)
+            assertTrue(block000.isDug)
+            assertTrue(block222.isDug)
+            assertTrue(block345.isDug)
+            assertTrue(sample.getBlock(1, 2, 3).isDug)
+            assertTrue(sample.getBlock(0, 5, 4).isDug)
+            assertTrue(sample.getBlock(7, 2, 6).isDug)
+        }
     }
 
     @Test
