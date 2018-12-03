@@ -40,6 +40,20 @@ data class Dimensions(
      */
     fun contains(x: Int, y: Int, z: Int) = 0 <= x && 0 <= y && 0 <= z && x < width && y < height && z < length
 
+    val BlockIndex.above
+        get() = this + ONE_ABOVE
+
+    val BlockIndex.below
+        get() = this + ONE_BELOW
+
+    operator fun BlockIndex.plus(distance: Distance3D): BlockIndex? = getIndex(positions[this], distance)
+
+    /** The index (in a position array) of this position. */
+    val Position.index
+        get() = getIndex(x, y, z)
+
+    operator fun Position.plus(distance: Distance3D): Position? = getIndex(this, distance)?.let { positions[it] }
+
     private fun getIndex(origin: Position, distance: Distance3D, wrapping: Wrapping = Wrapping.WRAP_XZ): BlockIndex? {
         return when (wrapping) {
             Wrapping.CUT -> {
@@ -65,20 +79,6 @@ data class Dimensions(
 
     private fun getIndexIfValid(x: Int, y: Int, z: Int): BlockIndex? =
         if (contains(x, y, z)) getIndex(x, y, z) else null
-
-    val BlockIndex.above
-        get() = this + ONE_ABOVE
-
-    val BlockIndex.below
-        get() = this + ONE_BELOW
-
-    operator fun BlockIndex.plus(distance: Distance3D): BlockIndex? = getIndex(positions[this], distance)
-
-    /** The index (in a position array) of this position. */
-    val Position.index
-        get() = getIndex(x, y, z)
-
-    operator fun Position.plus(distance: Distance3D): Position? = getIndex(this, distance)?.let { positions[it] }
 
     /**
      * Returns the index (in a position array) corresponding to the given [x], [y], [z] coordinates.
@@ -117,7 +117,6 @@ data class Dimensions(
  * Defines how some functions behave when accessing positions outside of some [Dimensions].
  */
 enum class Wrapping {
-
     /**
      * Does not consider blocks that are outside the sample.
      */
