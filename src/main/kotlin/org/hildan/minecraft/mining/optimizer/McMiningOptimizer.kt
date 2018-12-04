@@ -75,13 +75,13 @@ private suspend fun storePatternsAndPrintProgress(evaluatedPatterns: ReceiveChan
     for (p in evaluatedPatterns) {
         count++
         if (count % 10000 == 0) {
-            println("$count total evaluated patterns")
+            println("$count evaluated patterns so far")
         }
         if (store.add(p)) {
             println(store)
         }
     }
-    println("Finished!")
+    println("Finished with $count total evaluated patterns")
     return store
 }
 

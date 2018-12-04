@@ -25,6 +25,6 @@ class PatternStore : Iterable<EvaluatedPattern> {
 
     override fun toString(): String {
         val s = if (patterns.size > 1) "s" else ""
-        return "${patterns.size} best pattern$s: $patterns"
+        return "${patterns.size} best pattern$s - stats: ${patterns.map { it.statistics }.toSet()}"
     }
 }
