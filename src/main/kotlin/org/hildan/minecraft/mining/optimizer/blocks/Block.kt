@@ -12,9 +12,6 @@ class Block(
     val position: Position,
     var type: BlockType
 ) {
-    var isVisible: Boolean = false
-    var isExplored: Boolean = false
-
     /** Whether this block has been dug. */
     val isDug: Boolean
         get() = type == BlockType.AIR
@@ -26,17 +23,10 @@ class Block(
     /**
      * Creates a copy of this block.
      */
-    internal fun copy(): Block {
-        val copy = Block(index, position, type)
-        copy.isVisible = isVisible
-        copy.isExplored = isExplored
-        return copy
-    }
+    internal fun copy(): Block = Block(index, position, type)
 
     fun resetTo(refBlock: Block) {
         type = refBlock.type
-        isVisible = refBlock.isVisible
-        isExplored = refBlock.isExplored
     }
 
     override fun equals(other: Any?): Boolean {
@@ -48,8 +38,6 @@ class Block(
         if (index != other.index) return false
         if (position != other.position) return false
         if (type != other.type) return false
-        if (isVisible != other.isVisible) return false
-        if (isExplored != other.isExplored) return false
 
         return true
     }
@@ -58,8 +46,6 @@ class Block(
         var result = index
         result = 31 * result + position.hashCode()
         result = 31 * result + type.hashCode()
-        result = 31 * result + isVisible.hashCode()
-        result = 31 * result + isExplored.hashCode()
         return result
     }
 

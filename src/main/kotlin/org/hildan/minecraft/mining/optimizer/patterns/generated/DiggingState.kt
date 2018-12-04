@@ -85,7 +85,7 @@ internal data class DiggingState(
     /**
      * Creates a [GeneratedPattern] that brings any sample to this state.
      */
-    fun toPattern() = GeneratedPattern(headPositionByAccess.keys, dugPositions)
+    fun toPattern() = GeneratedPattern(dugPositions)
 }
 
 /**

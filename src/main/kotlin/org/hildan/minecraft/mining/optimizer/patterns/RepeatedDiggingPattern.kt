@@ -1,7 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.patterns
 
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
-import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 
 /**
  * Represents a DiggingPattern that is repeated as many times as necessary in every direction, starting from the point
@@ -35,16 +34,6 @@ interface RepeatedDiggingPattern : DiggingPattern {
      * @return the set of accesses at the given pattern position
      */
     fun getAccesses(offsetX: Int, offsetY: Int): Set<Access>
-
-    override fun getAccesses(dimensions: Dimensions): Set<Access> {
-        val accesses = mutableSetOf<Access>()
-        for (x in 0 until dimensions.width step width) {
-            for (y in 0 until dimensions.height step height) {
-                accesses.addAll(getAccesses(x, y))
-            }
-        }
-        return accesses
-    }
 
     /**
      * Digs this pattern into the given [sample] with the given offset. This method must take care of stopping at the

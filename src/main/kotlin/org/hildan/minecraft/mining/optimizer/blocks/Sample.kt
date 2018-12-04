@@ -2,9 +2,9 @@ package org.hildan.minecraft.mining.optimizer.blocks
 
 import org.hildan.minecraft.mining.optimizer.geometry.BlockIndex
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
-import org.hildan.minecraft.mining.optimizer.geometry.Position
 import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
 import org.hildan.minecraft.mining.optimizer.ore.BlockType
+import java.util.ArrayDeque
 
 /**
  * An arbitrary group of blocks. It can have any dimension, thus it is different from a minecraft chunk, which is
@@ -47,7 +47,7 @@ data class Sample(
      * Gets the 6 blocks that are adjacent to this block, with [Wrapping.WRAP_XZ] wrapping. If this block is on the
      * floor on ceiling of this sample, less than 6 blocks are returned because part of them is cut off.
      */
-    val Block.neighbours
+    private val Block.neighbours
         get() = with(dimensions) { position.neighbours.map { blocks[it] } }
 
     /**
@@ -56,19 +56,9 @@ data class Sample(
     fun contains(x: Int, y: Int, z: Int) = dimensions.contains(x, y, z)
 
     /**
-     * Returns whether the given [position] belong to this sample.
-     */
-    fun contains(position: Position) = contains(position.x, position.y, position.z)
-
-    /**
      * Gets the [Block] located at the given [x], [y], [z] coordinates.
      */
     fun getBlock(x: Int, y: Int, z: Int): Block = blocks[dimensions.getIndex(x, y, z)]
-
-    /**
-     * Gets the [Block] located at the given absolute [position].
-     */
-    fun getBlock(position: Position): Block = with(dimensions) { blocks[position.index] }
 
     /**
      * Changes the type of the block at the given [x], [y], [z] coordinates.
@@ -81,12 +71,7 @@ data class Sample(
      * Digs the block at the specified [index].
      */
     fun digBlock(index: BlockIndex) {
-        val block = blocks[index]
-        changeType(block, BlockType.AIR)
-
-        // TODO move visibility logic to external visitor
-        block.isVisible = true
-        block.neighbours.forEach { b -> b.isVisible = true }
+        changeType(blocks[index], BlockType.AIR)
     }
 
     /**
@@ -94,23 +79,21 @@ data class Sample(
      */
     fun digBlock(x: Int, y: Int, z: Int) = digBlock(dimensions.getIndex(x, y, z))
 
-    fun digVisibleOres() {
-        blocks.filter { it: Block -> it.isOre && it.isVisible }.forEach { digBlockAndAdjacentOres(it) }
-    }
-
-    private fun digBlockAndAdjacentOres(block: Block) {
-        digBlock(block.index)
-        for (ngb in block.neighbours) {
-            if (ngb.isOre && ngb.isVisible) {
-                digBlockAndAdjacentOres(ngb)
+    fun digVisibleOresRecursively() {
+        val dugBlocks=  blocks.filter { it.isDug }
+        val explored=  dugBlocks.mapTo(HashSet()) { it.index }
+        val toExplore = dugBlocks.flatMapTo(ArrayDeque()) { it.neighbours }
+        while (toExplore.isNotEmpty()) {
+            val block = toExplore.poll()
+            explored.add(block.index)
+            if (block.isOre) {
+                digBlock(block.index)
+                block.neighbours.filterNotTo(toExplore) { explored.contains(it.index) }
             }
         }
     }
 
     fun resetTo(sample: Sample) {
-        assert(dimensions == sample.dimensions) {
-            "the given sample does not have the same dimensions as this one"
-        }
         for (i in blocks.indices) {
             blocks[i].resetTo(sample.blocks[i])
         }
@@ -138,7 +121,7 @@ data class Sample(
     companion object {
         private fun createBlocks(dimensions: Dimensions, initialBlockType: BlockType): List<Block> =
             with(dimensions) {
-                positions.map { (Block(it.index, it, initialBlockType)) }
+                positions.map { Block(it.index, it, initialBlockType) }
             }
     }
 }
