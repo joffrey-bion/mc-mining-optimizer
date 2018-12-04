@@ -4,6 +4,7 @@ import org.hildan.minecraft.mining.optimizer.geometry.BlockIndex
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.geometry.Position
 import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
+import org.hildan.minecraft.mining.optimizer.ore.BlockType
 
 /**
  * An arbitrary group of blocks. It can have any dimension, thus it is different from a minecraft chunk, which is

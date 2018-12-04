@@ -2,6 +2,7 @@ package org.hildan.minecraft.mining.optimizer.blocks
 
 import org.hildan.minecraft.mining.optimizer.geometry.BlockIndex
 import org.hildan.minecraft.mining.optimizer.geometry.Position
+import org.hildan.minecraft.mining.optimizer.ore.BlockType
 
 /**
  * Represents a Minecraft block.

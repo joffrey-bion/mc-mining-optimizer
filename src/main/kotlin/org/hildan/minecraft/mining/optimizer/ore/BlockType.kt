@@ -1,4 +1,4 @@
-package org.hildan.minecraft.mining.optimizer.blocks
+package org.hildan.minecraft.mining.optimizer.ore
 
 import org.hildan.minecraft.mining.optimizer.display.AnsiCodes.BLUE
 import org.hildan.minecraft.mining.optimizer.display.AnsiCodes.CYAN

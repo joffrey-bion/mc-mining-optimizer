@@ -7,9 +7,9 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.hildan.minecraft.mining.optimizer.blocks.BlockType
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
+import org.hildan.minecraft.mining.optimizer.ore.BlockType
 import org.hildan.minecraft.mining.optimizer.ore.generateSamples
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
 import org.hildan.minecraft.mining.optimizer.patterns.generated.GenerationConstraints
