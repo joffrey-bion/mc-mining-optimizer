@@ -33,10 +33,10 @@ data class Dimensions(
     }
 
     private val adjacentIndices: EnumMap<Wrapping, Map<Position, BlockIndices>> =
-        Wrapping.values().associateTo(EnumMap(Wrapping::class.java)) { it to findAdjacentIndices(positions, it) }
+            Wrapping.values().associateTo(EnumMap(Wrapping::class.java)) { it to findAdjacentIndices(positions, it) }
 
     private fun findAdjacentIndices(positions: List<Position>, wrapping: Wrapping): Map<Position, BlockIndices> =
-            positions.associate { it to findAdjacentIndices(it, wrapping) }
+            positions.associateWith { findAdjacentIndices(it, wrapping) }
 
     private fun findAdjacentIndices(position: Position, wrapping: Wrapping): BlockIndices = mutableListOf<Int>().apply {
         addIfNotNull(getIndex(position, ONE_EAST, wrapping))
@@ -46,6 +46,12 @@ data class Dimensions(
         addIfNotNull(getIndex(position, ONE_NORTH, wrapping))
         addIfNotNull(getIndex(position, ONE_SOUTH, wrapping))
     }.toIntArray()
+
+    private fun MutableList<Int>.addIfNotNull(b: Int?) {
+        if (b != null) {
+            this.add(b)
+        }
+    }
 
     /**
      * Returns whether the given [x], [y] and [z] coordinates fit in these dimensions.
@@ -107,12 +113,6 @@ data class Dimensions(
 
     fun getAdjacentIndices(position: Position, wrapping: Wrapping = Wrapping.WRAP_XZ): BlockIndices =
         adjacentIndices[wrapping]!![position]!!
-
-    private fun MutableList<Int>.addIfNotNull(b: Int?) {
-        if (b != null) {
-            this.add(b)
-        }
-    }
 
     override fun toString(): String = "${width}x${height}x$length"
 }

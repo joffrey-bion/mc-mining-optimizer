@@ -1,5 +1,7 @@
 package org.hildan.minecraft.mining.optimizer.geometry
 
+import kotlin.math.abs
+
 /**
  * Represents a 3D range of what can be dug, which is symmetric with respect to the XY, YZ, and XZ planes, and has
  * symmetric behaviours for X and Z (symmetric with respect to the 45°-diagonal vertical planes).
@@ -35,14 +37,14 @@ enum class DigRange3D(
         )
     );
 
-    override fun maxX(distanceY: Int): Int = boundsDistribution[Math.abs(distanceY)].size - 1
+    override fun maxX(distanceY: Int): Int = boundsDistribution[abs(distanceY)].lastIndex
 
-    override fun maxY(): Int = boundsDistribution.size - 1
+    override fun maxY(): Int = boundsDistribution.lastIndex
 
     override fun inRange(distanceX: Int, distanceY: Int, distanceZ: Int): Boolean = when {
         distanceY < minY() || distanceY > maxY() -> false
         distanceX < minX(distanceY) || distanceX > maxX(distanceY) -> false
-        else -> Math.abs(distanceZ) <= boundsDistribution[Math.abs(distanceY)][Math.abs(distanceX)]
+        else -> abs(distanceZ) <= boundsDistribution[abs(distanceY)][abs(distanceX)]
     }
 
     override fun toString(): String {
