@@ -14,7 +14,7 @@ data class Sample(
     /** The dimensions of this sample. */
     val dimensions: Dimensions,
     /** The blocks of this sample. */
-    private val blocks: List<Block>
+    private val blocks: MutableList<BlockType>
 ) {
     /** The number of ore blocks currently in this sample. */
     var oreBlocksCount = 0
@@ -29,7 +29,7 @@ data class Sample(
      */
     constructor(dimensions: Dimensions, initialBlockType: BlockType) : this(
         dimensions,
-        createBlocks(dimensions, initialBlockType)
+        MutableList(dimensions.nbPositions) { initialBlockType }
     ) {
         oreBlocksCount = if (initialBlockType.isOre) blocks.size else 0
         dugBlocksCount = if (initialBlockType == BlockType.AIR) blocks.size else 0
@@ -38,72 +38,49 @@ data class Sample(
     /**
      * Creates a copy of the given [source] Sample.
      */
-    constructor(source: Sample) : this(source.dimensions, source.blocks.map { it.copy() }) {
+    constructor(source: Sample) : this(
+        source.dimensions,
+        ArrayList(source.blocks)
+    ) {
         this.oreBlocksCount = source.oreBlocksCount
         this.dugBlocksCount = source.dugBlocksCount
     }
 
     /**
      * Gets the 6 blocks that are adjacent to this block, with [Wrapping.WRAP_XZ] wrapping. If this block is on the
-     * floor on ceiling of this sample, less than 6 blocks are returned because part of them is cut off.
+     * floor or ceiling of this sample, less than 6 blocks are returned because part of them is cut off.
      */
-    private val Block.neighbours
-        get() = with(dimensions) { position.neighbours.map { blocks[it] } }
+    private val BlockIndex.neighbours
+        get() = with(dimensions) { neighbours }
 
     /**
      * Returns whether the given [x], [y], [z] coordinates belong to this sample.
      */
-    fun contains(x: Int, y: Int, z: Int) = dimensions.contains(x, y, z)
+    fun contains(x: Int, y: Int, z: Int): Boolean = dimensions.contains(x, y, z)
 
     /**
-     * Gets the [Block] located at the given [x], [y], [z] coordinates.
+     * Gets the type of the block located at the given [x], [y], [z] coordinates.
      */
-    fun getBlock(x: Int, y: Int, z: Int): Block = blocks[dimensions.getIndex(x, y, z)]
+    fun getBlockType(x: Int, y: Int, z: Int): BlockType = getBlockType(getIndex(x, y, z))
 
     /**
-     * Changes the type of the block at the given [x], [y], [z] coordinates.
+     * Sets the type of the block located at the given [x], [y], [z] coordinates.
      */
-    fun setBlock(x: Int, y: Int, z: Int, type: BlockType) = changeType(getBlock(x, y, z), type)
+    fun setBlockType(x: Int, y: Int, z: Int, type: BlockType) = setBlockType(getIndex(x, y, z), type)
 
-    fun fill(blockType: BlockType) = blocks.forEach { changeType(it, blockType) }
+    private fun getIndex(x: Int, y: Int, z: Int) = dimensions.getIndex(x, y, z)
 
     /**
-     * Digs the block at the specified [index].
+     * Gets the type of the block located at the given [index].
      */
-    fun digBlock(index: BlockIndex) {
-        changeType(blocks[index], BlockType.AIR)
-    }
+    private fun getBlockType(index: BlockIndex): BlockType = blocks[index]
 
     /**
-     * Digs the block at the specified [x], [y], [z] coordinates.
+     * Sets the type of the block located at the given [index].
      */
-    fun digBlock(x: Int, y: Int, z: Int) = digBlock(dimensions.getIndex(x, y, z))
-
-    fun digVisibleOresRecursively() {
-        val dugBlocks=  blocks.filter { it.isDug }
-        val explored=  dugBlocks.mapTo(HashSet()) { it.index }
-        val toExplore = dugBlocks.flatMapTo(ArrayDeque()) { it.neighbours }
-        while (toExplore.isNotEmpty()) {
-            val block = toExplore.poll()
-            explored.add(block.index)
-            if (block.isOre) {
-                digBlock(block.index)
-                block.neighbours.filterNotTo(toExplore) { explored.contains(it.index) }
-            }
-        }
-    }
-
-    fun resetTo(sample: Sample) {
-        for (i in blocks.indices) {
-            blocks[i].resetTo(sample.blocks[i])
-        }
-        oreBlocksCount = sample.oreBlocksCount
-        dugBlocksCount = sample.dugBlocksCount
-    }
-
-    private fun changeType(block: Block, type: BlockType) {
-        val formerType = block.type
-        block.type = type
+    private fun setBlockType(index: BlockIndex, type: BlockType) {
+        val formerType = blocks[index]
+        blocks[index] = type
         if (!formerType.isOre && type.isOre) {
             oreBlocksCount++
         } else if (formerType.isOre && !type.isOre) {
@@ -116,12 +93,47 @@ data class Sample(
         }
     }
 
-    override fun toString(): String = "Size: $dimensions  Dug: $dugBlocksCount"
-
-    companion object {
-        private fun createBlocks(dimensions: Dimensions, initialBlockType: BlockType): List<Block> =
-            with(dimensions) {
-                positions.map { Block(it.index, it, initialBlockType) }
-            }
+    fun fill(blockType: BlockType) {
+        blocks.fill(blockType)
+        dugBlocksCount = if (blockType == BlockType.AIR) blocks.size else 0
+        oreBlocksCount = if (blockType.isOre) blocks.size else 0
     }
+
+    /**
+     * Digs the block at the specified [index].
+     */
+    fun digBlock(index: BlockIndex) {
+        setBlockType(index, BlockType.AIR)
+    }
+
+    /**
+     * Digs the block at the specified [x], [y], [z] coordinates.
+     */
+    fun digBlock(x: Int, y: Int, z: Int) = digBlock(getIndex(x, y, z))
+
+    fun digVisibleOresRecursively() {
+        val explored= findDugBlocksIndices()
+        val toExplore = explored.flatMapTo(ArrayDeque()) { it.neighbours.asIterable() }
+        while (toExplore.isNotEmpty()) {
+            val blockIndex = toExplore.poll()
+            explored.add(blockIndex)
+            if (blocks[blockIndex].isOre) {
+                digBlock(blockIndex)
+                blockIndex.neighbours.filterNotTo(toExplore) { explored.contains(it) }
+            }
+        }
+    }
+
+    private fun findDugBlocksIndices(): HashSet<Int> =
+            blocks.mapIndexedNotNullTo(HashSet()) { index, type -> if (type == BlockType.AIR) index else null }
+
+    fun resetTo(sample: Sample) {
+        for (i in blocks.indices) {
+            blocks[i] = sample.blocks[i]
+        }
+        oreBlocksCount = sample.oreBlocksCount
+        dugBlocksCount = sample.dugBlocksCount
+    }
+
+    override fun toString(): String = "Size: $dimensions  Dug: $dugBlocksCount"
 }

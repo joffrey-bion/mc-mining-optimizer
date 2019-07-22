@@ -68,9 +68,9 @@ internal class WorldGenMinable(
                                 val sqD14 = d14 * d14
 
                                 if (sqD12 + sqD13 + sqD14 < 1.0 && sample.contains(x, y, z)
-                                    && sample.getBlock(x, y, z).type == blockTypeToReplace
+                                    && sample.getBlockType(x, y, z) == blockTypeToReplace
                                 ) {
-                                    sample.setBlock(x, y, z, blockTypeToGenerate)
+                                    sample.setBlockType(x, y, z, blockTypeToGenerate)
                                 }
                             }
                         }

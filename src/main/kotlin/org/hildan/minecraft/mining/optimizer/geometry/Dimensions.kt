@@ -32,10 +32,16 @@ data class Dimensions(
         }
     }
 
-    private val adjacentIndices: EnumMap<Wrapping, Map<Position, BlockIndices>> =
-            Wrapping.values().associateTo(EnumMap(Wrapping::class.java)) { it to findAdjacentIndices(positions, it) }
+    private val adjacentIndicesByIndex: EnumMap<Wrapping, Map<BlockIndex, BlockIndices>> =
+            Wrapping.values().associateTo(EnumMap(Wrapping::class.java)) { it to findAdjacentIndicesByIndex(it) }
 
-    private fun findAdjacentIndices(positions: List<Position>, wrapping: Wrapping): Map<Position, BlockIndices> =
+    private val adjacentIndicesByPosition: EnumMap<Wrapping, Map<Position, BlockIndices>> =
+            Wrapping.values().associateTo(EnumMap(Wrapping::class.java)) { it to findAdjacentIndicesByPosition(it) }
+
+    private fun findAdjacentIndicesByIndex(wrapping: Wrapping): Map<BlockIndex, BlockIndices> =
+            positions.associate { it.index to findAdjacentIndices(it, wrapping) }
+
+    private fun findAdjacentIndicesByPosition(wrapping: Wrapping): Map<Position, BlockIndices> =
             positions.associateWith { findAdjacentIndices(it, wrapping) }
 
     private fun findAdjacentIndices(position: Position, wrapping: Wrapping): BlockIndices = mutableListOf<Int>().apply {
@@ -53,6 +59,9 @@ data class Dimensions(
         }
     }
 
+    fun getAdjacentIndices(position: Position, wrapping: Wrapping = Wrapping.WRAP_XZ): BlockIndices =
+            adjacentIndicesByPosition[wrapping]!![position]!!
+
     /**
      * Returns whether the given [x], [y] and [z] coordinates fit in these dimensions.
      */
@@ -64,6 +73,9 @@ data class Dimensions(
     val BlockIndex.below
         get() = this + ONE_BELOW
 
+    val BlockIndex.neighbours
+        get() = adjacentIndicesByIndex[Wrapping.WRAP_XZ]!![this]!!
+
     operator fun BlockIndex.plus(distance: Distance3D): BlockIndex? = getIndex(positions[this], distance)
 
     /** The index (in a position array) of this position. */
@@ -71,7 +83,7 @@ data class Dimensions(
         get() = getIndex(x, y, z)
 
     val Position.neighbours
-        get() = adjacentIndices[Wrapping.WRAP_XZ]!![this]!!
+        get() = adjacentIndicesByPosition[Wrapping.WRAP_XZ]!![this]!!
 
     operator fun Position.plus(distance: Distance3D): Position? = getIndex(this, distance)?.let { positions[it] }
 
@@ -110,9 +122,6 @@ data class Dimensions(
         }
         return x + y * width + z * width * height
     }
-
-    fun getAdjacentIndices(position: Position, wrapping: Wrapping = Wrapping.WRAP_XZ): BlockIndices =
-        adjacentIndices[wrapping]!![position]!!
 
     override fun toString(): String = "${width}x${height}x$length"
 }
