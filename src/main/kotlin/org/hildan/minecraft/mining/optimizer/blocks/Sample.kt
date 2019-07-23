@@ -14,14 +14,18 @@ data class Sample(
     /** The dimensions of this sample. */
     val dimensions: Dimensions,
     /** The blocks of this sample. */
-    private val blocks: MutableList<BlockType>
+    private var blocks: MutableList<BlockType>
 ) {
-    /** The number of ore blocks currently in this sample. */
-    var oreBlocksCount = 0
+    /** The number of dug blocks currently in this sample. */
+    var dugBlocks = mutableSetOf<BlockIndex>()
         private set
 
     /** The number of dug blocks currently in this sample. */
-    var dugBlocksCount = 0
+    val dugBlocksCount: Int
+        get() = dugBlocks.size
+
+    /** The number of ore blocks currently in this sample. */
+    var oreBlocksCount = 0
         private set
 
     /**
@@ -32,7 +36,7 @@ data class Sample(
         MutableList(dimensions.nbPositions) { initialBlockType }
     ) {
         oreBlocksCount = if (initialBlockType.isOre) blocks.size else 0
-        dugBlocksCount = if (initialBlockType == BlockType.AIR) blocks.size else 0
+        dugBlocks = if (initialBlockType == BlockType.AIR) blocks.indices.toMutableSet() else mutableSetOf()
     }
 
     /**
@@ -43,7 +47,25 @@ data class Sample(
         ArrayList(source.blocks)
     ) {
         this.oreBlocksCount = source.oreBlocksCount
-        this.dugBlocksCount = source.dugBlocksCount
+        this.dugBlocks = HashSet(source.dugBlocksCount)
+    }
+
+    /**
+     * Fills this [Sample] with the given [blockType].
+     */
+    fun fill(blockType: BlockType) {
+        blocks.fill(blockType)
+        oreBlocksCount = if (blockType.isOre) blocks.size else 0
+        dugBlocks = if (blockType == BlockType.AIR) blocks.indices.toMutableSet() else mutableSetOf()
+    }
+
+    /**
+     * Resets this [Sample] to the same state as the given [sample].
+     */
+    fun resetTo(sample: Sample) {
+        blocks = ArrayList(sample.blocks)
+        oreBlocksCount = sample.oreBlocksCount
+        dugBlocks = HashSet(sample.dugBlocks)
     }
 
     /**
@@ -87,16 +109,10 @@ data class Sample(
             oreBlocksCount--
         }
         if (formerType != BlockType.AIR && type == BlockType.AIR) {
-            dugBlocksCount++
+            dugBlocks.add(index)
         } else if (formerType == BlockType.AIR && type != BlockType.AIR) {
-            dugBlocksCount--
+            dugBlocks.remove(index)
         }
-    }
-
-    fun fill(blockType: BlockType) {
-        blocks.fill(blockType)
-        dugBlocksCount = if (blockType == BlockType.AIR) blocks.size else 0
-        oreBlocksCount = if (blockType.isOre) blocks.size else 0
     }
 
     /**
@@ -112,7 +128,7 @@ data class Sample(
     fun digBlock(x: Int, y: Int, z: Int) = digBlock(getIndex(x, y, z))
 
     fun digVisibleOresRecursively() {
-        val explored= findDugBlocksIndices()
+        val explored = HashSet(dugBlocks)
         val toExplore = explored.flatMapTo(ArrayDeque()) { it.neighbours.asIterable() }
         while (toExplore.isNotEmpty()) {
             val blockIndex = toExplore.poll()
@@ -122,17 +138,6 @@ data class Sample(
                 blockIndex.neighbours.filterNotTo(toExplore) { explored.contains(it) }
             }
         }
-    }
-
-    private fun findDugBlocksIndices(): HashSet<Int> =
-            blocks.mapIndexedNotNullTo(HashSet()) { index, type -> if (type == BlockType.AIR) index else null }
-
-    fun resetTo(sample: Sample) {
-        for (i in blocks.indices) {
-            blocks[i] = sample.blocks[i]
-        }
-        oreBlocksCount = sample.oreBlocksCount
-        dugBlocksCount = sample.dugBlocksCount
     }
 
     override fun toString(): String = "Size: $dimensions  Dug: $dugBlocksCount"
