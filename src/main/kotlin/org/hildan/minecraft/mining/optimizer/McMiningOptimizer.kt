@@ -28,7 +28,6 @@ private const val SAMPLE_LOW_Y_POSITION = 5
 
 private const val MAX_DUG_BLOCKS = 20
 
-@ExperimentalCoroutinesApi
 fun main() = runBlocking {
     val sampleDimensions = Dimensions(SAMPLE_WIDTH, SAMPLE_HEIGHT, SAMPLE_LENGTH)
     val constraints = GenerationConstraints(sampleDimensions, MAX_DUG_BLOCKS)
@@ -47,14 +46,14 @@ fun main() = runBlocking {
     printBestPatterns(sampleDimensions, store)
 }
 
-@ExperimentalCoroutinesApi
+@OptIn(ExperimentalCoroutinesApi::class)
 private fun CoroutineScope.generatePatternsAsync(constraints: GenerationConstraints): ReceiveChannel<DiggingPattern> =
     produce(Dispatchers.Default, capacity = 200) {
         PatternGenerator(constraints).forEach { send(it) }
         close()
     }
 
-@ExperimentalCoroutinesApi
+@OptIn(ExperimentalCoroutinesApi::class)
 private fun CoroutineScope.evaluateAsync(
     referenceSamples: List<Sample>,
     generatedPatterns: ReceiveChannel<DiggingPattern>
