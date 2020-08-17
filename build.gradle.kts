@@ -25,3 +25,4 @@ dependencies {
 val compileKotlin: KotlinCompile by tasks
 
 compileKotlin.kotlinOptions.jvmTarget = "1.8"
+compileKotlin.kotlinOptions.freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
