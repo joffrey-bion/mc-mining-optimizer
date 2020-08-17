@@ -6,6 +6,7 @@ import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.geometry.Distance3D
 import org.hildan.minecraft.mining.optimizer.geometry.Range3D
 import java.util.ArrayList
+import kotlin.math.abs
 
 /**
  * Gets all possible actions supported for the given [digRange].
@@ -41,7 +42,7 @@ data class MoveAction(private val distance: Distance3D) : Action() {
         if (distance.x != 0 && distance.z != 0) {
             throw IllegalArgumentException("Moves are accepted only along one axis at a time")
         }
-        if (Math.abs(distance.x) > 1 || Math.abs(distance.z) > 1) {
+        if (abs(distance.x) > 1 || abs(distance.z) > 1) {
             throw IllegalArgumentException("Only moves of one block are accepted")
         }
     }

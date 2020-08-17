@@ -55,11 +55,11 @@ internal data class DiggingState(
      * @return a Stream of states resulting of each possible action taken on the given access
      */
     private fun expandAccess(access: Access, sample: DigMatrix) = EXPANDING_ACTIONS
-        .filter { action -> action.isValidFor(sample, headPositionByAccess[access]!!) }
+        .filter { action -> action.isValidFor(sample, headPositionByAccess.getValue(access)) }
         .map { action -> next(sample, access, action) }
 
     /**
-     * Returns the `DiggingState` resulting of the execution of the given action on this state. This method does
+     * Returns the `DiggingState` resulting from the execution of the given action on this state. This method does
      * not affect this state.
      *
      * @param access the access for which to add the action
@@ -73,12 +73,12 @@ internal data class DiggingState(
 
     private fun moveFromHere(access: Access, action: MoveAction, dimensions: Dimensions): DiggingState {
         val newHeadPositionsPerAccess = HashMap(headPositionByAccess)
-        newHeadPositionsPerAccess[access] = action.move(headPositionByAccess[access]!!, dimensions)
+        newHeadPositionsPerAccess[access] = action.move(headPositionByAccess.getValue(access), dimensions)
         return DiggingState(newHeadPositionsPerAccess, dugPositions)
     }
 
     private fun digFromHere(access: Access, action: RelativeDigAction, dimensions: Dimensions): DiggingState {
-        val dugBlockPos = action.digPosition(headPositionByAccess[access]!!, dimensions)
+        val dugBlockPos = action.digPosition(headPositionByAccess.getValue(access), dimensions)
         return DiggingState(headPositionByAccess, dugPositions + dugBlockPos)
     }
 

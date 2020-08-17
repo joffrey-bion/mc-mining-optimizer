@@ -23,5 +23,5 @@ class DigMatrix(
         feetPosition.below?.let { !isDug(it) } ?: true
     }
 
-    fun reset() = Arrays.fill(dugState, false)
+    fun reset() = dugState.fill(false)
 }
