@@ -48,7 +48,7 @@ data class MoveAction(private val distance: Distance3D) : Action() {
     }
 
     override fun isValidFor(sample: DigMatrix, currentHeadPosition: BlockIndex): Boolean = with (sample.dimensions) {
-        val headDestination = currentHeadPosition + distance ?: return false
+        val headDestination = (currentHeadPosition + distance) ?: return false
         val feetDestination = headDestination.below ?: return false
 
         if (!canStandAtPosition(sample, headDestination, feetDestination)) {
@@ -113,7 +113,7 @@ data class MoveAction(private val distance: Distance3D) : Action() {
 data class RelativeDigAction(private val distanceFromHead: Distance3D) : Action() {
 
     override fun isValidFor(sample: DigMatrix, currentHeadPosition: BlockIndex): Boolean = with(sample.dimensions) {
-        val blockToDig = currentHeadPosition + distanceFromHead ?: return false
+        val blockToDig = (currentHeadPosition + distanceFromHead) ?: return false
         return !sample.isDug(blockToDig) && isPathClear(sample, currentHeadPosition, blockToDig)
     }
 

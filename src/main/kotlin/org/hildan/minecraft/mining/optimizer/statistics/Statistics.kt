@@ -1,6 +1,6 @@
 package org.hildan.minecraft.mining.optimizer.statistics
 
-import java.util.Locale
+import java.util.*
 
 /**
  * Represents statistics about a digging pattern.
@@ -8,7 +8,7 @@ import java.util.Locale
 data class Statistics(
     private val foundOres: Long,
     private val dugBlocks: Long,
-    private val totalOres: Long
+    private val totalOres: Long,
 ) : Comparable<Statistics> {
 
     private val efficiency: Double = proportion(foundOres, dugBlocks)

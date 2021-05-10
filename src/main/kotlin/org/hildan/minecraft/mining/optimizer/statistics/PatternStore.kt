@@ -16,8 +16,7 @@ class PatternStore : Iterable<EvaluatedPattern> {
         return true
     }
 
-    private fun containsBetterThan(pattern: EvaluatedPattern) =
-        patterns.any { it > pattern }
+    private fun containsBetterThan(pattern: EvaluatedPattern) = patterns.any { it > pattern }
 
     private fun removeStrictlyWorseThan(pattern: EvaluatedPattern) = patterns.removeAll { it < pattern }
 

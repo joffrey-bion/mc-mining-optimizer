@@ -39,7 +39,7 @@ interface Distance3D : Vector3D {
 private data class BasicVector(
     override val x: Int,
     override val y: Int,
-    override val z: Int
+    override val z: Int,
 ) : Position, Distance3D {
 
     companion object {

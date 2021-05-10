@@ -8,7 +8,7 @@ import org.hildan.minecraft.mining.optimizer.blocks.Sample
 data class TunnelPattern(
     val section: TunnelSection,
     val hSpacing: Int,
-    val vSpacing: Int
+    val vSpacing: Int,
 ) {
     fun digInto(sample: Sample, originX: Int, originY: Int, originZ: Int, length: Int, direction: Axis) =
         section.digInto(sample, originX, originY, originZ, length, direction)

@@ -2,10 +2,9 @@ package org.hildan.minecraft.mining.optimizer.patterns.generated
 
 import org.hildan.minecraft.mining.optimizer.geometry.BlockIndex
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
-import java.util.Arrays
 
 class DigMatrix(
-    val dimensions: Dimensions
+    val dimensions: Dimensions,
 ) {
     private val dugState: BooleanArray = BooleanArray(dimensions.nbPositions)
 

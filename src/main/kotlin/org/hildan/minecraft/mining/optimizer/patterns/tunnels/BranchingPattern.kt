@@ -11,7 +11,7 @@ class BranchingPattern(
     private val shaft: TunnelPattern,
     private val branch: TunnelPattern,
     private val branchLength: Int,
-    private val branchOffsetByTier: Int
+    private val branchOffsetByTier: Int,
 ) : RepeatedDiggingPattern {
 
     private val layerHeight = shaft.section.height + shaft.vSpacing
@@ -29,16 +29,12 @@ class BranchingPattern(
             throw IllegalArgumentException("The main shaft should be higher than branches")
         }
         if (shaft.hSpacing < 2 * branch.section.width) {
-            throw IllegalArgumentException(
-                "Branches from 2 different shafts are touching: reduce branch length, or put more space"
-            )
+            throw IllegalArgumentException("Branches from 2 different shafts are touching: reduce branch length, or put more space")
         }
     }
 
-    override fun getAccesses(offsetX: Int, offsetY: Int) = setOf(
-        Access(offsetX + branchLength, offsetY),
-        Access(offsetX + branchLength, offsetY + layerHeight)
-    )
+    override fun getAccesses(offsetX: Int, offsetY: Int) =
+        setOf(Access(offsetX + branchLength, offsetY), Access(offsetX + branchLength, offsetY + layerHeight))
 
     override fun digInto(sample: Sample, offsetX: Int, offsetY: Int, offsetZ: Int) {
         digLayer(sample, offsetX, offsetY, offsetZ, 0)

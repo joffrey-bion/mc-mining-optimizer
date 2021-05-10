@@ -6,7 +6,6 @@ import org.hildan.minecraft.mining.optimizer.geometry.DigRange3D
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.patterns.Access
 import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
-import java.util.HashMap
 
 /**
  * Contains all possible actions supported with [DigRange3D.STRICT] digging range.
@@ -25,8 +24,7 @@ internal data class DiggingState(
      * position per access.
      */
     private val headPositionByAccess: Map<Access, BlockIndex>,
-
-    private val dugPositions: Set<BlockIndex>
+    private val dugPositions: Set<BlockIndex>,
 ) {
     fun replayOn(sample: DigMatrix) {
         dugPositions.forEach { sample.dig(it) }
@@ -54,9 +52,10 @@ internal data class DiggingState(
      * @param access the access to operate on
      * @return a Stream of states resulting of each possible action taken on the given access
      */
-    private fun expandAccess(access: Access, sample: DigMatrix) = EXPANDING_ACTIONS
-        .filter { action -> action.isValidFor(sample, headPositionByAccess.getValue(access)) }
-        .map { action -> next(sample, access, action) }
+    private fun expandAccess(access: Access, sample: DigMatrix) =
+        EXPANDING_ACTIONS
+            .filter { action -> action.isValidFor(sample, headPositionByAccess.getValue(access)) }
+            .map { action -> next(sample, access, action) }
 
     /**
      * Returns the `DiggingState` resulting from the execution of the given action on this state. This method does

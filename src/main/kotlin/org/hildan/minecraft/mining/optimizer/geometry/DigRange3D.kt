@@ -10,32 +10,29 @@ enum class DigRange3D(
     /**
      * `boundsDistribution[y][x]` gives the maximum that Z can take for the given X and Y.
      */
-    private val boundsDistribution: Array<IntArray>
+    private val boundsDistribution: Array<IntArray>,
 ) : Range3D {
 
     /**
      * The accessible range when pressing shift and no block is preventing the player from overextending.
      */
-    PRESSING_SHIFT(
-        arrayOf<IntArray>( //
-            intArrayOf(6, 6, 6, 5, 5, 4, 2), // distanceY = 0
-            intArrayOf(6, 6, 6, 5, 5, 4, 2), // distanceY = 1 or -1
-            intArrayOf(6, 6, 5, 5, 5, 4, 1), // distanceY = 2 or -2
-            intArrayOf(5, 5, 5, 5, 4, 3, -1) // distanceY = 3 or -3
-        )
-    ),
+    PRESSING_SHIFT(arrayOf(
+        intArrayOf(6, 6, 6, 5, 5, 4, 2), // distanceY = 0
+        intArrayOf(6, 6, 6, 5, 5, 4, 2), // distanceY = 1 or -1
+        intArrayOf(6, 6, 5, 5, 5, 4, 1), // distanceY = 2 or -2
+        intArrayOf(5, 5, 5, 5, 4, 3, -1), // distanceY = 3 or -3
+    )),
+
     /**
      * The accessible range when the player is strictly limited to the block he's standing on (because other blocks are
      * in his way and prevent him from overextending by pressing shift).
      */
-    STRICT(
-        arrayOf<IntArray>( //
-            intArrayOf(5, 5, 5, 5, 4, 3), // distanceY = 0
-            intArrayOf(5, 5, 5, 5, 4, 3), // distanceY = 1 or -1
-            intArrayOf(5, 5, 5, 4, 3, 2), // distanceY = 2 or -2
-            intArrayOf(4, 4, 4, 4, 3, -1) // distanceY = 3 or -3
-        )
-    );
+    STRICT(arrayOf(
+        intArrayOf(5, 5, 5, 5, 4, 3), // distanceY = 0
+        intArrayOf(5, 5, 5, 5, 4, 3), // distanceY = 1 or -1
+        intArrayOf(5, 5, 5, 4, 3, 2), // distanceY = 2 or -2
+        intArrayOf(4, 4, 4, 4, 3, -1), // distanceY = 3 or -3
+    ));
 
     override fun maxX(distanceY: Int): Int = boundsDistribution[abs(distanceY)].lastIndex
 
@@ -55,9 +52,9 @@ enum class DigRange3D(
                     val c = if (inRange(dX, dY, dZ)) '.' else 'X'
                     sb.append(c)
                 }
-                sb.appendln()
+                sb.appendLine()
             }
-            sb.appendln()
+            sb.appendLine()
         }
         return sb.toString()
     }

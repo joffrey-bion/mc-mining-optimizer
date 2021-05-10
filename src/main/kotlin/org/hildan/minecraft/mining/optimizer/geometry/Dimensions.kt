@@ -18,7 +18,7 @@ typealias BlockIndices = IntArray
 data class Dimensions(
     val width: Int,
     val height: Int,
-    val length: Int
+    val length: Int,
 ) {
     val nbPositions = width * height * length
 
@@ -33,10 +33,10 @@ data class Dimensions(
     }
 
     private val adjacentIndicesByIndex: EnumMap<Wrapping, Map<BlockIndex, BlockIndices>> =
-            Wrapping.values().associateTo(EnumMap(Wrapping::class.java)) { it to findAdjacentIndicesByIndex(it) }
+        Wrapping.values().associateWithTo(EnumMap(Wrapping::class.java)) { findAdjacentIndicesByIndex(it) }
 
     private val adjacentIndicesByPosition: EnumMap<Wrapping, Map<Position, BlockIndices>> =
-            Wrapping.values().associateTo(EnumMap(Wrapping::class.java)) { it to findAdjacentIndicesByPosition(it) }
+        Wrapping.values().associateWithTo(EnumMap(Wrapping::class.java)) { findAdjacentIndicesByPosition(it) }
 
     private fun findAdjacentIndicesByIndex(wrapping: Wrapping): Map<BlockIndex, BlockIndices> =
             positions.associate { it.index to findAdjacentIndices(it, wrapping) }

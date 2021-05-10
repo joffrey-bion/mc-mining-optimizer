@@ -2,9 +2,7 @@ package org.hildan.minecraft.mining.optimizer.ore
 
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
-
-import java.util.EnumMap
-import java.util.Random
+import java.util.*
 
 fun generateSamples(count: Int, dimensions: Dimensions, lowestY: Int, random: Random = Random()): List<Sample> =
     SampleGenerator(dimensions, lowestY, random).generate(count)
@@ -15,7 +13,7 @@ fun generateSamples(count: Int, dimensions: Dimensions, lowestY: Int, random: Ra
 private class SampleGenerator(
     private val dimensions: Dimensions,
     lowestY: Int,
-    random: Random = Random()
+    random: Random = Random(),
 ) {
     private val oreInjector: OreInjector = OreInjector(lowestY, random)
 
@@ -29,7 +27,7 @@ private class SampleGenerator(
  */
 private class OreInjector(
     private val lowestY: Int,
-    private val random: Random = Random()
+    private val random: Random = Random(),
 ) {
     /**
      * Replace some stones in the given [sample] by ores. Only stone blocks may be changed.
@@ -58,12 +56,12 @@ private class OreInjector(
         type: BlockType,
         xOffset: Int,
         zOffset: Int,
-        yGenerator: (minY: Int, maxY: Int) -> Int
+        yGenerator: (minY: Int, maxY: Int) -> Int,
     ) {
         val gen = oreGenerators[type]!!
         val minY = type.minYAvailability
         val maxY = type.maxYAvailability
-        repeat (type.veinsCountPerChunk) {
+        repeat(type.veinsCountPerChunk) {
             val x = random.nextInt(CHUNK_WIDTH)
             val y = yGenerator(minY, maxY)
             val z = random.nextInt(CHUNK_LENGTH)

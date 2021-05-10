@@ -7,7 +7,7 @@ import org.hildan.minecraft.mining.optimizer.patterns.DiggingPattern
  * Evaluates digging patterns based on the given reference samples.
  */
 class PatternEvaluator(
-    private val referenceSamples: List<Sample>
+    private val referenceSamples: List<Sample>,
 ) {
     private val testSamples = referenceSamples.map { Sample(it) }
 

@@ -1,11 +1,10 @@
 package org.hildan.minecraft.mining.optimizer.ore
 
 import org.hildan.minecraft.mining.optimizer.blocks.Sample
-
-import java.util.Random
+import java.util.*
 
 internal class WorldGenMinable(
-    private val blockTypeToGenerate: BlockType
+    private val blockTypeToGenerate: BlockType,
 ) {
     private val maxVeinSize: Int = blockTypeToGenerate.maxVeinSize
     private val maxVeinSizeDouble: Double = blockTypeToGenerate.maxVeinSize.toDouble()
@@ -67,9 +66,7 @@ internal class WorldGenMinable(
                                 val d14 = (z.toDouble() + 0.5 - scaledZ) / radius
                                 val sqD14 = d14 * d14
 
-                                if (sqD12 + sqD13 + sqD14 < 1.0 && sample.contains(x, y, z)
-                                    && sample.getBlockType(x, y, z) == blockTypeToReplace
-                                ) {
+                                if (sqD12 + sqD13 + sqD14 < 1.0 && sample.contains(x, y, z) && sample.getBlockType(x, y, z) == blockTypeToReplace) {
                                     sample.setBlockType(x, y, z, blockTypeToGenerate)
                                 }
                             }

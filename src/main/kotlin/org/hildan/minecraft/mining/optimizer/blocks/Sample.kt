@@ -4,7 +4,7 @@ import org.hildan.minecraft.mining.optimizer.geometry.BlockIndex
 import org.hildan.minecraft.mining.optimizer.geometry.Dimensions
 import org.hildan.minecraft.mining.optimizer.geometry.Wrapping
 import org.hildan.minecraft.mining.optimizer.ore.BlockType
-import java.util.ArrayDeque
+import java.util.*
 
 /**
  * An arbitrary group of blocks. It can have any dimension, thus it is different from a minecraft chunk, which is
@@ -14,7 +14,7 @@ data class Sample(
     /** The dimensions of this sample. */
     val dimensions: Dimensions,
     /** The blocks of this sample. */
-    private var blocks: MutableList<BlockType>
+    private var blocks: MutableList<BlockType>,
 ) {
     /** The number of dug blocks currently in this sample. */
     var dugBlocks = mutableSetOf<BlockIndex>()
@@ -32,8 +32,8 @@ data class Sample(
      * Creates a new pure sample of the given [dimensions] containing only blocks of the given [initialBlockType].
      */
     constructor(dimensions: Dimensions, initialBlockType: BlockType) : this(
-        dimensions,
-        MutableList(dimensions.nbPositions) { initialBlockType }
+        dimensions = dimensions,
+        blocks = MutableList(dimensions.nbPositions) { initialBlockType },
     ) {
         oreBlocksCount = if (initialBlockType.isOre) blocks.size else 0
         dugBlocks = if (initialBlockType == BlockType.AIR) blocks.indices.toMutableSet() else mutableSetOf()
@@ -42,10 +42,7 @@ data class Sample(
     /**
      * Creates a copy of the given [source] Sample.
      */
-    constructor(source: Sample) : this(
-        source.dimensions,
-        ArrayList(source.blocks)
-    ) {
+    constructor(source: Sample) : this(source.dimensions, ArrayList(source.blocks)) {
         this.oreBlocksCount = source.oreBlocksCount
         this.dugBlocks = HashSet(source.dugBlocksCount)
     }

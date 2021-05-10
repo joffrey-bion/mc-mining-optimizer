@@ -33,7 +33,7 @@ enum class BlockType(
     /**
      * the highest Y where a vein of this type can be generated in a chunk (ore only)
      */
-    val maxYAvailability: Int
+    val maxYAvailability: Int,
 ) {
     AIR(false, "\u2592", -1, -1, -1, -1),
     STONE(false, "\u2588", -1, -1, -1, -1),
