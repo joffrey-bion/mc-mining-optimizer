@@ -7,7 +7,7 @@ group = "org.hildan"
 version = "0.1"
 
 application {
-    mainClassName = "org.hildan.minecraft.mining.optimizer.McMiningOptimizerKt"
+    mainClass.set("org.hildan.minecraft.mining.optimizer.McMiningOptimizerKt")
 }
 
 repositories {
