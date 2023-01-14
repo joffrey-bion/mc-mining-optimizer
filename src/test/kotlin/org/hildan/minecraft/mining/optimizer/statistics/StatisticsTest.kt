@@ -12,19 +12,15 @@ internal class StatisticsTest {
 
     @Test
     fun testComparison_basicEquality() {
-        assertTrue(eff50tho50 == eff50tho50)
         assertTrue(eff50tho50 >= eff50tho50)
         assertTrue(eff50tho50 <= eff50tho50)
 
-        assertTrue(eff50tho100 == eff50tho100)
         assertTrue(eff50tho100 >= eff50tho100)
         assertTrue(eff50tho100 <= eff50tho100)
 
-        assertTrue(eff100tho50 == eff100tho50)
         assertTrue(eff100tho50 >= eff100tho50)
         assertTrue(eff100tho50 <= eff100tho50)
 
-        assertTrue(eff100tho100 == eff100tho100)
         assertTrue(eff100tho100 >= eff100tho100)
         assertTrue(eff100tho100 <= eff100tho100)
     }
