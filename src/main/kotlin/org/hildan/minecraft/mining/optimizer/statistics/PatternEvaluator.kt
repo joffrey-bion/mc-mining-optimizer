@@ -11,7 +11,7 @@ class PatternEvaluator(
 ) {
     private val testSamples = referenceSamples.map { Sample(it) }
 
-    private val totalOres = testSamples.map { it.oreBlocksCount }.sum().toLong()
+    private val totalOres = testSamples.sumOf { it.oreBlocksCount }.toLong()
 
     fun evaluate(pattern: DiggingPattern): EvaluatedPattern {
         var dugBlocks = 0L
